@@ -10,7 +10,7 @@ get_unlab_rate = function(labels, unlabelled){
 get_unlab_rate_ratio = function(prop_unlab_reference, prop_unlab_predicted){
     if(prop_unlab_reference != 0){
         cat("Prop unlab != 0") 
-        unlab_ratio = round((prop_unlab_predicted/prop_unlab_reference)*100,3)
+        unlab_ratio = round(prop_unlab_predicted/prop_unlab_reference,3)*100
     } else{
         cat("Prop unlab = 0")
         unlab_ratio = round(prop_unlab_predicted*100 / (prop_unlab_reference+1), 3)
@@ -47,7 +47,7 @@ get_shared_terms_prop = function(reference_labs, pred_labs, trivial_terms){
 
 ### find per-class/median F-1 scores and accuracy ###
 # adapted from https://github.com/tabdelaal/scRNAseq_Benchmark/blob/master/evaluate.R
-get_preformance_metrics = function(reference_labs, predicted_labs, unlabelled) {
+get_f1 = function(reference_labs, predicted_labs, unlabelled) {
     unique_ref = unique(reference_labs)
     unique_pred = unique(predicted_labs)
     #unique_all = unique(c(unique(unique_ref, unique_pred)))
@@ -63,7 +63,7 @@ get_preformance_metrics = function(reference_labs, predicted_labs, unlabelled) {
     for (i in c(1:length(unique_ref))){
     # check if label is in confusion table
     findLabel = colnames(conf_F1) == row.names(conf_F1)[i]
-    if(sum(findLabel)){
+    if(sum(findLabel, na.rm = TRUE)){
       prec = conf_F1[i, findLabel] / colSums(conf_F1)[findLabel]
       rec = conf_F1[i, findLabel] / rowSums(conf_F1)[i]
       if (prec == 0 || rec == 0){
@@ -79,49 +79,82 @@ get_preformance_metrics = function(reference_labs, predicted_labs, unlabelled) {
   # filter out empty classes
   pop_size = pop_size[pop_size > 0]
   names(F1) = names(pop_size)
-  med_F1 = median(F1)
+  med_F1 = round(median(F1), 3)
   # calculate overall accuracy 
-  acc = sum_acc/sum(conf_F1)
+  acc = round(sum_acc/sum(conf_F1), 3)
   out = list(MedF1 = med_F1, Acc = acc)
   return(out)
 }
 
-get_CL_similarity = function(reference_labs_df, ref_labs_col, CL_col, predicted_labs) {
-    suppressPackageStartupMessages(require(Onassis))
-    suppressPackageStartupMessages(require(org.Hs.eg.db)) # TODO: need argument to control database 
-    suppressPackageStartupMessages(require(hash))
+get_CL_similarity = function(reference_labs, ref_CL_terms, predicted_labs, ontology) {
+    suppressPackageStartupMessages(require(Onassis)) #NB: keep this within function, otherwise parallelism is broken
+    # initialise and configure Similarity object 
+    siml_object = new('Similarity')
+    ontology(siml_object) = ontology
+    # configure similarity measurement metric
+    pairwiseConfig(siml_object) = listSimilarities()$pairwiseMeasures[12]
 
-    ontology_terms = as.character(reference_labs_df[, CL_col])
-    cell_types = as.character(reference_labs_df[, ref_labs_col])
-    
     # map cell types to CL terms 
     cell_type_id_mapping = hash()
-    .set(cell_type_id_mapping, keys=cell_types, values=ontology_terms)
+    .set(cell_type_id_mapping, keys=reference_labs, values=ref_CL_terms)
     # get CL terms for predicted labels
-    obo = "data/cl-basic.obo"
     pred_cl = sapply(predicted_labs, function(x) cell_type_id_mapping[[x]])
-    ref_cl = as.character(reference_labs_df[, CL_col])
 
     # semantic similarity 
     .find_siml = function(idx){
         tryCatch({
-            siml = Similarity(obo, pred_cl[idx], ref_cl[idx])
+            siml = pairsim(siml_object, pred_cl[idx], ref_CL_terms[idx])
             return(siml)},
         error = function(cond){
+            print(cond)
+            print("returning NA")
             return(NA)})
     }
 
-    similarity = sapply(1:length(ref_cl), .find_siml)
+    similarity = sapply(1:length(ref_CL_terms), .find_siml)
     mean_siml = round(mean(similarity, na.rm = TRUE), 3)
     return(mean_siml)
 }
 
+##############################################
+# obtain metrics using functions defined above
+##############################################
+obtain_metrics_list = function(tool,
+                               reference_labs,
+                               predicted_labs,
+                               prop_unlab_reference,
+                               unlabelled,
+                               trivial_terms,
+                               ref_CL_terms,
+                               ontology){
 
-
-
-
-
-
+    # proportion of unlabelled cells in predicted labels
+    prop_unlab_predicted = get_unlab_rate(predicted_labs, unlabelled)
+    # ratio of unlabelled cells proportions
+    unlab_ratio = get_unlab_rate_ratio(prop_unlab_reference, prop_unlab_predicted)
+    # propotion of exact matches 
+    exact_match_prop = get_exact_matches(reference_labs, predicted_labs)
+    # match based on shared terms
+    mean_shared_terms = get_shared_terms_prop(reference_labs, predicted_labs, trivial_terms)
+    # calculate F1 scores and accuracy
+    metrics = get_f1(reference_labs, predicted_labs, unlabelled)
+    median_F1 = metrics$MedF1
+    accuracy = metrics$Acc
+    # cell ontology similarity
+    siml = get_CL_similarity(reference_labs, ref_CL_terms, predicted_labs, ontology)
+    
+    # combine metrics
+    row = list(Tool = tool,
+                Unlab_ref = prop_unlab_reference,
+                Unlab_pred = prop_unlab_predicted,
+                Unlab_ratio = unlab_ratio,
+                Exact_match_prop = exact_match_prop,
+                Mean_partial_match = mean_shared_terms,
+                Med_F1 = median_F1,
+                Accuracy = accuracy,
+                CL_similarity = siml)
+    return(row)
+}
 
 
 

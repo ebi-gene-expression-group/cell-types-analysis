@@ -3,6 +3,10 @@
 suppressPackageStartupMessages(require(optparse))
 suppressPackageStartupMessages(require(workflowscriptscommon))
 
+#suppressPackageStartupMessages(require(Onassis))
+suppressPackageStartupMessages(require(org.Hs.eg.db)) # TODO: need argument to control database 
+suppressPackageStartupMessages(require(hash)) # NB: must be version 2.2.6.1
+
 #### Create a table for evaluation metrics of multiple methods ####
 #### Inputs: 
 ####    1) Text file with reference cell types
@@ -56,6 +60,7 @@ suppressPackageStartupMessages(require(workflowscriptscommon))
         help = 'Path to the output table in .tsv format'
     )
 )
+# TODO: add arguments for ontology and gene database 
 
 # source function definitions 
 source("Utils.R")
@@ -68,11 +73,20 @@ predicted_labs_tables = lapply(file_names, function(file) read.csv(file, sep="\t
 pred_labs_col = opt$label_column_pred
 
 # read reference file 
-reference_labs_df = read.csv(opt$ref_file, sep=" ") #TODO: decide on separator
+reference_labs_df = read.csv(opt$ref_file, sep=",") #TODO: decide on separator
 ref_labs_col = opt$label_column_ref
-# NB: keep this relevant to the tools' output
-unlabelled = c("unassigned", "Unassigned", "unknown")
-# proportion of unknowns in reference cell types
+
+# NB: keep these relevant to the tools' output
+unlabelled = c("unassigned", "Unassigned", "unknown", NA)
+trivial_terms = c("cell", "of", "tissue") # add common words here
+
+# extract ontology terms for cell types 
+CL_col = opt$cell_ontology_col
+ref_CL_terms = as.character(reference_labs_df[, CL_col]) 
+ontology = "data/cl-basic.obo"
+
+
+# find proportion of unknowns in reference cell types
 prop_unlab_reference = get_unlab_rate(reference_labs_df[, ref_labs_col], unlabelled)
 
 output_table = list()
@@ -83,6 +97,7 @@ for(idx in 1:length(predicted_labs_tables)){
     print(tool)
 
     # check reference cell IDs match predicted cell IDs
+    # if so, extract reference and predicted labels as vectors
     if(all(as.character(predicted_labs_df[, "cell_id"]) == as.character(predicted_labs_df[, "cell_id"]))) {
         # extract label vectors
         print("extract label vectors")
@@ -92,41 +107,11 @@ for(idx in 1:length(predicted_labs_tables)){
         stop(paste("Error: cell id mismatch for tool: ", tool))
     }
 
-    ############################################
-                # obtain metrics
-    ############################################
-    # proportion of unlabelled cells in predicted labels
-    prop_unlab_predicted = get_unlab_rate(predicted_labs, unlabelled)
-    
-    # ratio of unlabelled cells proportions
-    unlab_ratio = get_unlab_rate_ratio(prop_unlab_reference, prop_unlab_predicted)
-
-    # propotion of exact matches 
-    exact_match_prop = get_exact_matches(reference_labs, predicted_labs)
-
-    # match based on shared terms
-    trivial_terms = c("cell", "of", "tissue") # add common words here
-    mean_shared_terms = get_shared_terms_prop(reference_labs, predicted_labs, trivial_terms)
-
-    # calculate F1 scores and accuracy
-    metrics = get_preformance_metrics(reference_labs, predicted_labs, unlabelled)
-    median_F1 = metrics$MedF1
-    accuracy = metrics$Acc
-
-    # cell ontology similarity
-    CL_col = opt$cell_ontology_col 
-    siml = get_CL_similarity(reference_labs_df, ref_labs_col, CL_col, predicted_labs)
-
-    # combine metrics
-    row = cbind(Tool = tool,
-                Unlab_ref = prop_unlab_reference,
-                Unlab_pred = prop_unlab_predicted,
-                Unlab_ratio = unlab_ratio,
-                Exact_match_prop = exact_match_prop,
-                Mean_partial_match = mean_shared_terms,
-                Med_F1 = median_F1,
-                Accuracy = accuracy,
-                CL_similarity = siml)
+    # run evaluation functions
+    row = obtain_metrics_list(tool, reference_labs,
+                              predicted_labs, prop_unlab_reference,
+                              unlabelled, trivial_terms, ref_CL_terms, ontology)
+    row = do.call(cbind, row)
     output_table[[idx]] = row
 }
 
