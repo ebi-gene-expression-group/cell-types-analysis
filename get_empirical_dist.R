@@ -5,12 +5,11 @@ suppressPackageStartupMessages(require(workflowscriptscommon))
 suppressPackageStartupMessages(require(hash))
 suppressPackageStartupMessages(require(foreach))
 suppressPackageStartupMessages(require(doParallel))
-suppressPackageStartupMessages(require(org.Hs.eg.db))
 source("Utils.R")
 
-### Generate a set of emprirical distributions for each metric defined in Utils.R 
+### Generate a set of emprirical distributions for metrics defined in Utils.R 
 ### The script takes reference dataset as an input and shuffles it a specified number of times 
-### for each iteration of shuffling, the metrics are calculated. 
+### for each iteration of shuffling, metrics are calculated; CDFs are produced after that  
 
 option_list = list(
     make_option(
@@ -32,7 +31,7 @@ option_list = list(
         action = "store",
         default = 'CL_term',
         type = 'character',
-        help = 'Name of CL id column in ref dataset'
+        help = 'Name of CL id column in reference dataset'
     ),
     make_option(
         c("-n", "--num-iterations"),
@@ -44,14 +43,14 @@ option_list = list(
     make_option(
         c("-c", "--num-cores"),
         action = "store",
-        default = 4,
+        default = 2,
         type = 'numeric',
-        help = 'Number of cores to run the process on. Default: 1'
+        help = 'Number of cores to run the process on. Default: 2'
     ),
     make_option(
         c("-g", "--ontology-graph"),
         action = "store",
-        default = NA,
+        default = "data/cl-basic.obo",
         type = 'character',
         help = 'Path to the ontology graph in .obo or .xml format'
     ),
@@ -83,8 +82,6 @@ trivial_terms = c("cell", "of", "tissue") # add common words here
     metrics = get_f1(reference_labs, predicted_labs, unlabelled)
     median_F1 = metrics$MedF1
     accuracy = metrics$Acc
-    print(head(reference_labs))
-    print(head(predicted_labs))
     siml = get_CL_similarity(reference_labs, ref_CL_terms, predicted_labs, ontology)
 
     metric_list = list(Exact_match_prop = exact_match_prop,
@@ -104,6 +101,6 @@ emp_samples = foreach (iter=1:num_iter) %dopar% {
 
 emp_samples = do.call(rbind, emp_samples)
 print(emp_samples)
-# generate cumulative empirical distributions for each sample
+# generate cumulative empirical distributions
 emp_dist = apply(emp_samples, 2, function(col) ecdf(as.numeric(col)))
 saveRDS(emp_dist, file = opt$output_path)

@@ -2,26 +2,20 @@
 get_unlab_rate = function(labels, unlabelled){
     labels = as.character(labels)
     prop_unknown_provided = length(labels[(labels %in% unlabelled)])/length(labels)
-    prop_unknown_provided = round(prop_unknown_provided, 3)*100
+    prop_unknown_provided = round(prop_unknown_provided, 3)
     return(prop_unknown_provided)
 }
 
 #### find ratio of unlabelled cells in reference dataset to that in predicted dataset ###
-get_unlab_rate_ratio = function(prop_unlab_reference, prop_unlab_predicted){
-    if(prop_unlab_reference != 0){
-        cat("Prop unlab != 0") 
-        unlab_ratio = round(prop_unlab_predicted/prop_unlab_reference,3)*100
-    } else{
-        cat("Prop unlab = 0")
-        unlab_ratio = round(prop_unlab_predicted*100 / (prop_unlab_reference+1), 3)
-    }
-    return(unlab_ratio)
+get_unlab_rate_delta = function(prop_unlab_reference, prop_unlab_predicted){
+    unlab_delta = abs(prop_unlab_predicted - prop_unlab_reference)
+    return(round(unlab_delta, 3))
 }
 
 #### find proportion of exact matches between reference cell types and predicted labels ###
 get_exact_matches = function(reference_labels, predicted_labels){
     matches = length(reference_labels[reference_labels == predicted_labels])
-    prop_exact_match = round(matches/length(reference_labels), 3)*100
+    prop_exact_match = round(matches/length(reference_labels), 3)
     return(prop_exact_match)
 }
 
@@ -41,7 +35,7 @@ get_shared_terms_prop = function(reference_labs, pred_labs, trivial_terms){
     # find average proportion of matching words 
     intersect_ratio = mean(sapply(1:length(intersection), 
                         function(x) length(intersection[[x]])/length(split_prediction[[x]])))
-    intersect_ratio = round(intersect_ratio, 3)*100
+    intersect_ratio = round(intersect_ratio, 3)
     return(intersect_ratio)
 }
 
@@ -62,16 +56,16 @@ get_f1 = function(reference_labs, predicted_labs, unlabelled) {
     # iterate across classes and calculate per-class F1-score
     for (i in c(1:length(unique_ref))){
     # check if label is in confusion table
-    findLabel = colnames(conf_F1) == row.names(conf_F1)[i]
-    if(sum(findLabel, na.rm = TRUE)){
-      prec = conf_F1[i, findLabel] / colSums(conf_F1)[findLabel]
-      rec = conf_F1[i, findLabel] / rowSums(conf_F1)[i]
+    find_label = colnames(conf_F1) == row.names(conf_F1)[i]
+    if(sum(find_label, na.rm = TRUE)){
+      prec = conf_F1[i, find_label] / colSums(conf_F1)[find_label]
+      rec = conf_F1[i, find_label] / rowSums(conf_F1)[i]
       if (prec == 0 || rec == 0){
         F1[i] = 0
       } else{
         F1[i] = (2*prec*rec) / (prec + rec)
       }
-      sum_acc = sum_acc + conf_F1[i, findLabel]
+      sum_acc = sum_acc + conf_F1[i, find_label]
     } else {
       F1[i] = 0
     }
@@ -87,12 +81,12 @@ get_f1 = function(reference_labs, predicted_labs, unlabelled) {
 }
 
 get_CL_similarity = function(reference_labs, ref_CL_terms, predicted_labs, ontology) {
-    suppressPackageStartupMessages(require(Onassis)) #NB: keep this within function, otherwise parallelism is broken
+    suppressPackageStartupMessages(require(Onassis)) #NB: keep package call within function, otherwise parallelism is broken
     # initialise and configure Similarity object 
     siml_object = new('Similarity')
     ontology(siml_object) = ontology
     # configure similarity measurement metric
-    pairwiseConfig(siml_object) = listSimilarities()$pairwiseMeasures[12]
+    pairwiseConfig(siml_object) = listSimilarities()$pairwiseMeasures[5]
 
     # map cell types to CL terms 
     cell_type_id_mapping = hash()
@@ -116,9 +110,22 @@ get_CL_similarity = function(reference_labs, ref_CL_terms, predicted_labs, ontol
     return(mean_siml)
 }
 
-##############################################
-# obtain metrics using functions defined above
-##############################################
+# get a combined score across all metrics 
+get_tool_combined_score = function(unlab_delta,
+                                   exact_match_prop,
+                                   mean_shared_terms, 
+                                   median_F1, 
+                                   accuracy, 
+                                   siml) { 
+    
+    score = (1 - unlab_delta) + exact_match_prop + mean_shared_terms + median_F1 + siml
+    return(round(score, 3))
+
+}
+
+#########################################
+# combine function calls  
+#########################################
 obtain_metrics_list = function(tool,
                                reference_labs,
                                predicted_labs,
@@ -131,7 +138,7 @@ obtain_metrics_list = function(tool,
     # proportion of unlabelled cells in predicted labels
     prop_unlab_predicted = get_unlab_rate(predicted_labs, unlabelled)
     # ratio of unlabelled cells proportions
-    unlab_ratio = get_unlab_rate_ratio(prop_unlab_reference, prop_unlab_predicted)
+    unlab_delta = get_unlab_rate_delta(prop_unlab_reference, prop_unlab_predicted)
     # propotion of exact matches 
     exact_match_prop = get_exact_matches(reference_labs, predicted_labs)
     # match based on shared terms
@@ -142,21 +149,67 @@ obtain_metrics_list = function(tool,
     accuracy = metrics$Acc
     # cell ontology similarity
     siml = get_CL_similarity(reference_labs, ref_CL_terms, predicted_labs, ontology)
-    
+    score = get_tool_combined_score(unlab_delta, exact_match_prop, mean_shared_terms, 
+                                   median_F1, accuracy, siml)
+
     # combine metrics
     row = list(Tool = tool,
                 Unlab_ref = prop_unlab_reference,
                 Unlab_pred = prop_unlab_predicted,
-                Unlab_ratio = unlab_ratio,
+                Unlab_delta = unlab_delta,
                 Exact_match_prop = exact_match_prop,
                 Mean_partial_match = mean_shared_terms,
                 Med_F1 = median_F1,
                 Accuracy = accuracy,
-                CL_similarity = siml)
+                CL_similarity = siml, 
+                Combined_score = score)
     return(row)
 }
 
+################################################################################
+# methods for per-cell statistics
+################################################################################
+get_agreement_rate = function(label_list){
+    # assume 1st column is cell id, 2nd col is label, and exclude them
+    label_list = label_list[-c(1,2)]
+    agreement = 1 / length(unique(label_list))
+    return(round(agreement, 3))
+}
 
+# mean pairwise similarity among predicted labels 
+get_cell_CL_siml = function(siml_object, label_list, labs_dict) {
+    label_list = label_list[-c(1,2)]
+    siml = c()
+    for(i in 1:length(label_list)){
+        term_i = labs_dict[[label_list[i]]]
+        for(j in 1:length(label_list)){
+            term_j = labs_dict[[label_list[j]]]
+            tryCatch({
+                siml = c(siml, pairsim(siml_object, term_i, term_j))
+            },
+            error = function(cond){
+                print(cond)
+                print("Returning NA")
+            })
+        }
+    }
+    mean_siml = mean(siml, na.rm = TRUE)
+    return(round(mean_siml, 4))
+}
 
+# calculate aggregated score for predicted labels 
+get_weighted_score = function(labels_list, tool_scores){
+    if(!all(names(labels_list) == names(tool_scores))){
+        stop("Name mismatch between predicted labels and tools")
+    }
+    .get_sums = function(lab){
+        t = names(labels_list[labels_list == lab])
+        s = sum(tool_scores[t])
+        return(s)
+    }
 
+    sums = sapply(labels_list, function(label) .get_sums(label)) 
+    labels_list = sapply(1:length(labels_list), function(idx) paste(labels_list[idx], sums[idx], sep=": "))
+    return(labels_list)
+}
 
