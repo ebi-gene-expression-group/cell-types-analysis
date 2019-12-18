@@ -1,118 +1,118 @@
 "cell_id"	"cell_type"	"TOOL"	"TOOL1"	"agreement_rate"	"group_siml"
-"2"	"ERR2632412"	"memory B cell"	"plasmablast: 2.716"	"naive B cell: 2.745"	0.5	0.9899
-"3"	"ERR2632413"	"memory B cell"	"memory B cell: 2.716"	"plasmablast: 2.745"	0.5	0.9899
-"6"	"ERR2632416"	"memory B cell"	"naive B cell: 2.716"	"plasmablast: 2.745"	0.5	0.9899
-"7"	"ERR2632417"	"memory B cell"	"plasmablast: 2.716"	"transitional stage B cell: 2.745"	0.5	0.9899
-"8"	"ERR2632418"	"memory B cell"	"memory B cell: 2.716"	"plasmablast: 2.745"	0.5	0.9899
-"9"	"ERR2632419"	"memory B cell"	"memory B cell: 2.716"	"plasmablast: 2.745"	0.5	0.9899
-"10"	"ERR2632420"	"memory B cell"	"naive B cell: 2.716"	"plasmablast: 2.745"	0.5	0.9899
-"12"	"ERR2632422"	"memory B cell"	"naive B cell: 2.716"	"plasmablast: 2.745"	0.5	0.9899
-"14"	"ERR2632424"	"memory B cell"	"naive B cell: 2.716"	"memory B cell: 2.745"	0.5	0.9899
-"17"	"ERR2632427"	"memory B cell"	"plasmablast: 2.716"	"naive B cell: 2.745"	0.5	0.9899
-"18"	"ERR2632428"	"memory B cell"	"transitional stage B cell: 2.716"	"naive B cell: 2.745"	0.5	0.9899
-"19"	"ERR2632429"	"memory B cell"	"naive B cell: 2.716"	"memory B cell: 2.745"	0.5	0.9899
-"21"	"ERR2632431"	"memory B cell"	"memory B cell: 2.716"	"plasmablast: 2.745"	0.5	0.9899
-"22"	"ERR2632432"	"memory B cell"	"memory B cell: 2.716"	"transitional stage B cell: 2.745"	0.5	0.9899
-"24"	"ERR2632434"	"memory B cell"	"plasmablast: 2.716"	"memory B cell: 2.745"	0.5	0.9899
-"26"	"ERR2632436"	"memory B cell"	"naive B cell: 2.716"	"transitional stage B cell: 2.745"	0.5	0.9899
-"27"	"ERR2632437"	"memory B cell"	"transitional stage B cell: 2.716"	"memory B cell: 2.745"	0.5	0.9899
-"28"	"ERR2632438"	"memory B cell"	"plasmablast: 2.716"	"naive B cell: 2.745"	0.5	0.9899
-"29"	"ERR2632439"	"memory B cell"	"memory B cell: 2.716"	"naive B cell: 2.745"	0.5	0.9899
-"30"	"ERR2632440"	"memory B cell"	"transitional stage B cell: 2.716"	"plasmablast: 2.745"	0.5	0.9899
-"32"	"ERR2632442"	"naive B cell"	"transitional stage B cell: 2.716"	"naive B cell: 2.745"	0.5	0.9899
-"33"	"ERR2632443"	"naive B cell"	"memory B cell: 2.716"	"transitional stage B cell: 2.745"	0.5	0.9899
-"34"	"ERR2632444"	"naive B cell"	"naive B cell: 2.716"	"plasmablast: 2.745"	0.5	0.9899
-"35"	"ERR2632445"	"naive B cell"	"plasmablast: 2.716"	"naive B cell: 2.745"	0.5	0.9899
-"36"	"ERR2632446"	"naive B cell"	"transitional stage B cell: 2.716"	"plasmablast: 2.745"	0.5	0.9899
-"37"	"ERR2632447"	"naive B cell"	"naive B cell: 2.716"	"plasmablast: 2.745"	0.5	0.9899
-"38"	"ERR2632448"	"naive B cell"	"memory B cell: 2.716"	"plasmablast: 2.745"	0.5	0.9899
-"39"	"ERR2632449"	"naive B cell"	"naive B cell: 2.716"	"plasmablast: 2.745"	0.5	0.9899
-"40"	"ERR2632450"	"naive B cell"	"transitional stage B cell: 2.716"	"plasmablast: 2.745"	0.5	0.9899
-"41"	"ERR2632451"	"naive B cell"	"plasmablast: 2.716"	"memory B cell: 2.745"	0.5	0.9899
-"42"	"ERR2632452"	"naive B cell"	"plasmablast: 2.716"	"memory B cell: 2.745"	0.5	0.9899
-"43"	"ERR2632453"	"naive B cell"	"naive B cell: 2.716"	"transitional stage B cell: 2.745"	0.5	0.9899
-"44"	"ERR2632454"	"naive B cell"	"plasmablast: 2.716"	"naive B cell: 2.745"	0.5	0.9899
-"45"	"ERR2632455"	"naive B cell"	"transitional stage B cell: 2.716"	"memory B cell: 2.745"	0.5	0.9899
-"48"	"ERR2632458"	"naive B cell"	"naive B cell: 2.716"	"memory B cell: 2.745"	0.5	0.9899
-"50"	"ERR2632460"	"naive B cell"	"transitional stage B cell: 2.716"	"naive B cell: 2.745"	0.5	0.9899
-"52"	"ERR2632462"	"naive B cell"	"transitional stage B cell: 2.716"	"memory B cell: 2.745"	0.5	0.9899
-"53"	"ERR2632463"	"naive B cell"	"plasmablast: 2.716"	"memory B cell: 2.745"	0.5	0.9899
-"54"	"ERR2632464"	"naive B cell"	"plasmablast: 2.716"	"naive B cell: 2.745"	0.5	0.9899
-"55"	"ERR2632465"	"naive B cell"	"plasmablast: 2.716"	"memory B cell: 2.745"	0.5	0.9899
-"57"	"ERR2632467"	"naive B cell"	"transitional stage B cell: 2.716"	"naive B cell: 2.745"	0.5	0.9899
-"58"	"ERR2632468"	"naive B cell"	"naive B cell: 2.716"	"transitional stage B cell: 2.745"	0.5	0.9899
-"59"	"ERR2632469"	"naive B cell"	"plasmablast: 2.716"	"naive B cell: 2.745"	0.5	0.9899
-"60"	"ERR2632470"	"naive B cell"	"memory B cell: 2.716"	"naive B cell: 2.745"	0.5	0.9899
-"61"	"ERR2632471"	"plasmablast"	"memory B cell: 2.716"	"plasmablast: 2.745"	0.5	0.9899
-"62"	"ERR2632472"	"plasmablast"	"memory B cell: 2.716"	"transitional stage B cell: 2.745"	0.5	0.9899
-"63"	"ERR2632473"	"plasmablast"	"transitional stage B cell: 2.716"	"memory B cell: 2.745"	0.5	0.9899
-"66"	"ERR2632476"	"plasmablast"	"transitional stage B cell: 2.716"	"naive B cell: 2.745"	0.5	0.9899
-"67"	"ERR2632477"	"plasmablast"	"naive B cell: 2.716"	"plasmablast: 2.745"	0.5	0.9899
-"68"	"ERR2632478"	"plasmablast"	"naive B cell: 2.716"	"transitional stage B cell: 2.745"	0.5	0.9899
-"69"	"ERR2632479"	"plasmablast"	"plasmablast: 2.716"	"naive B cell: 2.745"	0.5	0.9899
-"72"	"ERR2632482"	"plasmablast"	"plasmablast: 2.716"	"transitional stage B cell: 2.745"	0.5	0.9899
-"73"	"ERR2632483"	"plasmablast"	"transitional stage B cell: 2.716"	"naive B cell: 2.745"	0.5	0.9899
-"74"	"ERR2632484"	"plasmablast"	"memory B cell: 2.716"	"transitional stage B cell: 2.745"	0.5	0.9899
-"76"	"ERR2632486"	"plasmablast"	"naive B cell: 2.716"	"memory B cell: 2.745"	0.5	0.9899
-"77"	"ERR2632487"	"plasmablast"	"naive B cell: 2.716"	"transitional stage B cell: 2.745"	0.5	0.9899
-"78"	"ERR2632488"	"plasmablast"	"memory B cell: 2.716"	"plasmablast: 2.745"	0.5	0.9899
-"79"	"ERR2632489"	"plasmablast"	"naive B cell: 2.716"	"memory B cell: 2.745"	0.5	0.9899
-"80"	"ERR2632490"	"plasmablast"	"transitional stage B cell: 2.716"	"naive B cell: 2.745"	0.5	0.9899
-"82"	"ERR2632492"	"plasmablast"	"naive B cell: 2.716"	"memory B cell: 2.745"	0.5	0.9899
-"83"	"ERR2632493"	"plasmablast"	"plasmablast: 2.716"	"transitional stage B cell: 2.745"	0.5	0.9899
-"84"	"ERR2632494"	"plasmablast"	"plasmablast: 2.716"	"memory B cell: 2.745"	0.5	0.9899
-"86"	"ERR2632496"	"plasmablast"	"transitional stage B cell: 2.716"	"naive B cell: 2.745"	0.5	0.9899
-"87"	"ERR2632497"	"plasmablast"	"transitional stage B cell: 2.716"	"plasmablast: 2.745"	0.5	0.9899
-"88"	"ERR2632498"	"plasmablast"	"naive B cell: 2.716"	"transitional stage B cell: 2.745"	0.5	0.9899
-"89"	"ERR2632499"	"plasmablast"	"naive B cell: 2.716"	"transitional stage B cell: 2.745"	0.5	0.9899
-"90"	"ERR2632500"	"plasmablast"	"plasmablast: 2.716"	"transitional stage B cell: 2.745"	0.5	0.9899
-"93"	"ERR2632503"	"transitional stage B cell"	"plasmablast: 2.716"	"transitional stage B cell: 2.745"	0.5	0.9899
-"94"	"ERR2632504"	"transitional stage B cell"	"memory B cell: 2.716"	"naive B cell: 2.745"	0.5	0.9899
-"95"	"ERR2632505"	"transitional stage B cell"	"plasmablast: 2.716"	"naive B cell: 2.745"	0.5	0.9899
-"96"	"ERR2632506"	"transitional stage B cell"	"transitional stage B cell: 2.716"	"plasmablast: 2.745"	0.5	0.9899
-"97"	"ERR2632507"	"transitional stage B cell"	"memory B cell: 2.716"	"transitional stage B cell: 2.745"	0.5	0.9899
-"99"	"ERR2632509"	"transitional stage B cell"	"plasmablast: 2.716"	"transitional stage B cell: 2.745"	0.5	0.9899
-"100"	"ERR2632510"	"transitional stage B cell"	"memory B cell: 2.716"	"plasmablast: 2.745"	0.5	0.9899
-"101"	"ERR2632511"	"transitional stage B cell"	"naive B cell: 2.716"	"plasmablast: 2.745"	0.5	0.9899
-"102"	"ERR2632512"	"transitional stage B cell"	"plasmablast: 2.716"	"transitional stage B cell: 2.745"	0.5	0.9899
-"103"	"ERR2632513"	"transitional stage B cell"	"naive B cell: 2.716"	"memory B cell: 2.745"	0.5	0.9899
-"104"	"ERR2632514"	"transitional stage B cell"	"transitional stage B cell: 2.716"	"memory B cell: 2.745"	0.5	0.9899
-"105"	"ERR2632515"	"transitional stage B cell"	"naive B cell: 2.716"	"plasmablast: 2.745"	0.5	0.9899
-"107"	"ERR2632517"	"transitional stage B cell"	"memory B cell: 2.716"	"naive B cell: 2.745"	0.5	0.9899
-"108"	"ERR2632518"	"transitional stage B cell"	"memory B cell: 2.716"	"transitional stage B cell: 2.745"	0.5	0.9899
-"109"	"ERR2632519"	"transitional stage B cell"	"transitional stage B cell: 2.716"	"naive B cell: 2.745"	0.5	0.9899
-"111"	"ERR2632521"	"transitional stage B cell"	"plasmablast: 2.716"	"memory B cell: 2.745"	0.5	0.9899
-"113"	"ERR2632523"	"transitional stage B cell"	"transitional stage B cell: 2.716"	"memory B cell: 2.745"	0.5	0.9899
-"114"	"ERR2632524"	"transitional stage B cell"	"memory B cell: 2.716"	"naive B cell: 2.745"	0.5	0.9899
-"115"	"ERR2632525"	"transitional stage B cell"	"memory B cell: 2.716"	"transitional stage B cell: 2.745"	0.5	0.9899
-"116"	"ERR2632526"	"transitional stage B cell"	"memory B cell: 2.716"	"plasmablast: 2.745"	0.5	0.9899
-"117"	"ERR2632527"	"transitional stage B cell"	"transitional stage B cell: 2.716"	"memory B cell: 2.745"	0.5	0.9899
-"1"	"ERR2632411"	"Unassigned"	"plasmablast: 5.461"	"plasmablast: 5.461"	1	0.9848
-"4"	"ERR2632414"	"memory B cell"	"memory B cell: 5.461"	"memory B cell: 5.461"	1	0.9848
-"5"	"ERR2632415"	"memory B cell"	"naive B cell: 5.461"	"naive B cell: 5.461"	1	0.9848
-"11"	"ERR2632421"	"memory B cell"	"memory B cell: 5.461"	"memory B cell: 5.461"	1	0.9848
-"13"	"ERR2632423"	"memory B cell"	"memory B cell: 5.461"	"memory B cell: 5.461"	1	0.9848
-"15"	"ERR2632425"	"memory B cell"	"plasmablast: 5.461"	"plasmablast: 5.461"	1	0.9848
-"16"	"ERR2632426"	"memory B cell"	"naive B cell: 5.461"	"naive B cell: 5.461"	1	0.9848
-"20"	"ERR2632430"	"memory B cell"	"naive B cell: 5.461"	"naive B cell: 5.461"	1	0.9848
-"23"	"ERR2632433"	"memory B cell"	"plasmablast: 5.461"	"plasmablast: 5.461"	1	0.9848
-"25"	"ERR2632435"	"memory B cell"	"naive B cell: 5.461"	"naive B cell: 5.461"	1	0.9848
-"31"	"ERR2632441"	"naive B cell"	"memory B cell: 5.461"	"memory B cell: 5.461"	1	0.9848
-"46"	"ERR2632456"	"naive B cell"	"transitional stage B cell: 5.461"	"transitional stage B cell: 5.461"	1	0.9848
-"47"	"ERR2632457"	"naive B cell"	"plasmablast: 5.461"	"plasmablast: 5.461"	1	0.9848
-"49"	"ERR2632459"	"naive B cell"	"plasmablast: 5.461"	"plasmablast: 5.461"	1	0.9848
-"51"	"ERR2632461"	"naive B cell"	"memory B cell: 5.461"	"memory B cell: 5.461"	1	0.9848
-"56"	"ERR2632466"	"naive B cell"	"transitional stage B cell: 5.461"	"transitional stage B cell: 5.461"	1	0.9848
-"64"	"ERR2632474"	"plasmablast"	"memory B cell: 5.461"	"memory B cell: 5.461"	1	0.9848
-"65"	"ERR2632475"	"plasmablast"	"naive B cell: 5.461"	"naive B cell: 5.461"	1	0.9848
-"70"	"ERR2632480"	"plasmablast"	"plasmablast: 5.461"	"plasmablast: 5.461"	1	0.9848
-"71"	"ERR2632481"	"plasmablast"	"memory B cell: 5.461"	"memory B cell: 5.461"	1	0.9848
-"75"	"ERR2632485"	"plasmablast"	"transitional stage B cell: 5.461"	"transitional stage B cell: 5.461"	1	0.9848
-"81"	"ERR2632491"	"plasmablast"	"transitional stage B cell: 5.461"	"transitional stage B cell: 5.461"	1	0.9848
-"85"	"ERR2632495"	"plasmablast"	"naive B cell: 5.461"	"naive B cell: 5.461"	1	0.9848
-"91"	"ERR2632501"	"transitional stage B cell"	"plasmablast: 5.461"	"plasmablast: 5.461"	1	0.9848
-"92"	"ERR2632502"	"transitional stage B cell"	"transitional stage B cell: 5.461"	"transitional stage B cell: 5.461"	1	0.9848
-"98"	"ERR2632508"	"transitional stage B cell"	"naive B cell: 5.461"	"naive B cell: 5.461"	1	0.9848
-"106"	"ERR2632516"	"transitional stage B cell"	"memory B cell: 5.461"	"memory B cell: 5.461"	1	0.9848
-"110"	"ERR2632520"	"transitional stage B cell"	"transitional stage B cell: 5.461"	"transitional stage B cell: 5.461"	1	0.9848
-"112"	"ERR2632522"	"transitional stage B cell"	"memory B cell: 5.461"	"memory B cell: 5.461"	1	0.9848
+"ERR2632412"	"memory B cell"	"plasmablast: 2.716"	"naive B cell: 2.745"	0.5	0.9899
+"ERR2632413"	"memory B cell"	"memory B cell: 2.716"	"plasmablast: 2.745"	0.5	0.9899
+"ERR2632416"	"memory B cell"	"naive B cell: 2.716"	"plasmablast: 2.745"	0.5	0.9899
+"ERR2632417"	"memory B cell"	"plasmablast: 2.716"	"transitional stage B cell: 2.745"	0.5	0.9899
+"ERR2632418"	"memory B cell"	"memory B cell: 2.716"	"plasmablast: 2.745"	0.5	0.9899
+"ERR2632419"	"memory B cell"	"memory B cell: 2.716"	"plasmablast: 2.745"	0.5	0.9899
+"ERR2632420"	"memory B cell"	"naive B cell: 2.716"	"plasmablast: 2.745"	0.5	0.9899
+"ERR2632422"	"memory B cell"	"naive B cell: 2.716"	"plasmablast: 2.745"	0.5	0.9899
+"ERR2632424"	"memory B cell"	"naive B cell: 2.716"	"memory B cell: 2.745"	0.5	0.9899
+"ERR2632427"	"memory B cell"	"plasmablast: 2.716"	"naive B cell: 2.745"	0.5	0.9899
+"ERR2632428"	"memory B cell"	"transitional stage B cell: 2.716"	"naive B cell: 2.745"	0.5	0.9899
+"ERR2632429"	"memory B cell"	"naive B cell: 2.716"	"memory B cell: 2.745"	0.5	0.9899
+"ERR2632431"	"memory B cell"	"memory B cell: 2.716"	"plasmablast: 2.745"	0.5	0.9899
+"ERR2632432"	"memory B cell"	"memory B cell: 2.716"	"transitional stage B cell: 2.745"	0.5	0.9899
+"ERR2632434"	"memory B cell"	"plasmablast: 2.716"	"memory B cell: 2.745"	0.5	0.9899
+"ERR2632436"	"memory B cell"	"naive B cell: 2.716"	"transitional stage B cell: 2.745"	0.5	0.9899
+"ERR2632437"	"memory B cell"	"transitional stage B cell: 2.716"	"memory B cell: 2.745"	0.5	0.9899
+"ERR2632438"	"memory B cell"	"plasmablast: 2.716"	"naive B cell: 2.745"	0.5	0.9899
+"ERR2632439"	"memory B cell"	"memory B cell: 2.716"	"naive B cell: 2.745"	0.5	0.9899
+"ERR2632440"	"memory B cell"	"transitional stage B cell: 2.716"	"plasmablast: 2.745"	0.5	0.9899
+"ERR2632442"	"naive B cell"	"transitional stage B cell: 2.716"	"naive B cell: 2.745"	0.5	0.9899
+"ERR2632443"	"naive B cell"	"memory B cell: 2.716"	"transitional stage B cell: 2.745"	0.5	0.9899
+"ERR2632444"	"naive B cell"	"naive B cell: 2.716"	"plasmablast: 2.745"	0.5	0.9899
+"ERR2632445"	"naive B cell"	"plasmablast: 2.716"	"naive B cell: 2.745"	0.5	0.9899
+"ERR2632446"	"naive B cell"	"transitional stage B cell: 2.716"	"plasmablast: 2.745"	0.5	0.9899
+"ERR2632447"	"naive B cell"	"naive B cell: 2.716"	"plasmablast: 2.745"	0.5	0.9899
+"ERR2632448"	"naive B cell"	"memory B cell: 2.716"	"plasmablast: 2.745"	0.5	0.9899
+"ERR2632449"	"naive B cell"	"naive B cell: 2.716"	"plasmablast: 2.745"	0.5	0.9899
+"ERR2632450"	"naive B cell"	"transitional stage B cell: 2.716"	"plasmablast: 2.745"	0.5	0.9899
+"ERR2632451"	"naive B cell"	"plasmablast: 2.716"	"memory B cell: 2.745"	0.5	0.9899
+"ERR2632452"	"naive B cell"	"plasmablast: 2.716"	"memory B cell: 2.745"	0.5	0.9899
+"ERR2632453"	"naive B cell"	"naive B cell: 2.716"	"transitional stage B cell: 2.745"	0.5	0.9899
+"ERR2632454"	"naive B cell"	"plasmablast: 2.716"	"naive B cell: 2.745"	0.5	0.9899
+"ERR2632455"	"naive B cell"	"transitional stage B cell: 2.716"	"memory B cell: 2.745"	0.5	0.9899
+"ERR2632458"	"naive B cell"	"naive B cell: 2.716"	"memory B cell: 2.745"	0.5	0.9899
+"ERR2632460"	"naive B cell"	"transitional stage B cell: 2.716"	"naive B cell: 2.745"	0.5	0.9899
+"ERR2632462"	"naive B cell"	"transitional stage B cell: 2.716"	"memory B cell: 2.745"	0.5	0.9899
+"ERR2632463"	"naive B cell"	"plasmablast: 2.716"	"memory B cell: 2.745"	0.5	0.9899
+"ERR2632464"	"naive B cell"	"plasmablast: 2.716"	"naive B cell: 2.745"	0.5	0.9899
+"ERR2632465"	"naive B cell"	"plasmablast: 2.716"	"memory B cell: 2.745"	0.5	0.9899
+"ERR2632467"	"naive B cell"	"transitional stage B cell: 2.716"	"naive B cell: 2.745"	0.5	0.9899
+"ERR2632468"	"naive B cell"	"naive B cell: 2.716"	"transitional stage B cell: 2.745"	0.5	0.9899
+"ERR2632469"	"naive B cell"	"plasmablast: 2.716"	"naive B cell: 2.745"	0.5	0.9899
+"ERR2632470"	"naive B cell"	"memory B cell: 2.716"	"naive B cell: 2.745"	0.5	0.9899
+"ERR2632471"	"plasmablast"	"memory B cell: 2.716"	"plasmablast: 2.745"	0.5	0.9899
+"ERR2632472"	"plasmablast"	"memory B cell: 2.716"	"transitional stage B cell: 2.745"	0.5	0.9899
+"ERR2632473"	"plasmablast"	"transitional stage B cell: 2.716"	"memory B cell: 2.745"	0.5	0.9899
+"ERR2632476"	"plasmablast"	"transitional stage B cell: 2.716"	"naive B cell: 2.745"	0.5	0.9899
+"ERR2632477"	"plasmablast"	"naive B cell: 2.716"	"plasmablast: 2.745"	0.5	0.9899
+"ERR2632478"	"plasmablast"	"naive B cell: 2.716"	"transitional stage B cell: 2.745"	0.5	0.9899
+"ERR2632479"	"plasmablast"	"plasmablast: 2.716"	"naive B cell: 2.745"	0.5	0.9899
+"ERR2632482"	"plasmablast"	"plasmablast: 2.716"	"transitional stage B cell: 2.745"	0.5	0.9899
+"ERR2632483"	"plasmablast"	"transitional stage B cell: 2.716"	"naive B cell: 2.745"	0.5	0.9899
+"ERR2632484"	"plasmablast"	"memory B cell: 2.716"	"transitional stage B cell: 2.745"	0.5	0.9899
+"ERR2632486"	"plasmablast"	"naive B cell: 2.716"	"memory B cell: 2.745"	0.5	0.9899
+"ERR2632487"	"plasmablast"	"naive B cell: 2.716"	"transitional stage B cell: 2.745"	0.5	0.9899
+"ERR2632488"	"plasmablast"	"memory B cell: 2.716"	"plasmablast: 2.745"	0.5	0.9899
+"ERR2632489"	"plasmablast"	"naive B cell: 2.716"	"memory B cell: 2.745"	0.5	0.9899
+"ERR2632490"	"plasmablast"	"transitional stage B cell: 2.716"	"naive B cell: 2.745"	0.5	0.9899
+"ERR2632492"	"plasmablast"	"naive B cell: 2.716"	"memory B cell: 2.745"	0.5	0.9899
+"ERR2632493"	"plasmablast"	"plasmablast: 2.716"	"transitional stage B cell: 2.745"	0.5	0.9899
+"ERR2632494"	"plasmablast"	"plasmablast: 2.716"	"memory B cell: 2.745"	0.5	0.9899
+"ERR2632496"	"plasmablast"	"transitional stage B cell: 2.716"	"naive B cell: 2.745"	0.5	0.9899
+"ERR2632497"	"plasmablast"	"transitional stage B cell: 2.716"	"plasmablast: 2.745"	0.5	0.9899
+"ERR2632498"	"plasmablast"	"naive B cell: 2.716"	"transitional stage B cell: 2.745"	0.5	0.9899
+"ERR2632499"	"plasmablast"	"naive B cell: 2.716"	"transitional stage B cell: 2.745"	0.5	0.9899
+"ERR2632500"	"plasmablast"	"plasmablast: 2.716"	"transitional stage B cell: 2.745"	0.5	0.9899
+"ERR2632503"	"transitional stage B cell"	"plasmablast: 2.716"	"transitional stage B cell: 2.745"	0.5	0.9899
+"ERR2632504"	"transitional stage B cell"	"memory B cell: 2.716"	"naive B cell: 2.745"	0.5	0.9899
+"ERR2632505"	"transitional stage B cell"	"plasmablast: 2.716"	"naive B cell: 2.745"	0.5	0.9899
+"ERR2632506"	"transitional stage B cell"	"transitional stage B cell: 2.716"	"plasmablast: 2.745"	0.5	0.9899
+"ERR2632507"	"transitional stage B cell"	"memory B cell: 2.716"	"transitional stage B cell: 2.745"	0.5	0.9899
+"ERR2632509"	"transitional stage B cell"	"plasmablast: 2.716"	"transitional stage B cell: 2.745"	0.5	0.9899
+"ERR2632510"	"transitional stage B cell"	"memory B cell: 2.716"	"plasmablast: 2.745"	0.5	0.9899
+"ERR2632511"	"transitional stage B cell"	"naive B cell: 2.716"	"plasmablast: 2.745"	0.5	0.9899
+"ERR2632512"	"transitional stage B cell"	"plasmablast: 2.716"	"transitional stage B cell: 2.745"	0.5	0.9899
+"ERR2632513"	"transitional stage B cell"	"naive B cell: 2.716"	"memory B cell: 2.745"	0.5	0.9899
+"ERR2632514"	"transitional stage B cell"	"transitional stage B cell: 2.716"	"memory B cell: 2.745"	0.5	0.9899
+"ERR2632515"	"transitional stage B cell"	"naive B cell: 2.716"	"plasmablast: 2.745"	0.5	0.9899
+"ERR2632517"	"transitional stage B cell"	"memory B cell: 2.716"	"naive B cell: 2.745"	0.5	0.9899
+"ERR2632518"	"transitional stage B cell"	"memory B cell: 2.716"	"transitional stage B cell: 2.745"	0.5	0.9899
+"ERR2632519"	"transitional stage B cell"	"transitional stage B cell: 2.716"	"naive B cell: 2.745"	0.5	0.9899
+"ERR2632521"	"transitional stage B cell"	"plasmablast: 2.716"	"memory B cell: 2.745"	0.5	0.9899
+"ERR2632523"	"transitional stage B cell"	"transitional stage B cell: 2.716"	"memory B cell: 2.745"	0.5	0.9899
+"ERR2632524"	"transitional stage B cell"	"memory B cell: 2.716"	"naive B cell: 2.745"	0.5	0.9899
+"ERR2632525"	"transitional stage B cell"	"memory B cell: 2.716"	"transitional stage B cell: 2.745"	0.5	0.9899
+"ERR2632526"	"transitional stage B cell"	"memory B cell: 2.716"	"plasmablast: 2.745"	0.5	0.9899
+"ERR2632527"	"transitional stage B cell"	"transitional stage B cell: 2.716"	"memory B cell: 2.745"	0.5	0.9899
+"ERR2632411"	"Unassigned"	"plasmablast: 5.461"	"plasmablast: 5.461"	1	0.9848
+"ERR2632414"	"memory B cell"	"memory B cell: 5.461"	"memory B cell: 5.461"	1	0.9848
+"ERR2632415"	"memory B cell"	"naive B cell: 5.461"	"naive B cell: 5.461"	1	0.9848
+"ERR2632421"	"memory B cell"	"memory B cell: 5.461"	"memory B cell: 5.461"	1	0.9848
+"ERR2632423"	"memory B cell"	"memory B cell: 5.461"	"memory B cell: 5.461"	1	0.9848
+"ERR2632425"	"memory B cell"	"plasmablast: 5.461"	"plasmablast: 5.461"	1	0.9848
+"ERR2632426"	"memory B cell"	"naive B cell: 5.461"	"naive B cell: 5.461"	1	0.9848
+"ERR2632430"	"memory B cell"	"naive B cell: 5.461"	"naive B cell: 5.461"	1	0.9848
+"ERR2632433"	"memory B cell"	"plasmablast: 5.461"	"plasmablast: 5.461"	1	0.9848
+"ERR2632435"	"memory B cell"	"naive B cell: 5.461"	"naive B cell: 5.461"	1	0.9848
+"ERR2632441"	"naive B cell"	"memory B cell: 5.461"	"memory B cell: 5.461"	1	0.9848
+"ERR2632456"	"naive B cell"	"transitional stage B cell: 5.461"	"transitional stage B cell: 5.461"	1	0.9848
+"ERR2632457"	"naive B cell"	"plasmablast: 5.461"	"plasmablast: 5.461"	1	0.9848
+"ERR2632459"	"naive B cell"	"plasmablast: 5.461"	"plasmablast: 5.461"	1	0.9848
+"ERR2632461"	"naive B cell"	"memory B cell: 5.461"	"memory B cell: 5.461"	1	0.9848
+"ERR2632466"	"naive B cell"	"transitional stage B cell: 5.461"	"transitional stage B cell: 5.461"	1	0.9848
+"ERR2632474"	"plasmablast"	"memory B cell: 5.461"	"memory B cell: 5.461"	1	0.9848
+"ERR2632475"	"plasmablast"	"naive B cell: 5.461"	"naive B cell: 5.461"	1	0.9848
+"ERR2632480"	"plasmablast"	"plasmablast: 5.461"	"plasmablast: 5.461"	1	0.9848
+"ERR2632481"	"plasmablast"	"memory B cell: 5.461"	"memory B cell: 5.461"	1	0.9848
+"ERR2632485"	"plasmablast"	"transitional stage B cell: 5.461"	"transitional stage B cell: 5.461"	1	0.9848
+"ERR2632491"	"plasmablast"	"transitional stage B cell: 5.461"	"transitional stage B cell: 5.461"	1	0.9848
+"ERR2632495"	"plasmablast"	"naive B cell: 5.461"	"naive B cell: 5.461"	1	0.9848
+"ERR2632501"	"transitional stage B cell"	"plasmablast: 5.461"	"plasmablast: 5.461"	1	0.9848
+"ERR2632502"	"transitional stage B cell"	"transitional stage B cell: 5.461"	"transitional stage B cell: 5.461"	1	0.9848
+"ERR2632508"	"transitional stage B cell"	"naive B cell: 5.461"	"naive B cell: 5.461"	1	0.9848
+"ERR2632516"	"transitional stage B cell"	"memory B cell: 5.461"	"memory B cell: 5.461"	1	0.9848
+"ERR2632520"	"transitional stage B cell"	"transitional stage B cell: 5.461"	"transitional stage B cell: 5.461"	1	0.9848
+"ERR2632522"	"transitional stage B cell"	"memory B cell: 5.461"	"memory B cell: 5.461"	1	0.9848
