@@ -2,9 +2,6 @@
 
 suppressPackageStartupMessages(require(optparse))
 suppressPackageStartupMessages(require(workflowscriptscommon))
-
-#suppressPackageStartupMessages(require(Onassis))
-suppressPackageStartupMessages(require(org.Hs.eg.db)) # TODO: need argument to control database 
 suppressPackageStartupMessages(require(hash)) # NB: must be version 2.2.6.1
 
 #### Create a table for evaluation metrics of multiple methods ####
@@ -13,7 +10,6 @@ suppressPackageStartupMessages(require(hash)) # NB: must be version 2.2.6.1
 ####    2) Directory path containing a list of output files from multiple methods.
 ####       A standard format is assumed: first column - cell_id; second column: pred_label
 ####
-
 
  option_list = list(
     make_option(
@@ -30,6 +26,13 @@ suppressPackageStartupMessages(require(hash)) # NB: must be version 2.2.6.1
         default = NA,
         type = 'character',
         help = 'Path to the file with reference cell type assignments'
+    ),
+    make_option(
+        c("-f", "--ontology-graph"),
+        action = "store",
+        default = "data/cl-basic.obo",
+        type = 'character',
+        help = 'Path to the ontology graph in .obo or .xml format'
     ),
     make_option(
         c("-s", "--cell-ontology-col"),
@@ -60,7 +63,6 @@ suppressPackageStartupMessages(require(hash)) # NB: must be version 2.2.6.1
         help = 'Path to the output table in .tsv format'
     )
 )
-# TODO: add arguments for ontology and gene database 
 
 # source function definitions 
 source("Utils.R")
@@ -81,32 +83,28 @@ unlabelled = c("unassigned", "Unassigned", "unknown", NA)
 trivial_terms = c("cell", "of", "tissue") # add common words here
 
 # extract ontology terms for cell types 
+ontology = opt$ontology_graph
 CL_col = opt$cell_ontology_col
 ref_CL_terms = as.character(reference_labs_df[, CL_col]) 
-ontology = "data/cl-basic.obo"
-
 
 # find proportion of unknowns in reference cell types
 prop_unlab_reference = get_unlab_rate(reference_labs_df[, ref_labs_col], unlabelled)
 
-output_table = list()
 # iterate through tools' outputs and calculate relevant statistics per tool
+output_table = list()
 for(idx in 1:length(predicted_labs_tables)){
     predicted_labs_df = predicted_labs_tables[[idx]]
     tool = unlist(strsplit(basename(file_names[idx]), "_"))[1]
-    print(tool)
+    print(paste("Evaluating tool:", tool, sep = " "))
 
     # check reference cell IDs match predicted cell IDs
     # if so, extract reference and predicted labels as vectors
-    if(all(as.character(predicted_labs_df[, "cell_id"]) == as.character(predicted_labs_df[, "cell_id"]))) {
-        # extract label vectors
-        print("extract label vectors")
-        predicted_labs = as.character(predicted_labs_df[, pred_labs_col])
-        reference_labs = as.character(reference_labs_df[, ref_labs_col])
-    } else {
-        stop(paste("Error: cell id mismatch for tool: ", tool))
+    if(!all(as.character(predicted_labs_df[, "cell_id"]) == as.character(predicted_labs_df[, "cell_id"]))) {
+        stop(paste("Error: cell id mismatch for tool: ", tool))        
     }
-
+    # extract label vectors
+    predicted_labs = as.character(predicted_labs_df[, pred_labs_col])
+    reference_labs = as.character(reference_labs_df[, ref_labs_col])
     # run evaluation functions
     row = obtain_metrics_list(tool, reference_labs,
                               predicted_labs, prop_unlab_reference,
@@ -116,5 +114,5 @@ for(idx in 1:length(predicted_labs_tables)){
 }
 
 output_table = data.frame(do.call(rbind, output_table))
+output_table = output_table[order(output_table$Combined_score), ]
 write.table(output_table, file = opt$output_path, sep ="\t")
-

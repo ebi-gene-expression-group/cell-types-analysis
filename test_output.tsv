@@ -1,3 +1,0 @@
-"Tool"	"Unlab_ref"	"Unlab_pred"	"Unlab_ratio"	"Exact_match_prop"	"Mean_partial_match"	"Med_F1"	"Accuracy"	"CL_similarity"
-"1"	"TOOL"	"0.9"	"0"	"0"	"23.9"	"29"	"0.203"	"0.241"	"6.377"
-"2"	"TOOL1"	"0.9"	"0"	"0"	"23.9"	"28.5"	"0.237"	"0.241"	"6.38"
