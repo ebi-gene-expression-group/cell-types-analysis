@@ -75,7 +75,7 @@ predicted_labs_tables = lapply(file_names, function(file) read.csv(file, sep="\t
 pred_labs_col = opt$label_column_pred
 
 # read reference file 
-reference_labs_df = read.csv(opt$ref_file, sep=",") #TODO: decide on separator
+reference_labs_df = read.csv(opt$ref_file, sep="\t")
 ref_labs_col = opt$label_column_ref
 
 # NB: keep these relevant to the tools' output

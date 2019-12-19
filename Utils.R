@@ -80,24 +80,24 @@ get_f1 = function(reference_labs, predicted_labs, unlabelled) {
   return(out)
 }
 
-get_CL_similarity = function(reference_labs, ref_CL_terms, predicted_labs, ontology) {
+get_CL_similarity = function(reference_labs, ref_CL_terms, predicted_labs, ontology, unlabelled) {
     suppressPackageStartupMessages(require(Onassis)) #NB: keep package call within function, otherwise parallelism is broken
     # initialise and configure Similarity object 
     siml_object = new('Similarity')
     ontology(siml_object) = ontology
     # configure similarity measurement metric
     pairwiseConfig(siml_object) = listSimilarities()$pairwiseMeasures[5]
-
     # map cell types to CL terms 
     cell_type_id_mapping = hash()
-    .set(cell_type_id_mapping, keys=reference_labs, values=ref_CL_terms)
+    i = which(!(reference_labs %in% unlabelled | ref_CL_terms==''))
+    .set(cell_type_id_mapping, keys=reference_labs[i], values=ref_CL_terms[i])
     # get CL terms for predicted labels
     pred_cl = sapply(predicted_labs, function(x) cell_type_id_mapping[[x]])
 
     # semantic similarity 
     .find_siml = function(idx){
         tryCatch({
-            siml = pairsim(siml_object, pred_cl[idx], ref_CL_terms[idx])
+            siml = pairsim(siml_object, as.character(pred_cl[idx]), ref_CL_terms[idx])
             return(siml)},
         error = function(cond){
             print(cond)
@@ -148,7 +148,7 @@ obtain_metrics_list = function(tool,
     median_F1 = metrics$MedF1
     accuracy = metrics$Acc
     # cell ontology similarity
-    siml = get_CL_similarity(reference_labs, ref_CL_terms, predicted_labs, ontology)
+    siml = get_CL_similarity(reference_labs, ref_CL_terms, predicted_labs, ontology, unlabelled)
     score = get_tool_combined_score(unlab_delta, exact_match_prop, mean_shared_terms, 
                                    median_F1, accuracy, siml)
 
@@ -185,7 +185,7 @@ get_cell_CL_siml = function(siml_object, label_list, labs_dict) {
         for(j in 1:length(label_list)){
             term_j = labs_dict[[label_list[j]]]
             tryCatch({
-                siml = c(siml, pairsim(siml_object, term_i, term_j))
+                siml = c(siml, pairsim(siml_object, as.character(term_i), as.character(term_j)))
             },
             error = function(cond){
                 print(cond)

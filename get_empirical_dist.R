@@ -64,7 +64,7 @@ option_list = list(
 )
 
 opt = wsc_parse_args(option_list, mandatory = c("input_ref_file", "output_path", "ontology_graph"))
-reference_labs_df = read.csv(opt$input_ref_file, sep=",")
+reference_labs_df = read.csv(opt$input_ref_file, sep="\t")
 reference_labs = as.character(reference_labs_df[, opt$label_column_ref])
 num_iter = opt$num_iterations
 ref_CL_terms = as.character(reference_labs_df[, opt$cell_ontology_col])
@@ -82,7 +82,7 @@ trivial_terms = c("cell", "of", "tissue") # add common words here
     metrics = get_f1(reference_labs, predicted_labs, unlabelled)
     median_F1 = metrics$MedF1
     accuracy = metrics$Acc
-    siml = get_CL_similarity(reference_labs, ref_CL_terms, predicted_labs, ontology)
+    siml = get_CL_similarity(reference_labs, ref_CL_terms, predicted_labs, ontology, unlabelled)
 
     metric_list = list(Exact_match_prop = exact_match_prop,
                        Mean_partial_match = mean_shared_terms,

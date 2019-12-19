@@ -80,11 +80,13 @@ predicted_labs_tables = lapply(file_names, function(file) read.csv(file, sep="\t
 pred_labs_col = opt$label_column_pred
 
 # read reference data 
-reference_labs_df = read.csv(opt$ref_file, sep=",")#TODO: decide on separator
+reference_labs_df = read.csv(opt$ref_file, sep="\t")
 ref_labs_col = opt$label_column_ref
 ref_CL_terms = as.character(reference_labs_df[, opt$cell_ontology_col]) 
 reference_labs = as.character(reference_labs_df[, ref_labs_col])
 output_table = reference_labs_df[, c("cell_id", ref_labs_col)]
+# NB: keep these relevant to the tools' output
+unlabelled = c("unassigned", "Unassigned", "unknown", NA)
 
 # iterate through tools' outputs and combine predictions per cell
 tools = c() 
@@ -115,7 +117,8 @@ ontology(siml_object) = ontology
 # configure similarity measurement metric
 pairwiseConfig(siml_object) = listSimilarities()$pairwiseMeasures[5]
 cell_type_id_mapping = hash()
-.set(cell_type_id_mapping, keys=reference_labs, values=ref_CL_terms)
+i = which(!(reference_labs %in% unlabelled | ref_CL_terms==''))
+.set(cell_type_id_mapping, keys=reference_labs[i], values=ref_CL_terms[i])
 group_siml = apply(output_table, 1, function(row) get_cell_CL_siml(siml_object, row, cell_type_id_mapping))
 output_table = cbind(output_table, agreement_rate = agreement_rate, group_siml = group_siml)
 
