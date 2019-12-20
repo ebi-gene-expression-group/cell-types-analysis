@@ -117,7 +117,7 @@ ontology(siml_object) = ontology
 # configure similarity measurement metric
 pairwiseConfig(siml_object) = listSimilarities()$pairwiseMeasures[5]
 cell_type_id_mapping = hash()
-i = which(!(reference_labs %in% unlabelled | ref_CL_terms==''))
+i = which(!(reference_labs %in% unlabelled | ref_CL_terms=='')) # filter unmapped cells 
 .set(cell_type_id_mapping, keys=reference_labs[i], values=ref_CL_terms[i])
 group_siml = apply(output_table, 1, function(row) get_cell_CL_siml(siml_object, row, cell_type_id_mapping))
 output_table = cbind(output_table, agreement_rate = agreement_rate, group_siml = group_siml)

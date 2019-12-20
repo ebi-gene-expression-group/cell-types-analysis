@@ -189,7 +189,7 @@ get_cell_CL_siml = function(siml_object, label_list, labs_dict) {
             },
             error = function(cond){
                 print(cond)
-                print("Returning NA")
+                siml = c(siml, NA)
             })
         }
     }
