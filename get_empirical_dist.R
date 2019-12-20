@@ -17,14 +17,14 @@ option_list = list(
         action = "store",
         default = NA,
         type = 'character',
-        help = 'Path to dataframe with reference cell types'
+        help = 'Path to file with reference cell types'
     ),
     make_option(
         c("-l", "--label-column-ref"),
         action = "store",
         default = 'cell_type',
         type = 'character',
-        help = 'Name of the label column name in reference file'
+        help = 'Name of the label column in reference file'
     ),
     make_option(
         c("-s", "--cell-ontology-col"),
@@ -38,7 +38,7 @@ option_list = list(
         action = "store",
         default = 5,
         type = 'numeric',
-        help = 'Number of iterations to construct empirical distribution'
+        help = 'Number of sampling iterations to construct empirical distribution'
     ),
     make_option(
         c("-c", "--num-cores"),
@@ -55,11 +55,20 @@ option_list = list(
         help = 'Path to the ontology graph in .obo or .xml format'
     ),
     make_option(
+        c("-m", "--semantic-sim-metric"),
+        action = "store",
+        default = 'edge_resnik',
+        type = 'character',
+        help = 'Semantic similarity scoring method. 
+                Must be supported by Onassis package.
+                See listSimilarities()$pairwiseMeasures for a list of accepted options'
+    ),
+    make_option(
         c("-o", "--output-path"),
         action = "store",
         default = NA,
         type = 'character',
-        help = 'Path to the ouput object in .rds format'
+        help = 'Path to the output object in .rds format'
     )
 )
 
@@ -69,9 +78,11 @@ reference_labs = as.character(reference_labs_df[, opt$label_column_ref])
 num_iter = opt$num_iterations
 ref_CL_terms = as.character(reference_labs_df[, opt$cell_ontology_col])
 ontology = opt$ontology_graph
+sim_metric = opt$semantic_sim_metric
 
-unlabelled = c("unassigned", "Unassigned", "unknown", NA)
-trivial_terms = c("cell", "of", "tissue") # add common words here
+unlabelled = c("unassigned", "Unassigned", "unknown",
+                'Unknown','rand','Node','ambiguous', NA)
+trivial_terms = c("cell", "of", "tissue", "entity", "type") # add common words here
 
 # generate empirical distribution
 .run_simulations = function(siml_num){
@@ -82,7 +93,7 @@ trivial_terms = c("cell", "of", "tissue") # add common words here
     metrics = get_f1(reference_labs, predicted_labs, unlabelled)
     median_F1 = metrics$MedF1
     accuracy = metrics$Acc
-    siml = get_CL_similarity(reference_labs, ref_CL_terms, predicted_labs, ontology, unlabelled)
+    siml = get_CL_similarity(reference_labs, ref_CL_terms, predicted_labs, ontology, sim_metric, unlabelled)
 
     metric_list = list(Exact_match_prop = exact_match_prop,
                        Mean_partial_match = mean_shared_terms,

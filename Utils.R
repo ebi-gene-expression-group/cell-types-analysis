@@ -80,13 +80,18 @@ get_f1 = function(reference_labs, predicted_labs, unlabelled) {
   return(out)
 }
 
-get_CL_similarity = function(reference_labs, ref_CL_terms, predicted_labs, ontology, unlabelled) {
+get_CL_similarity = function(reference_labs, ref_CL_terms, predicted_labs, ontology, sim_metric, unlabelled) {
     suppressPackageStartupMessages(require(Onassis)) #NB: keep package call within function, otherwise parallelism is broken
     # initialise and configure Similarity object 
     siml_object = new('Similarity')
     ontology(siml_object) = ontology
     # configure similarity measurement metric
-    pairwiseConfig(siml_object) = listSimilarities()$pairwiseMeasures[5]
+    if(! sim_metric %in% listSimilarities()$pairwiseMeasures){
+        stop("Incorrect semantic similarity metric provided.")
+    }
+    idx = which(listSimilarities()$pairwiseMeasures == sim_metric)
+    pairwiseConfig(siml_object) = listSimilarities()$pairwiseMeasures[idx]
+    #pairwiseConfig(siml_object) = listSimilarities()$pairwiseMeasures[5]
     # map cell types to CL terms 
     cell_type_id_mapping = hash()
     i = which(!(reference_labs %in% unlabelled | ref_CL_terms==''))
@@ -133,7 +138,8 @@ obtain_metrics_list = function(tool,
                                unlabelled,
                                trivial_terms,
                                ref_CL_terms,
-                               ontology){
+                               ontology,
+                               sim_metric){
 
     # proportion of unlabelled cells in predicted labels
     prop_unlab_predicted = get_unlab_rate(predicted_labs, unlabelled)
@@ -148,7 +154,7 @@ obtain_metrics_list = function(tool,
     median_F1 = metrics$MedF1
     accuracy = metrics$Acc
     # cell ontology similarity
-    siml = get_CL_similarity(reference_labs, ref_CL_terms, predicted_labs, ontology, unlabelled)
+    siml = get_CL_similarity(reference_labs, ref_CL_terms, predicted_labs, ontology, sim_metric, unlabelled)
     score = get_tool_combined_score(unlab_delta, exact_match_prop, mean_shared_terms, 
                                    median_F1, accuracy, siml)
 

@@ -46,14 +46,23 @@ suppressPackageStartupMessages(require(hash)) # NB: must be version 2.2.6.1
         action = "store",
         default = 'cell_type',
         type = 'character',
-        help = 'Name of the label column name in reference file'
+        help = 'Name of the label column in reference file'
     ),
     make_option(
         c("-p", "--label-column-pred"),
         action = "store",
         default = 'pred_label',
         type = 'character',
-        help = 'Name of the label column name in prediction file'
+        help = 'Name of the label column in prediction file'
+    ),
+    make_option(
+        c("-m", "--semantic-sim-metric"),
+        action = "store",
+        default = 'edge_resnik',
+        type = 'character',
+        help = 'Semantic similarity scoring method. 
+                Must be supported by Onassis package.
+                See listSimilarities()$pairwiseMeasures for a list of accepted options'
     ),
     make_option(
         c("-o", "--output-path"),
@@ -79,13 +88,15 @@ reference_labs_df = read.csv(opt$ref_file, sep="\t")
 ref_labs_col = opt$label_column_ref
 
 # NB: keep these relevant to the tools' output
-unlabelled = c("unassigned", "Unassigned", "unknown", NA)
-trivial_terms = c("cell", "of", "tissue") # add common words here
+unlabelled = c("unassigned", "Unassigned", "unknown",
+                'Unknown','rand','Node','ambiguous', NA)
+trivial_terms = c("cell", "of", "tissue", "entity", "type") # add common words here
 
 # extract ontology terms for cell types 
 ontology = opt$ontology_graph
 CL_col = opt$cell_ontology_col
-ref_CL_terms = as.character(reference_labs_df[, CL_col]) 
+ref_CL_terms = as.character(reference_labs_df[, CL_col])
+sim_metric = opt$semantic_sim_metric 
 
 # find proportion of unknowns in reference cell types
 prop_unlab_reference = get_unlab_rate(reference_labs_df[, ref_labs_col], unlabelled)
@@ -108,7 +119,7 @@ for(idx in 1:length(predicted_labs_tables)){
     # run evaluation functions
     row = obtain_metrics_list(tool, reference_labs,
                               predicted_labs, prop_unlab_reference,
-                              unlabelled, trivial_terms, ref_CL_terms, ontology)
+                              unlabelled, trivial_terms, ref_CL_terms, ontology, sim_metric)
     row = do.call(cbind, row)
     output_table[[idx]] = row
 }
