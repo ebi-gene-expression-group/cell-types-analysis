@@ -5,7 +5,6 @@ suppressPackageStartupMessages(require(workflowscriptscommon))
 suppressPackageStartupMessages(require(hash))
 suppressPackageStartupMessages(require(foreach))
 suppressPackageStartupMessages(require(doParallel))
-source("Utils.R")
 
 ### Generate a set of emprirical distributions for metrics defined in Utils.R 
 ### The script takes reference dataset as an input and shuffles it a specified number of times 
@@ -73,6 +72,7 @@ option_list = list(
 )
 
 opt = wsc_parse_args(option_list, mandatory = c("input_ref_file", "output_path", "ontology_graph"))
+source("Utils.R")
 reference_labs_df = read.csv(opt$input_ref_file, sep="\t")
 reference_labs = as.character(reference_labs_df[, opt$label_column_ref])
 num_iter = opt$num_iterations

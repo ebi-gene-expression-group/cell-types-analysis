@@ -1,3 +1,4 @@
+#!/usr/bin/env Rscript
 ### find number of unassigned cells ###
 get_unlab_rate = function(labels, unlabelled){
     labels = as.character(labels)

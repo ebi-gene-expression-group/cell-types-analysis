@@ -73,10 +73,10 @@ suppressPackageStartupMessages(require(hash)) # NB: must be version 2.2.6.1
     )
 )
 
-# source function definitions 
-source("Utils.R")
 # parse arguments 
 opt = wsc_parse_args(option_list, mandatory = c("input_dir", "ref_file", "output_path"))
+# source function definitions 
+source("Utils.R")
 
 # file names must start with the tool name 
 file_names = list.files(opt$input_dir, full.names=TRUE)
