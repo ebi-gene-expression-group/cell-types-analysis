@@ -72,7 +72,9 @@ option_list = list(
 )
 
 opt = wsc_parse_args(option_list, mandatory = c("input_ref_file", "output_path", "ontology_graph"))
-source("Utils.R")
+p = system("which cell_types_utils.R", intern = TRUE)
+source(p)
+
 reference_labs_df = read.csv(opt$input_ref_file, sep="\t")
 reference_labs = as.character(reference_labs_df[, opt$label_column_ref])
 num_iter = opt$num_iterations

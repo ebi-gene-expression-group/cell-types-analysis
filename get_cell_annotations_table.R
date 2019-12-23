@@ -81,7 +81,8 @@ option_list = list(
 # parse arguments 
 opt = wsc_parse_args(option_list, mandatory = c("input_dir", "ref_file", "output_path"))
 # source function definitions 
-source("Utils.R")
+p = system("which cell_types_utils.R", intern = TRUE)
+source(p)
 
 # file names must start with the tool name 
 file_names = list.files(opt$input_dir, full.names=TRUE)
