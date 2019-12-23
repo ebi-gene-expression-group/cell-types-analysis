@@ -39,6 +39,8 @@ A common output format across tools is assumed - a tab-separated table with 3 co
 |ERR2632412 | memory B cell | 0.8|
 |ERR2632413 | memory B cell | 0.8|
 
+Example output tables can be found [here](https://github.com/ebi-gene-expression-group/cell-types-analysis/tree/master/example_output).
+
 **Metadata**
 
 In order to keep track of information about tool and training dataset which produced given table, add metadata fields to the top of the file in the following format:
