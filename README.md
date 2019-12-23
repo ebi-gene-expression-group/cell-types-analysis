@@ -16,7 +16,7 @@ A common output format across tools is assumed - a tab-separated table with 2 co
 
 Predicted labels for specific cells can be aggregated and analysed, providing evidence in favour of each label based on the overall performance of corresponding tools.
 
-Example output tables can be found [here](https://github.com/ebi-gene-expression-group/cell-types-analysis/blob/handle_unassigned_terms/example_output/tool_pvals.tsv) and [here](https://github.com/ebi-gene-expression-group/cell-types-analysis/blob/handle_unassigned_terms/example_output/cell_anno_table.tsv).
+Example output tables can be found [here](https://github.com/ebi-gene-expression-group/cell-types-analysis/tree/master/example_output).
 
 ### Installation 
 The package is installed via EBI Gene Expression Group conda channel:
