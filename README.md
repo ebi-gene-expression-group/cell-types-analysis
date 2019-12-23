@@ -19,7 +19,7 @@ Predicted labels for specific cells can be aggregated and analysed, providing ev
 Example output tables can be found [here](https://github.com/ebi-gene-expression-group/cell-types-analysis/blob/handle_unassigned_terms/example_output/tool_pvals.tsv) and [here](https://github.com/ebi-gene-expression-group/cell-types-analysis/blob/handle_unassigned_terms/example_output/cell_anno_table.tsv).
 
 ### Installation 
-The package is installed through via EBI Gene Expression Group conda channel:
+The package is installed via EBI Gene Expression Group conda channel:
 
 ```conda install -c ebi-gene-expression-group cell-types-analysis``` 
 
