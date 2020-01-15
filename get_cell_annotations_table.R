@@ -33,6 +33,20 @@ option_list = list(
         help = 'Path to the tool evaluation table in text format'
     ),
     make_option(
+        c("-b", "--barcode-col-ref"),
+        action = "store",
+        default = 'cell_id',
+        type = 'character',
+        help = 'Name of the cell id field in reference file'
+    ),
+    make_option(
+        c("-a", "--barcode-col-pred"),
+        action = "store",
+        default = 'cell_id',
+        type = 'character',
+        help = 'Name of the cell id field in prediction file'
+    ),
+    make_option(
         c("-f", "--ontology-graph"),
         action = "store",
         default = "data/cl-basic.obo",
@@ -88,13 +102,15 @@ source(p)
 file_names = list.files(opt$input_dir, full.names=TRUE)
 predicted_labs_tables = lapply(file_names, function(file) read.csv(file, sep="\t"))
 pred_labs_col = opt$label_column_pred
+barcode_ref = opt$barcode_col_ref
+barcode_pred = opt$barcode_col_pred
 
 # read reference data 
 reference_labs_df = read.csv(opt$ref_file, sep="\t")
 ref_labs_col = opt$label_column_ref
 ref_CL_terms = as.character(reference_labs_df[, opt$cell_ontology_col]) 
 reference_labs = as.character(reference_labs_df[, ref_labs_col])
-output_table = reference_labs_df[, c("cell_id", ref_labs_col)]
+output_table = reference_labs_df[, c(barcode_ref, ref_labs_col)]
 # NB: keep these relevant to the tools' output
 unlabelled = c("unassigned", "Unassigned", "unknown",
                 'Unknown','rand','Node','ambiguous', NA)
@@ -108,7 +124,7 @@ for(idx in 1:length(predicted_labs_tables)){
 
     # check reference cell IDs match predicted cell IDs
     # if so, extract reference and predicted labels as vectors
-    if(!all(as.character(predicted_labs_df[, "cell_id"]) == as.character(predicted_labs_df[, "cell_id"]))) {
+    if(!all(as.character(reference_labs_df[, barcode_ref]) == as.character(predicted_labs_df[, barcode_pred]))) {
          stop(paste("Error: cell id mismatch for tool: ", tool))
     }    
     # extract label vectors
