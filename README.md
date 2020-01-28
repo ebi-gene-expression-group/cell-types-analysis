@@ -23,7 +23,7 @@ The package is installed via EBI Gene Expression Group conda channel:
 
 ```conda install -c ebi-gene-expression-group cell-types-analysis``` 
 
-Use `run_post_install_tests.sh` script to make sure installation was successful.
+Use `run_post_install_tests.sh` script to make sure installation was successful. 
 
 Run `<script_name>.R --help` to see documentation.  
 
