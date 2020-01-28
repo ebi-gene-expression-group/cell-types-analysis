@@ -4,7 +4,10 @@ suppressPackageStartupMessages(require(optparse))
 suppressPackageStartupMessages(require(workflowscriptscommon))
 suppressPackageStartupMessages(require(hash))
 suppressPackageStartupMessages(require(foreach))
+suppressPackageStartupMessages(require(parallel))
+n_cores = detectCores()
 suppressPackageStartupMessages(require(doParallel))
+
 
 ### Generate a set of emprirical distributions for metrics defined in Utils.R 
 ### The script takes reference dataset as an input and shuffles it a specified number of times 
@@ -42,9 +45,9 @@ option_list = list(
     make_option(
         c("-c", "--num-cores"),
         action = "store",
-        default = 2,
+        default = n_cores,
         type = 'numeric',
-        help = 'Number of cores to run the process on. Default: 2'
+        help = 'Number of cores to run the process on. Default: all available cores'
     ),
     make_option(
         c("-g", "--ontology-graph"),
@@ -75,10 +78,10 @@ opt = wsc_parse_args(option_list, mandatory = c("input_ref_file", "output_path",
 p = system("which cell_types_utils.R", intern = TRUE)
 source(p)
 
-reference_labs_df = read.csv(opt$input_ref_file, sep="\t")
-reference_labs = as.character(reference_labs_df[, opt$label_column_ref])
+reference_labs_df = read.csv(opt$input_ref_file, sep="\t", stringsAsFactors=FALSE)
+reference_labs = reference_labs_df[, opt$label_column_ref]
 num_iter = opt$num_iterations
-ref_CL_terms = as.character(reference_labs_df[, opt$cell_ontology_col])
+ref_CL_terms = reference_labs_df[, opt$cell_ontology_col]
 ontology = opt$ontology_graph
 sim_metric = opt$semantic_sim_metric
 
@@ -113,7 +116,6 @@ emp_samples = foreach (iter=1:num_iter) %dopar% {
 }
 
 emp_samples = do.call(rbind, emp_samples)
-print(emp_samples)
 # generate cumulative empirical distributions
 emp_dist = apply(emp_samples, 2, function(col) ecdf(as.numeric(col)))
 saveRDS(emp_dist, file = opt$output_path)

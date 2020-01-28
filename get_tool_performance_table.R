@@ -42,6 +42,20 @@ suppressPackageStartupMessages(require(hash)) # NB: must be version 2.2.6.1
         help = 'Name of CL id column in ref dataset'
     ),
     make_option(
+        c("-b", "--barcode-col-ref"),
+        action = "store",
+        default = 'cell_id',
+        type = 'character',
+        help = 'Name of the cell id field in reference file'
+    ),
+    make_option(
+        c("-a", "--barcode-col-pred"),
+        action = "store",
+        default = 'cell_id',
+        type = 'character',
+        help = 'Name of the cell id field in prediction file'
+    ),
+    make_option(
         c("-l", "--label-column-ref"),
         action = "store",
         default = 'cell_type',
@@ -81,11 +95,13 @@ source(p)
 
 # file names must start with the tool name 
 file_names = list.files(opt$input_dir, full.names=TRUE)
-predicted_labs_tables = lapply(file_names, function(file) read.csv(file, sep="\t"))
+predicted_labs_tables = lapply(file_names, function(file) read.csv(file, sep="\t", stringsAsFactors=FALSE))
 pred_labs_col = opt$label_column_pred
+barcode_ref = opt$barcode_col_ref
+barcode_pred = opt$barcode_col_pred
 
 # read reference file 
-reference_labs_df = read.csv(opt$ref_file, sep="\t")
+reference_labs_df = read.csv(opt$ref_file, sep="\t", stringsAsFactors=FALSE)
 ref_labs_col = opt$label_column_ref
 
 # NB: keep these relevant to the tools' output
@@ -96,7 +112,7 @@ trivial_terms = c("cell", "of", "tissue", "entity", "type") # add common words h
 # extract ontology terms for cell types 
 ontology = opt$ontology_graph
 CL_col = opt$cell_ontology_col
-ref_CL_terms = as.character(reference_labs_df[, CL_col])
+ref_CL_terms = reference_labs_df[, CL_col]
 sim_metric = opt$semantic_sim_metric 
 
 # find proportion of unknowns in reference cell types
@@ -111,7 +127,7 @@ for(idx in 1:length(predicted_labs_tables)){
 
     # check reference cell IDs match predicted cell IDs
     # if so, extract reference and predicted labels as vectors
-    if(!all(as.character(predicted_labs_df[, "cell_id"]) == as.character(predicted_labs_df[, "cell_id"]))) {
+    if(!all(as.character(reference_labs_df[, barcode_ref]) == as.character(predicted_labs_df[, barcode_pred]))) {
         stop(paste("Error: cell id mismatch for tool: ", tool))        
     }
     # extract label vectors
@@ -127,4 +143,4 @@ for(idx in 1:length(predicted_labs_tables)){
 
 output_table = data.frame(do.call(rbind, output_table))
 output_table = output_table[order(output_table$Combined_score), ]
-write.table(output_table, file = opt$output_path, sep ="\t")
+write.table(output_table, file = opt$output_path, sep ="\t", row.names=FALSE)

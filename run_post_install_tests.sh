@@ -22,7 +22,8 @@ if [ "$use_existing_outputs" != 'true' ] && [ "$use_existing_outputs" != 'false'
 fi
 
 test_working_dir=`pwd`/'post_install_tests'
-output_dir=$test_working_dir/outputs
+output_dir=$test_working_dir/'outputs'
+data_dir=$test_working_dir/'data'
 
 # Clean up if specified
 if [ "$action" = 'clean' ]; then
@@ -41,9 +42,15 @@ mkdir -p $output_dir
 ################################################################################
 # List tool outputs/inputs & parameters 
 ################################################################################
-export input_dir='data/test/pred_labs/'
-export ref_labels_file='data/test/metadata.tsv'
-export ontology_graph='data/cl-basic.obo'
+export input_dir=$data_dir/'results_dir/'
+export ref_labels_file=$data_dir/'metadata_filtered.tsv'
+export ontology_graph=$data_dir/'cl-basic.obo'
+export barcode_col_pred='cell_id'
+export barcode_col_ref='Assay'
+export label_column_ref='Sample.Characteristic.cell.type.'
+export label_column_pred='predicted_label'
+export cell_ontology_col='Factor.Value.Ontology.Term.cell.type.'
+
 export tool_perf_table=$output_dir/'tool_perf_table.tsv'
 export cell_anno_table=$output_dir/'cell_anno_table.tsv'
 export empirical_dist=$output_dir/'empirical_dist_list.rds'
@@ -53,11 +60,11 @@ export num_iter=5
 export num_cores=4
 export use_existing_outputs
 
+# retrieve test data 
+wget "https://www.ebi.ac.uk/~a_solovyev/cell_types_analysis_data.tar.gz" -P $test_working_dir
+tar -xzvf $test_working_dir/'cell_types_analysis_data.tar.gz' -C $test_working_dir
+
 # Derive the tests file name from the script name
 tests_file="${script_name%.*}".bats
 # Execute the bats tests
 $tests_file
-
-
-
-

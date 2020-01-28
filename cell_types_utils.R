@@ -7,7 +7,7 @@ get_unlab_rate = function(labels, unlabelled){
     return(prop_unknown_provided)
 }
 
-#### find ratio of unlabelled cells in reference dataset to that in predicted dataset ###
+#### find delta between unlabelled cells in reference dataset and those in predicted dataset ###
 get_unlab_rate_delta = function(prop_unlab_reference, prop_unlab_predicted){
     unlab_delta = abs(prop_unlab_predicted - prop_unlab_reference)
     return(round(unlab_delta, 3))
@@ -45,7 +45,6 @@ get_shared_terms_prop = function(reference_labs, pred_labs, trivial_terms){
 get_f1 = function(reference_labs, predicted_labs, unlabelled) {
     unique_ref = unique(reference_labs)
     unique_pred = unique(predicted_labs)
-    #unique_all = unique(c(unique(unique_ref, unique_pred)))
     conf = table(reference_labs, predicted_labs)
     pop_size = rowSums(conf)
     
@@ -92,7 +91,6 @@ get_CL_similarity = function(reference_labs, ref_CL_terms, predicted_labs, ontol
     }
     idx = which(listSimilarities()$pairwiseMeasures == sim_metric)
     pairwiseConfig(siml_object) = listSimilarities()$pairwiseMeasures[idx]
-    #pairwiseConfig(siml_object) = listSimilarities()$pairwiseMeasures[5]
     # map cell types to CL terms 
     cell_type_id_mapping = hash()
     i = which(!(reference_labs %in% unlabelled | ref_CL_terms==''))
@@ -206,7 +204,7 @@ get_cell_CL_siml = function(siml_object, label_list, labs_dict) {
 
 # calculate aggregated score for predicted labels 
 get_weighted_score = function(labels_list, tool_scores){
-    if(!all(names(labels_list) == names(tool_scores))){
+    if(!all(names(labels_list) %in% names(tool_scores))){
         stop("Name mismatch between predicted labels and tools")
     }
     .get_sums = function(lab){

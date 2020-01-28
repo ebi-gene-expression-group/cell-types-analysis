@@ -32,7 +32,7 @@ option_list = list(
 opt = wsc_parse_args(option_list, mandatory = c("input_table", "emp_dist_list", "output_table"))
 
 distr_list = readRDS(opt$emp_dist_list)
-tools_table = read.delim(opt$input_table)
+tools_table = read.delim(opt$input_table, stringsAsFactors=FALSE)
 metrics = names(distr_list)
 for(metric in metrics){
     metric_distr = distr_list[[metric]]
@@ -41,4 +41,4 @@ for(metric in metrics){
     col_name = paste(metric, "_pval", sep = '')
     tools_table[, col_name] = tool_pvals
 }
-write.table(tools_table, file = opt$output_table, sep="\t")
+write.table(tools_table, file = opt$output_table, sep="\t", row.names=FALSE)
