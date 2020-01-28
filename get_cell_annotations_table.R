@@ -100,16 +100,16 @@ source(p)
 
 # file names must start with the tool name 
 file_names = list.files(opt$input_dir, full.names=TRUE)
-predicted_labs_tables = lapply(file_names, function(file) read.csv(file, sep="\t"))
+predicted_labs_tables = lapply(file_names, function(file) read.csv(file, sep="\t", stringsAsFactors=FALSE))
 pred_labs_col = opt$label_column_pred
 barcode_ref = opt$barcode_col_ref
 barcode_pred = opt$barcode_col_pred
 
 # read reference data 
-reference_labs_df = read.csv(opt$ref_file, sep="\t")
+reference_labs_df = read.csv(opt$ref_file, sep="\t", stringsAsFactors=FALSE)
 ref_labs_col = opt$label_column_ref
-ref_CL_terms = as.character(reference_labs_df[, opt$cell_ontology_col]) 
-reference_labs = as.character(reference_labs_df[, ref_labs_col])
+ref_CL_terms = reference_labs_df[, opt$cell_ontology_col]
+reference_labs = reference_labs_df[, ref_labs_col]
 output_table = reference_labs_df[, c(barcode_ref, ref_labs_col)]
 # NB: keep these relevant to the tools' output
 unlabelled = c("unassigned", "Unassigned", "unknown",
@@ -124,7 +124,7 @@ for(idx in 1:length(predicted_labs_tables)){
 
     # check reference cell IDs match predicted cell IDs
     # if so, extract reference and predicted labels as vectors
-    if(!all(as.character(reference_labs_df[, barcode_ref]) == as.character(predicted_labs_df[, barcode_pred]))) {
+    if(!all(reference_labs_df[, barcode_ref] == predicted_labs_df[, barcode_pred])) {
          stop(paste("Error: cell id mismatch for tool: ", tool))
     }    
     # extract label vectors
@@ -133,7 +133,7 @@ for(idx in 1:length(predicted_labs_tables)){
 }
 
 # add tool names to columns 
-names(output_table)[3:length(names(output_table))] = tools
+names(output_table) = c("cell_id", "reference_cell_type", tools)
 # find agreement between tools for a specific cell 
 agreement_rate = apply(output_table, 1, get_agreement_rate)
 
@@ -152,13 +152,14 @@ group_siml = apply(output_table, 1, function(row) get_cell_CL_siml(siml_object, 
 output_table = cbind(output_table, agreement_rate = agreement_rate, group_siml = group_siml)
 
 # obtain scores according to combined tool performance
-tool_table = read.delim(opt$tool_table)
+tool_table = read.delim(opt$tool_table, stringsAsFactors=FALSE)
 tool_scores = tool_table$Combined_score
 names(tool_scores) = tool_table$Tool
+# extract part of table with tool-predicted cell labels
 tool_labels = output_table[, tools]
 tool_labels = apply(tool_labels, 1, function(row) get_weighted_score(row, tool_scores))
 output_table[, tools] = t(tool_labels)
 
 # put cells with weakest evidence on top of the list 
 output_table = output_table[order(agreement_rate, group_siml) ,]
-write.table(output_table, file=opt$output_path, sep="\t")
+write.table(output_table, file=opt$output_path, sep="\t", row.names = FALSE)

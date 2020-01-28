@@ -91,7 +91,6 @@ get_CL_similarity = function(reference_labs, ref_CL_terms, predicted_labs, ontol
     }
     idx = which(listSimilarities()$pairwiseMeasures == sim_metric)
     pairwiseConfig(siml_object) = listSimilarities()$pairwiseMeasures[idx]
-    #pairwiseConfig(siml_object) = listSimilarities()$pairwiseMeasures[5]
     # map cell types to CL terms 
     cell_type_id_mapping = hash()
     i = which(!(reference_labs %in% unlabelled | ref_CL_terms==''))
@@ -205,7 +204,7 @@ get_cell_CL_siml = function(siml_object, label_list, labs_dict) {
 
 # calculate aggregated score for predicted labels 
 get_weighted_score = function(labels_list, tool_scores){
-    if(!all(names(labels_list) == names(tool_scores))){
+    if(!all(names(labels_list) %in% names(tool_scores))){
         stop("Name mismatch between predicted labels and tools")
     }
     .get_sums = function(lab){

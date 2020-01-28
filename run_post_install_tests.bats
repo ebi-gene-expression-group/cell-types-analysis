@@ -7,7 +7,13 @@
 
     run rm -f $tool_perf_table && get_tool_performance_table.R\
                                     --input-dir $input_dir\
+                                    --barcode-col-ref $barcode_col_ref\
+                                    --barcode-col-pred $barcode_col_pred\
+                                    --label-column-ref $label_column_ref\
+                                    --label-column-pred $label_column_pred\
+                                    --cell-ontology-col $cell_ontology_col\
                                     --ref-file $ref_labels_file\
+                                    --ontology-graph $ontology_graph\
                                     --output-path $tool_perf_table
     echo "status = ${status}"
     echo "output = ${output}"
@@ -24,8 +30,11 @@
 
     run rm -f $empirical_dist && get_empirical_dist.R\
                                     --input-ref-file $ref_labels_file\
+                                    --label-column-ref $label_column_ref\
+                                    --cell-ontology-col $cell_ontology_col\
                                     --num-iterations $num_iter\
                                     --num-cores $num_cores\
+                                    --ontology-graph $ontology_graph\
                                     --output-path $empirical_dist
     echo "status = ${status}"
     echo "output = ${output}"
@@ -60,6 +69,12 @@
     run rm -f $cell_anno_table && get_cell_annotations_table.R\
                                     --input-dir $input_dir\
                                     --ref-file $ref_labels_file\
+                                    --barcode-col-ref $barcode_col_ref\
+                                    --barcode-col-pred $barcode_col_pred\
+                                    --cell-ontology-col $cell_ontology_col\
+                                    --label-column-ref $label_column_ref\
+                                    --label-column-pred $label_column_pred\
+                                    --ontology-graph $ontology_graph\
                                     --tool-table $tool_perf_table\
                                     --output-path $cell_anno_table
     echo "status = ${status}"
