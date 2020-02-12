@@ -12,7 +12,7 @@ For each tool, a list of statistics is generated. The following metrics are used
 
 For a subset of statistics, empirical distribution function can be estimated and then used to determine the p-value of obtained scores.  
 
-A common output format across tools is assumed - a tab-separated table with 2 columns: `cell_id` (or barcode) and `predicted_label`. Outputs from multiple tools must be stored in a single directory, with file names prefixed by tool name, e.g. `toolX_output.tsv`. A reference table is required, with the following compulsory columns: cell ids, reference labels, and corresponding cell ontology terms.
+A common output format across tools is assumed - a tab-separated table with 2 columns: `cell_id` (or barcode) and `predicted_label`. In some use cases, `score` column might be required. Outputs from multiple tools must be stored in a single directory, with file names prefixed by tool name, e.g. `toolX_output.tsv`. A reference table is required, with the following compulsory columns: cell ids, reference labels, and corresponding cell ontology terms.
 
 Predicted labels for specific cells can be aggregated and analysed, providing evidence in favour of each label based on the overall performance of corresponding tools.
 
