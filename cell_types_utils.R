@@ -80,6 +80,9 @@ get_f1 = function(reference_labs, predicted_labs, unlabelled) {
   return(out)
 }
 
+# TODO: refactor this function to allow for pair-wise and group similarity
+# this will allow to re-use it in the production scenario 
+# + build a general CL term - cell type mapping and provide it as arg
 get_CL_similarity = function(reference_labs, ref_CL_terms, predicted_labs, ontology, sim_metric, unlabelled) {
     suppressPackageStartupMessages(require(Onassis)) #NB: keep package call within function, otherwise parallelism is broken
     # initialise and configure Similarity object 
@@ -174,6 +177,8 @@ obtain_metrics_list = function(tool,
 ################################################################################
 # methods for per-cell statistics
 ################################################################################
+
+
 get_agreement_rate = function(label_list){
     # assume 1st column is cell id, 2nd col is label, and exclude them
     label_list = label_list[-c(1,2)]
