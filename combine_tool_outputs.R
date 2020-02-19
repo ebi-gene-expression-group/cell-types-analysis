@@ -76,37 +76,40 @@ if(opt$scores){
     # extract list of labels corresponding to top score indices
     top_labels = lapply(seq_along(top_items), function(idx) labels[ idx, as.numeric(unlist(top_items[[idx]][2])) ])
     top_labels = data.frame(do.call(rbind, top_labels))
-    names = paste("label", c(1:top_n))
+    names = paste("label", c(1:top_n), sep="_")
     colnames(top_labels) = names
 
     # extract list of top scores per cell
     top_scores = lapply(top_items, function(l) l[[1]])
     top_scores = data.frame(do.call(rbind, top_scores))
-    names = paste("score", c(1:top_n))
+    names = paste("score", c(1:top_n), sep="_")
     colnames(top_scores) = names
 
     # combine output columns
     output_table = cbind(cell_id = cell_ids, top_labels, top_scores)
     write.table(output_table, opt$output_table, sep="\t", row.names=FALSE)
 } else{
-    # for tools without scores provided, apply different method
-    # TODO: run CL similarity for each combination of labels, select labels with the highest 
-    #       mean similarity to other labels
-    
+    # in case a tool does not allow to retrieve prediction scores, 
+    # filter out unlabelled predictions
+    unlabelled = c("unassigned", "Unassigned", "unknown",
+                'Unknown','rand','Node','ambiguous', NA)
 
+    labels = apply(labels, 1, function(row) row[which(!row %in% unlabelled)])
+    if(length(labels) == 0){ 
+        stop("There are no labelled cells in the data set")
+    }
+    max_lab = max(unlist(sapply(labels, length)))
+
+    .fill_vectors = function(vec, max_len){
+        d = max_len - length(vec)
+        print(d)
+        return(append(vec, rep(NA, d)))
+    }
+    # fill empty spots with NAs 
+    labels = lapply(labels, function(lab_vec) .fill_vectors(lab_vec, max_lab))
+    labels = data.frame(do.call(rbind, labels))
+    names = paste("label", c(1:max_lab), sep="_")
+    colnames(labels) = names
+    output_table = cbind(cell_id=cell_ids, labels)
+    write.table(output_table, opt$output_table, sep="\t", row.names=FALSE)
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
