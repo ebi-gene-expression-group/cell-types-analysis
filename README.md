@@ -59,15 +59,4 @@ get_tool_pvals.R\
           --emp-dist-list <path to serialised list of empirical distributions in .rds format>\
           --output-table <path to tab-delimited output table with added p-values> 
 ```
-**get_cell_annotations_table.R**: calculate cell-level statistics
-```
-get_cell_annotations_table.R\
-          --input-dir <path to directory with standardised tab-separated output files from analysed methods>\
-          --ref-file <path to tab-delimited file with reference cell type labels>\
-          --tool-table <path to table of tool statistics produced by get_tool_performance_table.R>\
-          --cell-ontology-col <name of cell ontology id column in reference dataset>\
-          --semantic-sim-metric <semantic similarity scoring method>\  
-          --label-column-ref <name of label column in reference file>\
-          --label-column-pred <name of label column in prediction file>\
-          --output-path <path to tab-delimited output table>
-```
+

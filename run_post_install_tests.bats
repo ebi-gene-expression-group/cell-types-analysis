@@ -61,26 +61,20 @@
     [ -f  "$tool_table_pvals" ]
 }
 
-@test "get per-cell statistics" {
-    if [ "$use_existing_outputs" = 'true' ] && [ -f "$cell_anno_table" ]; then
-        skip "$cell_anno_table exists and use_existing_outputs is set to 'true'"
+@test "combine results" {
+    if [ "$use_existing_outputs" = 'true' ] && [ -f "$combined_results" ]; then
+        skip "$combined_results exists and use_existing_outputs is set to 'true'"
     fi
-    
-    run rm -f $cell_anno_table && get_cell_annotations_table.R\
-                                    --input-dir $input_dir\
-                                    --ref-file $ref_labels_file\
-                                    --barcode-col-ref $barcode_col_ref\
-                                    --barcode-col-pred $barcode_col_pred\
-                                    --cell-ontology-col $cell_ontology_col\
-                                    --label-column-ref $label_column_ref\
-                                    --label-column-pred $label_column_pred\
-                                    --ontology-graph $ontology_graph\
-                                    --tool-table $tool_perf_table\
-                                    --output-path $cell_anno_table
+
+    run rm -f $combined_results && combine_tool_outputs.R\
+                                    --input-dir $res_to_combine\
+                                    --scores\
+                                    --output-table $combined_results
+
     echo "status = ${status}"
     echo "output = ${output}"
 
     [ "$status" -eq 0 ]
-    [ -f  "$cell_anno_table" ]
-   
+    [ -f  "$combined_results" ]
+
 }

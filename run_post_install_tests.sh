@@ -43,6 +43,7 @@ mkdir -p $output_dir
 # List tool outputs/inputs & parameters 
 ################################################################################
 export input_dir=$data_dir/'results_dir/'
+export res_to_combine=$data_dir/'results_to_combine/'
 export ref_labels_file=$data_dir/'metadata_filtered.tsv'
 export ontology_graph=$data_dir/'cl-basic.obo'
 export barcode_col_pred='cell_id'
@@ -55,6 +56,7 @@ export tool_perf_table=$output_dir/'tool_perf_table.tsv'
 export cell_anno_table=$output_dir/'cell_anno_table.tsv'
 export empirical_dist=$output_dir/'empirical_dist_list.rds'
 export tool_table_pvals=$output_dir/'tool_pvals.tsv'
+export combined_results=$output_dir/'combined_results.tsv'
 
 export num_iter=5
 export num_cores=4
