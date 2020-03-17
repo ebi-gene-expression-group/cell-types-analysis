@@ -33,7 +33,7 @@ Use `run_post_install_tests.sh` script to make sure installation was successful.
 
 Run `<script_name>.R --help` to see help for corresponding script.  
 
-### Commands 
+## Commands 
 **build_cell_ontology_dict.R**: create a mapping between labels and ontology terms
 ```
 build_cell_ontology_dict.R\
