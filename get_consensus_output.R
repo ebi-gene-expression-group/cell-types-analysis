@@ -1,11 +1,6 @@
 #!/usr/bin/env Rscript 
 suppressPackageStartupMessages(require(optparse))
 suppressPackageStartupMessages(require(workflowscriptscommon))
-suppressPackageStartupMessages(require(hash))
-suppressPackageStartupMessages(require(tools))
-suppressPackageStartupMessages(require(foreach))
-suppressPackageStartupMessages(require(parallel))
-suppressPackageStartupMessages(require(doParallel))
 
 ### Concatenate labels for specific cell obtained from different tools.
 ### Calculate statistics: agreement between tools, CL similarity among predictions,  
@@ -84,6 +79,12 @@ ontology = opt$ontology_graph
 sim_metric = opt$semantic_sim_metric
 p = system("which cell_types_utils.R", intern = TRUE)
 source(p)
+# import the rest of dependencies
+suppressPackageStartupMessages(require(hash))
+suppressPackageStartupMessages(require(tools))
+suppressPackageStartupMessages(require(foreach))
+suppressPackageStartupMessages(require(parallel))
+suppressPackageStartupMessages(require(doParallel))
 
 # retrieve tool scores if specified
 if(!is.na(opt$tool_table)){

@@ -2,11 +2,6 @@
 
 suppressPackageStartupMessages(require(optparse))
 suppressPackageStartupMessages(require(workflowscriptscommon))
-suppressPackageStartupMessages(require(hash))
-suppressPackageStartupMessages(require(foreach))
-suppressPackageStartupMessages(require(parallel))
-suppressPackageStartupMessages(require(doParallel))
-
 
 ### Generate a set of emprirical distributions for metrics defined for tool performance table
 ### The script takes reference dataset as an input and shuffles it a specified number of times 
@@ -74,6 +69,11 @@ option_list = list(
 opt = wsc_parse_args(option_list, mandatory = c("input_ref_file", "output_path", "lab_cl_mapping", "ontology_graph"))
 p = system("which cell_types_utils.R", intern = TRUE)
 source(p)
+# import the rest of dependencies 
+suppressPackageStartupMessages(require(hash))
+suppressPackageStartupMessages(require(foreach))
+suppressPackageStartupMessages(require(parallel))
+suppressPackageStartupMessages(require(doParallel))
 
 reference_labs_df = read.csv(opt$input_ref_file, sep="\t", stringsAsFactors=FALSE)
 reference_labs = reference_labs_df[, opt$label_column_ref]

@@ -56,6 +56,8 @@ This is followed by a second filtering step where predictions across different t
 | ERR2632411 | memory B cell | NA | NA | NA | NA | NA | 1 | 0 |0.297727360113896 | E-MTAB-6386; OTHER-DATASET | NA | NA|
 | ERR2632412 | memory B cell |  NA | NA | NA | NA | NA | 1 | 0 |0.297727360113896 | E-MTAB-6386; OTHER-DATASET | NA | NA|  
 
+NA values are introduced when there are fewer then 3 unique labels - this is caused by either high agreement across tools or poor labelling rate. See the `unlab_rate` field for more information. 
+
 Example output tables can be found [here](https://github.com/ebi-gene-expression-group/cell-types-analysis/tree/master/example_output).
 
 ## Commands 

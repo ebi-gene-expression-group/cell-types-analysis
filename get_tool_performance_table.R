@@ -2,10 +2,6 @@
 
 suppressPackageStartupMessages(require(optparse))
 suppressPackageStartupMessages(require(workflowscriptscommon))
-suppressPackageStartupMessages(require(hash)) # must be version 2.2.6.1
-suppressPackageStartupMessages(require(foreach))
-suppressPackageStartupMessages(require(parallel))
-suppressPackageStartupMessages(require(doParallel))
 
 #### Create a table for evaluation metrics of multiple methods ####
 #### Inputs: 
@@ -102,6 +98,12 @@ opt = wsc_parse_args(option_list, mandatory = c("input_dir", "ref_file", "lab_cl
 # source function definitions 
 p = system("which cell_types_utils.R", intern = TRUE)
 source(p)
+
+# import the rest of dependencies 
+suppressPackageStartupMessages(require(hash)) # must be version 2.2.6.1
+suppressPackageStartupMessages(require(foreach))
+suppressPackageStartupMessages(require(parallel))
+suppressPackageStartupMessages(require(doParallel))
 
 # file names must start with the tool name 
 file_names = list.files(opt$input_dir, full.names=TRUE)

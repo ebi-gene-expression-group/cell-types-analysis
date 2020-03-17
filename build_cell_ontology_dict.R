@@ -7,9 +7,6 @@
 
 suppressPackageStartupMessages(require(optparse))
 suppressPackageStartupMessages(require(workflowscriptscommon))
-suppressPackageStartupMessages(require(hash))
-suppressPackageStartupMessages(library(reshape2))
-suppressPackageStartupMessages(library(data.table))
 
 option_list = list(
     make_option(
@@ -61,10 +58,12 @@ opt = wsc_parse_args(option_list, mandatory = c("input_dir", "output_dict_path")
 # source function definitions 
 p = system("which cell_types_utils.R", intern = TRUE)
 source(p)
-condensed = opt$condensed_sdrf
-
-
+# import the rest of dependencies 
+suppressPackageStartupMessages(require(hash))
+suppressPackageStartupMessages(library(reshape2))
+suppressPackageStartupMessages(library(data.table))
 # parse input SDRF files
+condensed = opt$condensed_sdrf
 file_names = list.files(opt$input_dir, full.names=TRUE)
 if(condensed){
     sdrf_tables = lapply(file_names, function(file) data.frame(fread(file, header=FALSE, stringsAsFactors = FALSE, fill = TRUE)))
