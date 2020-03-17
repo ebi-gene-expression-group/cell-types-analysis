@@ -138,7 +138,7 @@ names(output_table) = c("cell_id", "reference_cell_type", tools)
 agreement_rate = apply(output_table, 1, get_agreement_rate)
 
 # find semantic similarity among labels
-siml_object = new('Similarity')
+siml_object = new('Similarity') 
 ontology = opt$ontology_graph
 ontology(siml_object) = ontology
 metric = opt$semantic_sim_metric
