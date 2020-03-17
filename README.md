@@ -51,10 +51,10 @@ See output file snippet below:
 
 This is followed by a second filtering step where predictions across different tools are analysed for consistency and semantic similarity (`get_consensus_output.R`). Output file snippet:
 
-|cell_id | label_1 | label_2 | label_3 | weighted.score_1 | weighted.score_2 | | weighted.score_3 |  agreement_rate | unlab_rate | mean_sem_sim | dataset_1 | dataset_2 | dataset_3|
+| cell_id | label_1 | label_2 | label_3 | weighted.score_1 | weighted.score_2 |weighted.score_3 |  agreement_rate | unlab_rate | mean_sem_sim | dataset_1 | dataset_2 | dataset_3|
 --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- 
 | ERR2632411 | memory B cell | NA | NA | NA | NA | NA | 1 | 0 |0.297727360113896 | E-MTAB-6386; OTHER-DATASET | NA | NA|
-|ERR2632412 | memory B cell |  NA | NA | NA | NA | NA | 1 | 0 |0.297727360113896 | E-MTAB-6386; OTHER-DATASET | NA | NA|  
+| ERR2632412 | memory B cell |  NA | NA | NA | NA | NA | 1 | 0 |0.297727360113896 | E-MTAB-6386; OTHER-DATASET | NA | NA|  
 
 Example output tables can be found [here](https://github.com/ebi-gene-expression-group/cell-types-analysis/tree/master/example_output).
 
