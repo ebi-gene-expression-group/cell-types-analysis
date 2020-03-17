@@ -67,8 +67,8 @@ option_list = list(
 )
 
 opt = wsc_parse_args(option_list, mandatory = c("input_ref_file", "output_path", "lab_cl_mapping", "ontology_graph"))
-p = system("which cell_types_utils.R", intern = TRUE)
-source(p)
+script_dir = dirname(strsplit(commandArgs()[grep('--file=', commandArgs())], '=')[[1]][2])
+source(file.path(script_dir, 'cell_types_utils.R'))
 # import the rest of dependencies 
 suppressPackageStartupMessages(require(hash))
 suppressPackageStartupMessages(require(foreach))

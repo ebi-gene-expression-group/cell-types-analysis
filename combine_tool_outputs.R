@@ -44,8 +44,8 @@ option_list = list(
 # parse arguments 
 opt = wsc_parse_args(option_list, mandatory = c("input_dir", "output_table"))
 # source function definitions 
-p = system("which cell_types_utils.R", intern = TRUE)
-source(p)
+script_dir = dirname(strsplit(commandArgs()[grep('--file=', commandArgs())], '=')[[1]][2])
+source(file.path(script_dir, 'cell_types_utils.R'))
 
 # parse input tables
 file_names = list.files(opt$input_dir, full.names=TRUE)

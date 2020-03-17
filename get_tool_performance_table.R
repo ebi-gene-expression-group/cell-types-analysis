@@ -96,8 +96,8 @@ suppressPackageStartupMessages(require(workflowscriptscommon))
 # parse arguments 
 opt = wsc_parse_args(option_list, mandatory = c("input_dir", "ref_file", "lab_cl_mapping", "output_path"))
 # source function definitions 
-p = system("which cell_types_utils.R", intern = TRUE)
-source(p)
+script_dir = dirname(strsplit(commandArgs()[grep('--file=', commandArgs())], '=')[[1]][2])
+source(file.path(script_dir, 'cell_types_utils.R'))
 
 # import the rest of dependencies 
 suppressPackageStartupMessages(require(hash)) # must be version 2.2.6.1

@@ -77,8 +77,8 @@ opt = wsc_parse_args(option_list, mandatory = c("input_dir", "cl_dictionary",
 lab_cl_mapping = readRDS(opt$cl_dictionary)
 ontology = opt$ontology_graph
 sim_metric = opt$semantic_sim_metric
-p = system("which cell_types_utils.R", intern = TRUE)
-source(p)
+script_dir = dirname(strsplit(commandArgs()[grep('--file=', commandArgs())], '=')[[1]][2])
+source(file.path(script_dir, 'cell_types_utils.R'))
 # import the rest of dependencies
 suppressPackageStartupMessages(require(hash))
 suppressPackageStartupMessages(require(tools))

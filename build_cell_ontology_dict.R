@@ -7,6 +7,7 @@
 
 suppressPackageStartupMessages(require(optparse))
 suppressPackageStartupMessages(require(workflowscriptscommon))
+suppressPackageStartupMessages(require(tools))
 
 option_list = list(
     make_option(
@@ -56,8 +57,9 @@ option_list = list(
 # parse arguments 
 opt = wsc_parse_args(option_list, mandatory = c("input_dir", "output_dict_path"))
 # source function definitions 
-p = system("which cell_types_utils.R", intern = TRUE)
-source(p)
+script_dir = dirname(strsplit(commandArgs()[grep('--file=', commandArgs())], '=')[[1]][2])
+source(file.path(script_dir, 'cell_types_utils.R'))
+
 # import the rest of dependencies 
 suppressPackageStartupMessages(require(hash))
 suppressPackageStartupMessages(library(reshape2))
@@ -71,7 +73,8 @@ if(condensed){
     sdrf_tables = lapply(file_names, function(file) read.csv(file, sep="\t", stringsAsFactors = FALSE))
 }
 
-
+# extract cell labels and CL terms from SDRF files (condensed or non-condensed)
+# then map each label to corresponding CL term in a hash table 
 .map_cell_labels = function(df, hash_table, condensed){
     if(condensed){
         # select rows which have cell type 
@@ -100,4 +103,9 @@ cell_type_id_mapping = hash()
 for(df in sdrf_tables){
     .map_cell_labels(df, cell_type_id_mapping, condensed)
 }
-saveRDS(cell_type_id_mapping, opt$output_dict_path)
+out_path = opt$output_dict_path
+saveRDS(cell_type_id_mapping, out_path)
+# save a human-readable version of the dictionary 
+label_cl_table = data.frame(cell_labels=keys(cell_type_id_mapping), CL_terms=values(cell_type_id_mapping))
+out_path = sub("rds", "tsv", out_path)
+write.table(label_cl_table, file=out_path, sep="\t", row.names=FALSE)
