@@ -31,11 +31,11 @@ For a subset of statistics, empirical distribution function can be estimated and
 A common output format across tools is assumed - a tab-separated table with 3 columns: cell id (or barcode), predicted labels, and corresponding prediction scores (e.g. p-values or distance metrics). In cases when scores cannot be retrieved, this column can be omitted. Outputs from multiple tools must be stored in a single directory, with file names prefixed by tool name, e.g. `toolX_output.tsv`. A reference table is required, with the following compulsory columns: cell ids, reference labels, and corresponding cell ontology terms. See the example snippet below: 
 
 
-|"cell_id" | "predicted_label" | "score"|
+|cell_id | predicted_label | score|
 --- | --- | --- 
-|"ERR2632411" | "memory B cell" | 0.8|
-|"ERR2632412" | "memory B cell" | 0.8|
-|"ERR2632413" | "memory B cell" | 0.8|
+|ERR2632411 | memory B cell | 0.8|
+|ERR2632412 | memory B cell | 0.8|
+|ERR2632413 | memory B cell | 0.8|
 
 
 ### Production scenario (novel data)
@@ -43,13 +43,18 @@ In production scenario, we are interested in getting as accurate predictions for
 
 See output file snippet below: 
 
-|"cell_id" | "label_1" | "label_2" | "dataset_1" | "dataset_2" | "score_1" | "score_2"
+| cell_id | label_1 | label_2 | dataset_1 | dataset_2 | score_1 | score_2
 --- | --- | --- | --- | --- | --- | ---
-|"ERR2632411" | "memory B cell" | "memory B cell" | "E-MTAB-6386" |   "OTHER-DATASET" | 0.8 | 0.9|
-|"ERR2632412" | "memory B cell" | "memory B cell" | "E-MTAB-6386" |   "OTHER-DATASET" | 0.8 | 0.9|
+| ERR2632411 | memory B cell | memory B cell | E-MTAB-6386 |   OTHER-DATASET | 0.8 | 0.9|
+| ERR2632412 | memory B cell | memory B cell | E-MTAB-6386 |   OTHER-DATASET | 0.8 | 0.9|
 
 
-This is followed by a second filtering step where predictions across different tools are analysed for consistency and semantic similarity (`get_consensus_output.R`). Output file snippet: 
+This is followed by a second filtering step where predictions across different tools are analysed for consistency and semantic similarity (`get_consensus_output.R`). Output file snippet:
+
+|cell_id | label_1 | label_2 | label_3 | weighted.score_1 | weighted.score_2 | | weighted.score_3 |  agreement_rate | unlab_rate | mean_sem_sim | dataset_1 | dataset_2 | dataset_3|
+--- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- 
+| ERR2632411 | memory B cell | NA | NA | NA | NA | NA | 1 | 0 |0.297727360113896 | E-MTAB-6386; OTHER-DATASET | NA | NA|
+|ERR2632412 | memory B cell |  NA | NA | NA | NA | NA | 1 | 0 |0.297727360113896 | E-MTAB-6386; OTHER-DATASET | NA | NA|  
 
 Example output tables can be found [here](https://github.com/ebi-gene-expression-group/cell-types-analysis/tree/master/example_output).
 
