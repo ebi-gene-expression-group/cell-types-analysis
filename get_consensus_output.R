@@ -188,7 +188,7 @@ top_labs_tbl = data.frame(cbind(cell_id=cell_ids,
                                 top_labs,
                                 agreement_rate=agreement_rate,
                                 unlab_rate=unlab_rate,
-                                mean_sem_sim=sem_sim, 
+                                mean_log_sem_sim=sem_sim, 
                                 ds_tbl))
 
 write.table(top_labs_tbl, file=opt$summary_table_output_path, sep="\t", row.names=FALSE)

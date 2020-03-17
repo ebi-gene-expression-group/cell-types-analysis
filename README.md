@@ -1,5 +1,5 @@
 # cell-types-analysis [![Anaconda-Server Badge](https://anaconda.org/ebi-gene-expression-group/atlas-fastq-provider/badges/installer/conda.svg)](https://anaconda.org/ebi-gene-expression-group/cell-types-analysis)
-A suite of scripts for analysis of scRNA-seq cell type classification tool outputs. These can be used both for evaluating the existing methods by running pipelines on labelled data and for analysing predicted labels for novel data sets.  
+A suite of scripts for analysis of scRNA-seq cell type classification tool outputs. These scripts can be used both for evaluating the existing methods by running pipelines on labelled data and for analysing predicted labels for novel data sets.  
 
 ## Installation 
 The package is installed via EBI Gene Expression Group conda channel:
@@ -23,14 +23,33 @@ For each tool, a list of statistics is generated. The following metrics are used
 * average semantic similarity between predicted and reference labels
 * combined score: combination of the above metrics expressed as a single number. This score is then used as a 'weight' for labels predicted by corresponding tool in production scenario. 
 
-For a subset of statistics, empirical distribution function can be estimated and then used to determine the p-values of computed scores.  
-
-A common output format across tools is assumed - a tab-separated table with 3 columns: cell id (or barcode), predicted labels, and corresponding prediction scores (e.g. p-values or distance metrics). In cases when scores cannot be retrieved, this column can be omitted. Outputs from multiple tools must be stored in a single directory, with file names prefixed by tool name, e.g. `toolX_output.tsv`. A reference table is required, with the following compulsory columns: cell ids, reference labels, and corresponding cell ontology terms.
-
 As a result, a table with a set of metrics per each tool is produced. 
+Run `get_tool_performance_table.R` to generate this table. 
+
+For a subset of statistics, empirical distribution function can be estimated and then used to determine the p-values of computed scores. To create empirical distribution and assign p-values to the scores, run `get_empirical_dist.R` and `get_tool_pvals.R`, respectively.    
+
+A common output format across tools is assumed - a tab-separated table with 3 columns: cell id (or barcode), predicted labels, and corresponding prediction scores (e.g. p-values or distance metrics). In cases when scores cannot be retrieved, this column can be omitted. Outputs from multiple tools must be stored in a single directory, with file names prefixed by tool name, e.g. `toolX_output.tsv`. A reference table is required, with the following compulsory columns: cell ids, reference labels, and corresponding cell ontology terms. See the example snippet below: 
+
+```
+"cell_id" | "predicted_label" | "score"
+--- | --- | --- 
+"ERR2632411" | "memory B cell" | 0.8
+"ERR2632412" | "memory B cell" | 0.8
+"ERR2632413" | "memory B cell" | 0.8
+```
 
 ### Production scenario (novel data)
-In production scenario, we are interested in getting as accurate predictions for novel data as possible. To do so, we run a host of pre-trained classifiers against an incoming data set. Then, we aggregate predictions on a single tool basis and select top ones based on corresponding scores. This is followed by a second filtering step where predictions across different tools are analysed for consistency and semantic similarity. 
+In production scenario, we are interested in getting as accurate predictions for novel data as possible. To do so, we run a host of pre-trained classifiers against an incoming data set. Then, we aggregate predictions on a single tool basis and select top ones based on corresponding scores (`combine_tool_outputs.R`).
+
+See output file snippet below: 
+```
+"cell_id" | "label_1" | "label_2" | "dataset_1" | "dataset_2" | "score_1" | "score_2"
+--- | --- | --- | --- | --- | --- | ---
+"ERR2632411" | "memory B cell" | "memory B cell" | "E-MTAB-6386" |   "OTHER-DATASET" | 0.8 | 0.9
+"ERR2632412" | "memory B cell" | "memory B cell" | "E-MTAB-6386" |   "OTHER-DATASET" | 0.8 | 0.9
+```
+
+This is followed by a second filtering step where predictions across different tools are analysed for consistency and semantic similarity (`get_consensus_output.R`). Output file snippet: 
 
 Example output tables can be found [here](https://github.com/ebi-gene-expression-group/cell-types-analysis/tree/master/example_output).
 
