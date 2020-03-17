@@ -1,5 +1,15 @@
-# cell-types-analysis
+# cell-types-analysis [![Anaconda-Server Badge](https://anaconda.org/ebi-gene-expression-group/atlas-fastq-provider/badges/installer/conda.svg)](https://anaconda.org/ebi-gene-expression-group/cell-types-analysis)
 A suite of scripts for analysis of scRNA-seq cell type classification tool outputs. These can be used both for evaluating the existing methods by running pipelines on labelled data and for analysing predicted labels for novel data sets.  
+
+## Installation 
+The package is installed via EBI Gene Expression Group conda channel:
+
+```conda install -c ebi-gene-expression-group cell-types-analysis``` 
+
+Use `run_post_install_tests.sh` script to make sure installation was successful. 
+
+Run `<script_name>.R --help` to see help for corresponding script.  
+
 
 ## Usage
 
@@ -23,15 +33,6 @@ As a result, a table with a set of metrics per each tool is produced.
 In production scenario, we are interested in getting as accurate predictions for novel data as possible. To do so, we run a host of pre-trained classifiers against an incoming data set. Then, we aggregate predictions on a single tool basis and select top ones based on corresponding scores. This is followed by a second filtering step where predictions across different tools are analysed for consistency and semantic similarity. 
 
 Example output tables can be found [here](https://github.com/ebi-gene-expression-group/cell-types-analysis/tree/master/example_output).
-
-### Installation 
-The package is installed via EBI Gene Expression Group conda channel:
-
-```conda install -c ebi-gene-expression-group cell-types-analysis``` 
-
-Use `run_post_install_tests.sh` script to make sure installation was successful. 
-
-Run `<script_name>.R --help` to see help for corresponding script.  
 
 ## Commands 
 **build_cell_ontology_dict.R**: create a mapping between labels and ontology terms
