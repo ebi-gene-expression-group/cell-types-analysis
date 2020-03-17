@@ -56,7 +56,7 @@ This is followed by a second filtering step where predictions across different t
 | ERR2632411 | memory B cell | NA | NA | NA | NA | NA | 1 | 0 |0.297727360113896 | E-MTAB-6386; OTHER-DATASET | NA | NA|
 | ERR2632412 | memory B cell |  NA | NA | NA | NA | NA | 1 | 0 |0.297727360113896 | E-MTAB-6386; OTHER-DATASET | NA | NA|  
 
-NA values are introduced when there are fewer then 3 unique labels - this is caused by either high agreement across tools or poor labelling rate. See the `unlab_rate` field for more information. 
+`NA` values are introduced when there are fewer then 3 unique labels - this is caused by either high agreement across tools or poor labelling rate. See the `unlab_rate` field for more information. 
 
 Example output tables can be found [here](https://github.com/ebi-gene-expression-group/cell-types-analysis/tree/master/example_output).
 
@@ -71,6 +71,8 @@ build_cell_ontology_dict.R\
           --cell-ontology-col-name <Name of the cell ontology terms column in SDRF files (must be identical across all files)>\
           --output-dict-path <Output path for serialised object containing the dictionary>
 ```
+
+Note: SDRF files are a common standard for reporting single-cell experiment metadata. See [this link](http://fged.org/projects/mage-tab/) for official documentation. Condensed SDRF is essentially the same table in 'long' format - [this](https://github.com/ebi-gene-expression-group/experiment_metadata#condense_sdrfpl) script can be used to condense SDRF file and annotate labels to cell ontology terms via Zooma if necessary. 
 
 **get_tool_performance_table.R**: create a table of metrics for the analysed tools
 ```
