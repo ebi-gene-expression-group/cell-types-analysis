@@ -91,7 +91,7 @@ combine_tool_outputs.R\
           --scores <Boolean: Are prediction scores available for the given method? Default: FALSE>\
           --output-table <Path to the output table in text format>
 ```
-Note: files in the input directory are assumed to be of the following structire: A_B_final-labs.tsv, where A is dataset or origin and B is classifier used to obtain predictions.
+Note: files in the input directory are assumed to be of the following structire: `A_B_final-labs.tsv`, where A is dataset or origin and B is classifier used to obtain predictions.
 
 **get_consensus_output.R**: Get most likely labels across all tools
 ```
@@ -105,4 +105,4 @@ get_consensus_output.R\
           --summary-table-output-path <Path to the output table with top labels and per-cell metrics in .tsv format>
           --raw-table-output-path <Path to the output table with all labels in .tsv format>
 ```
-Note: the following naming is expected for input tables, e.g. tool-X_combined.tsv
+Note: the following naming is expected for input tables, e.g. `tool-X_combined.tsv`
