@@ -16,6 +16,13 @@ option_list = list(
         help = 'Path to file with reference cell types'
     ),
     make_option(
+        c("-e", "--exclusions"),
+        action = "store",
+        default = NA,
+        type = 'character',
+        help = "Path to the yaml file with excluded terms. Must contain fields 'unlabelled' and 'trivial_terms'"
+    ),
+    make_option(
         c("-l", "--label-column-ref"),
         action = "store",
         default = 'cell_type',
