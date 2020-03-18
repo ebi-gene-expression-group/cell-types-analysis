@@ -22,7 +22,7 @@ before_install:
       conda config --add channels bioconda;
       conda config --add channels ebi-gene-expression-group;
 
-      conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION r-base r-cairo cell-types-analysis r-yaml openjdk=8.0.192 r-rjava=0.9_11 r-reshape2=1.4.3 r-data.table;
+      conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION r-base r-cairo cell-types-analysis r-yaml openjdk=8.0.192 r-rjava=0.9_11 bioconductor-onassisjavalibs=1.8.0 r-reshape2=1.4.3 r-data.table;
     fi
 
 install:
