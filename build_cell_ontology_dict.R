@@ -79,11 +79,11 @@ if(condensed){
     if(condensed){
         # select rows which have cell type 
         df = df[df[, 5] == "cell type", ]
-        cell_labs = df[, 6]
-        cl_terms = df[, 7]
+        cell_labs = tolower(df[, 6])
+        cl_terms = tolower(df[, 7])
     } else {
-        cell_labs = df[, opt$cell_label_col_name]
-        cl_terms = df[, opt$cell_ontology_col_name]
+        cell_labs = tolower(df[, opt$cell_label_col_name])
+        cl_terms = tolower(df[, opt$cell_ontology_col_name])
     }
     
     for(idx in seq_along(cell_labs)){

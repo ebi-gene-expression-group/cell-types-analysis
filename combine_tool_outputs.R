@@ -5,7 +5,6 @@
 # downstream analysis. 
 
 suppressPackageStartupMessages(require(optparse))
-suppressPackageStartupMessages(require(tools))
 suppressPackageStartupMessages(require(workflowscriptscommon))
 
 option_list = list(
@@ -24,6 +23,13 @@ option_list = list(
         default = 3,
         type = 'numeric',
         help = 'Number of top labels to keep'
+    ),
+    make_option(
+        c("-e", "--exclusions"),
+        action = "store",
+        default = NA,
+        type = 'character',
+        help = "Path to the yaml file with excluded terms. Must contain fields 'unlabelled' and 'trivial_terms'"
     ),
     make_option(
         c("-s", "--scores"),
@@ -46,6 +52,9 @@ opt = wsc_parse_args(option_list, mandatory = c("input_dir", "output_table"))
 # source function definitions 
 script_dir = dirname(strsplit(commandArgs()[grep('--file=', commandArgs())], '=')[[1]][2])
 source(file.path(script_dir, 'cell_types_utils.R'))
+# import the rest of dependencies 
+suppressPackageStartupMessages(require(tools))
+suppressPackageStartupMessages(require(yaml))
 
 # parse input tables
 file_names = list.files(opt$input_dir, full.names=TRUE)
@@ -57,7 +66,13 @@ datasets = sapply(file_names, function(name) unlist(strsplit(name, "_"))[1])
 # check cell ids are identical across tables
 cell_ids = get_unq_cell_ids(predicted_labs_tables)
 # extract labels as lists of vectors and transform them into 2d arrays 
-labels = lapply(predicted_labs_tables, function(tbl) tbl[, "predicted_label"])
+labels = lapply(predicted_labs_tables, function(tbl) tolower(tbl[, "predicted_label"]))
+
+# read in exclusions config file if provided
+if(!is.na(opt$exclusions)){
+    e = yaml.load_file(opt$exclusions)
+    unlabelled = tolower(e$unlabelled)
+}
 
 # coerce unlabelled cells to NAs
 .filter_labs = function(lab_vec){

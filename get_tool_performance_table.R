@@ -33,6 +33,13 @@ suppressPackageStartupMessages(require(workflowscriptscommon))
         type = 'double',
         help = 'Number of cores to run the process on. Default: all available cores'
     ),
+     make_option(
+        c("-e", "--exclusions"),
+        action = "store",
+        default = NA,
+        type = 'character',
+        help = "Path to the yaml file with excluded terms. Must contain fields 'unlabelled' and 'trivial_terms'"
+    ),
     make_option(
         c("-f", "--ontology-graph"),
         action = "store",
@@ -104,6 +111,7 @@ suppressPackageStartupMessages(require(hash)) # must be version 2.2.6.1
 suppressPackageStartupMessages(require(foreach))
 suppressPackageStartupMessages(require(parallel))
 suppressPackageStartupMessages(require(doParallel))
+suppressPackageStartupMessages(require(yaml))
 
 # file names must start with the tool name 
 file_names = list.files(opt$input_dir, full.names=TRUE)
@@ -123,6 +131,13 @@ ontology = opt$ontology_graph
 lab_cl_mapping = readRDS(opt$lab_cl_mapping)
 sim_metric = opt$semantic_sim_metric 
 
+# read in exclusions file, if provided
+if(! is.na(opt$exclusions)){
+    e = yaml.load_file(opt$exclusions)
+    unlabelled = tolower(e$unlabelled)
+    trivial_terms = tolower(e$trivial_terms)
+}
+
 # find proportion of unknowns in reference cell types
 prop_unlab_reference = get_unlab_rate(reference_labs_df[, ref_labs_col], unlabelled)
 
@@ -138,8 +153,8 @@ prop_unlab_reference = get_unlab_rate(reference_labs_df[, ref_labs_col], unlabel
         stop(paste("Error: cell id mismatch for tool: ", tool))        
     }
     # extract label vectors
-    predicted_labs = as.character(predicted_labs_df[, pred_labs_col])
-    reference_labs = as.character(reference_labs_df[, ref_labs_col])
+    predicted_labs = tolower(as.character(predicted_labs_df[, pred_labs_col]))
+    reference_labs = tolower(as.character(reference_labs_df[, ref_labs_col]))
     # run evaluation function for a tool
     row = obtain_metrics_list(tool=tool, 
                               reference_labs=reference_labs,

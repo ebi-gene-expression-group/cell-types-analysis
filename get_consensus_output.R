@@ -36,6 +36,13 @@ option_list = list(
         type = 'character',
         help = 'Path to the mapping between labels and CL terms in .rds format'
     ),
+     make_option(
+        c("-e", "--exclusions"),
+        action = "store",
+        default = NA,
+        type = 'character',
+        help = "Path to the yaml file with excluded terms. Must contain fields 'unlabelled' and 'trivial_terms'"
+    ),
     make_option(
         c("-f", "--ontology-graph"),
         action = "store",
@@ -85,6 +92,7 @@ suppressPackageStartupMessages(require(tools))
 suppressPackageStartupMessages(require(foreach))
 suppressPackageStartupMessages(require(parallel))
 suppressPackageStartupMessages(require(doParallel))
+suppressPackageStartupMessages(require(yaml))
 
 # retrieve tool scores if specified
 if(!is.na(opt$tool_table)){
@@ -101,6 +109,12 @@ file_names = list.files(opt$input_dir, full.names=TRUE)
 predicted_labs_tables = lapply(file_names, function(f) read.csv(f, sep="\t", 
                                                        stringsAsFactors=FALSE))
 cell_ids = get_unq_cell_ids(predicted_labs_tables)
+
+# read in exclusions file, if provided
+if(! is.na(opt$exclusions)){
+    e = yaml.load_file(opt$exclusions)
+    unlabelled = tolower(e$unlabelled)
+}
 
 # process label columns to know which tool generated which label
 # and what datasets a label maps to
@@ -137,19 +151,14 @@ top_labs = apply(labels, 1, function(row) get_top_labels(row, tool_scores=tool_s
 top_labs = data.frame(t(top_labs))
 
 # semantic similarity across predicted labels 
-print(labels)
 .get_sem_sim = function(iter){
     label_vec = as.character(labels[iter, ])
-    print(length(label_vec))
     sem_sim = matrix(nrow=length(label_vec), ncol=length(label_vec))
-    print(sem_sim)
-    #l = length(label_vec) - 1
     for(i in 1:length(label_vec)){
         print(paste("i", i))
         label_i = label_vec[i]
         for(j in i:length(label_vec)){
             label_j = label_vec[j]
-            print(paste("POSITION", i, j))
             sem_sim[i,j] = get_CL_similarity(label_i, label_j, 
                                         lab_cl_mapping=lab_cl_mapping,
                                         ontology=ontology,
@@ -157,7 +166,6 @@ print(labels)
                                         unlabelled=unlabelled)
         }
     }
-    print(sem_sim)
     return(mean(log10(sem_sim+1), na.rm=TRUE))
 }
 

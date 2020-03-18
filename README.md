@@ -26,6 +26,8 @@ For each tool, a list of statistics is generated. The following metrics are used
 As a result, a table with a set of metrics per each tool is produced. 
 Run `get_tool_performance_table.R` to generate this table. 
 
+Note: code calculating accuracy and median F1-score was adapted from the following [study](https://github.com/tabdelaal/scRNAseq_Benchmark).
+
 For a subset of statistics, empirical distribution function can be estimated and then used to determine the p-values of computed scores. To create empirical distribution and assign p-values to the scores, run `get_empirical_dist.R` and `get_tool_pvals.R`, respectively.    
 
 A common output format across tools is assumed - a tab-separated table with 3 columns: cell id (or barcode), predicted labels, and corresponding prediction scores (e.g. p-values or distance metrics). In cases when scores cannot be retrieved, this column can be omitted. Outputs from multiple tools must be stored in a single directory, with file names prefixed by tool name, e.g. `toolX_output.tsv`. A reference table is required, with the following compulsory columns: cell ids, reference labels, and corresponding cell ontology terms. See the example snippet below: 
@@ -79,6 +81,7 @@ Note: SDRF files are a common standard for reporting single-cell experiment meta
 get_tool_performance_table.R\
           --input-dir <path to directory with standardised tab-separated output files from analysed methods>\
           --ref-file <path to tab-delimited file with reference cell type labels>\
+          --exclustions <path to yaml file with unlabelled cells or excluded terms>\ 
           --num-cores <number of cores to run the process on>\
           --ontology-graph <path to the Cell Ontology graph object>\
           --lab-cl-mapping <path to label - CL terms dictionary in .rds format>\
@@ -117,6 +120,7 @@ get_tool_pvals.R\
 combine_tool_outputs.R\
           --input-dir <Path to the directory with standardised output .tsv files from multiple classifiers>\
           --top-labels-num <Number of top labels to keep>\
+          --exclustions <path to yaml file with unlabelled cells or excluded terms>\ 
           --scores <Boolean: Are prediction scores available for the given method? Default: FALSE>\
           --output-table <Path to the output table in text format>
 ```
@@ -129,6 +133,7 @@ get_consensus_output.R\
           --tool-table <Path to the tool evaluation table in text format>\
           --num-cores <Number of cores to run the process>\
           --cl-dictionary <Path to the mapping between labels and CL terms in .rds format>\
+          --exclustions <path to yaml file with unlabelled cells or excluded terms>\ 
           --ontology-graph <Path to the ontology graph in .obo or .xml format>\
           --semantic-sim-metric <Semantic similarity scoring method>\
           --summary-table-output-path <Path to the output table with top labels and per-cell metrics in .tsv format>
