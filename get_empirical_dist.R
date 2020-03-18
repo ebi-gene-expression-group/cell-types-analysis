@@ -74,6 +74,14 @@ suppressPackageStartupMessages(require(hash))
 suppressPackageStartupMessages(require(foreach))
 suppressPackageStartupMessages(require(parallel))
 suppressPackageStartupMessages(require(doParallel))
+suppressPackageStartupMessages(require(yaml))
+
+# read in exclusions file, if provided
+if(! is.na(opt$exclusions)){
+    e = yaml.load_file(opt$exclusions)
+    unlabelled = tolower(e$unlabelled)
+    trivial_terms = tolower(e$trivial_terms)
+}
 
 reference_labs_df = read.csv(opt$input_ref_file, sep="\t", stringsAsFactors=FALSE)
 reference_labs = reference_labs_df[, opt$label_column_ref]
