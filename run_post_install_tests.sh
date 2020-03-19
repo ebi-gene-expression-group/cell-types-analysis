@@ -42,27 +42,34 @@ mkdir -p $output_dir
 ################################################################################
 # List tool outputs/inputs & parameters 
 ################################################################################
-export input_dir=$data_dir/'results_dir/'
-export ref_labels_file=$data_dir/'metadata_filtered.tsv'
+export eval_input_dir=$data_dir/'results_dir/'
+export res_to_combine=$data_dir/'prod_outputs_scpred/'
+export ref_labels_file=$data_dir/'reference_sdrf.tsv'
+export SDRF_dir=$data_dir/'SDRFs'
 export ontology_graph=$data_dir/'cl-basic.obo'
+export combined_tools_results=$data_dir/'prod_combined_tools'
 export barcode_col_pred='cell_id'
 export barcode_col_ref='Assay'
 export label_column_ref='Sample.Characteristic.cell.type.'
 export label_column_pred='predicted_label'
-export cell_ontology_col='Factor.Value.Ontology.Term.cell.type.'
 
+export label_cl_dict=$output_dir/'label_cl_dict.rds'
 export tool_perf_table=$output_dir/'tool_perf_table.tsv'
-export cell_anno_table=$output_dir/'cell_anno_table.tsv'
 export empirical_dist=$output_dir/'empirical_dist_list.rds'
 export tool_table_pvals=$output_dir/'tool_pvals.tsv'
+export combined_results=$output_dir/'combined_results.tsv'
+
+export raw_labels_table_path=$output_dir/'raw_labels_table.tsv'
+export summary_table_path=$output_dir/'summary_output_table.tsv'
 
 export num_iter=5
 export num_cores=4
+export top_labels_num=2
 export use_existing_outputs
 
 # retrieve test data 
-wget "https://www.ebi.ac.uk/~a_solovyev/cell_types_analysis_data.tar.gz" -P $test_working_dir
-tar -xzvf $test_working_dir/'cell_types_analysis_data.tar.gz' -C $test_working_dir
+wget "ftp://ftp.ebi.ac.uk/pub/databases/arrayexpress/data/atlas/cell-types-project-test-data/cell_types_analysis_test_data.tar.gz" -P $test_working_dir
+tar -xzvf $test_working_dir/'cell_types_analysis_test_data.tar.gz' -C $test_working_dir
 
 # Derive the tests file name from the script name
 tests_file="${script_name%.*}".bats

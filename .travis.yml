@@ -22,7 +22,7 @@ before_install:
       conda config --add channels bioconda;
       conda config --add channels ebi-gene-expression-group;
 
-      conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION r-base r-cairo cell-types-analysis;
+      conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION r-base r-cairo r-yaml r-hash=2.2.6.1 r-foreach r-doparallel r-matrixstats bioconductor-onassis openjdk=8.0.152 r-reshape2=1.4.3 r-data.table=1.12.8 r-optparse r-workflowscriptscommon bats r-yaml;
     fi
 
 install:
@@ -33,13 +33,3 @@ before_script:
     - export PATH=`pwd`:$PATH
 
 script: run_post_install_tests.sh
-
-cache:
-  directories:
-      - $HOME/miniconda
-      - post_install_tests
-
-before_cache:
-    - if ! [[ $TRAVIS_TAG ]]; then rm -rf $HOME/miniconda/conda-bld; fi
-    - rm -rf post_install_tests/outputs
-    - rm -rf $HOME/miniconda/locks $HOME/miniconda/pkgs $HOME/miniconda/var $HOME/miniconda/conda-meta/history

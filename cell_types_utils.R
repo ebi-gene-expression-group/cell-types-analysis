@@ -1,4 +1,13 @@
 #!/usr/bin/env Rscript
+
+# Define global variables 
+# list of unlabelled cell types
+# NB: keep these relevant to the tools' output
+unlabelled = c("unassigned", "unknown", 'rand','node','ambiguous', NA)
+
+# add common words here to improve specificity of word-matching method 
+trivial_terms = c("cell", "of", "tissue", "entity", "type") 
+
 ### find number of unassigned cells ###
 get_unlab_rate = function(labels, unlabelled){
     labels = as.character(labels)
@@ -25,14 +34,11 @@ get_shared_terms_prop = function(reference_labs, pred_labs, trivial_terms){
     # split predicted and provided annotations into words 
     split_ref = sapply(reference_labs, function(x) strsplit(as.character(x), " "))
     split_prediction = sapply(pred_labs, function(x) strsplit(as.character(x), " "))
-
     # find corresponding terms between word vectors 
     intersection = sapply(1:length(split_ref), 
                         function(x) intersect(split_ref[[x]], split_prediction[[x]]))
-
     # remove trivial terms from intersection 
     intersection = sapply(intersection, function(x) x[!x %in% trivial_terms])
-
     # find average proportion of matching words 
     intersect_ratio = mean(sapply(1:length(intersection), 
                         function(x) length(intersection[[x]])/length(split_prediction[[x]])))
@@ -42,7 +48,7 @@ get_shared_terms_prop = function(reference_labs, pred_labs, trivial_terms){
 
 ### find per-class/median F-1 scores and accuracy ###
 # adapted from https://github.com/tabdelaal/scRNAseq_Benchmark/blob/master/evaluate.R
-get_f1 = function(reference_labs, predicted_labs, unlabelled) {
+get_f1 = function(reference_labs, predicted_labs, unlabelled=unlabelled) {
     unique_ref = unique(reference_labs)
     unique_pred = unique(predicted_labs)
     conf = table(reference_labs, predicted_labs)
@@ -80,8 +86,9 @@ get_f1 = function(reference_labs, predicted_labs, unlabelled) {
   return(out)
 }
 
-get_CL_similarity = function(reference_labs, ref_CL_terms, predicted_labs, ontology, sim_metric, unlabelled) {
-    suppressPackageStartupMessages(require(Onassis)) #NB: keep package call within function, otherwise parallelism is broken
+# calculate similarity between a pair of labels 
+get_CL_similarity = function(label_1, label_2, lab_cl_mapping, ontology, sim_metric, unlabelled) {
+    suppressPackageStartupMessages(require(Onassis)) #NB: keep package import within function, otherwise parallelism is broken
     # initialise and configure Similarity object 
     siml_object = new('Similarity')
     ontology(siml_object) = ontology
@@ -91,27 +98,26 @@ get_CL_similarity = function(reference_labs, ref_CL_terms, predicted_labs, ontol
     }
     idx = which(listSimilarities()$pairwiseMeasures == sim_metric)
     pairwiseConfig(siml_object) = listSimilarities()$pairwiseMeasures[idx]
-    # map cell types to CL terms 
-    cell_type_id_mapping = hash()
-    i = which(!(reference_labs %in% unlabelled | ref_CL_terms==''))
-    .set(cell_type_id_mapping, keys=reference_labs[i], values=ref_CL_terms[i])
-    # get CL terms for predicted labels
-    pred_cl = sapply(predicted_labs, function(x) cell_type_id_mapping[[x]])
+    # map labels to CL terms; return 0 if unlabelled 
+    if(label_1 %in% unlabelled | label_2 %in% unlabelled){
+        return(0)
+    }
+    # check if labels in dict keys; return NA otherwise 
+    if(! label_1 %in% keys(lab_cl_mapping) && label_2 %in% keys(lab_cl_mapping)){
+        return(NA)
+    }
+    term_1 = lab_cl_mapping[[as.character(label_1)]]
+    term_2 = lab_cl_mapping[[as.character(label_2)]]
 
     # semantic similarity 
-    .find_siml = function(idx){
-        tryCatch({
-            siml = pairsim(siml_object, as.character(pred_cl[idx]), ref_CL_terms[idx])
-            return(siml)},
-        error = function(cond){
-            print(cond)
-            print("returning NA")
-            return(NA)})
-    }
-
-    similarity = sapply(1:length(ref_CL_terms), .find_siml)
-    mean_siml = round(mean(similarity, na.rm = TRUE), 3)
-    return(mean_siml)
+    tryCatch({
+        psim = pairsim(siml_object, term_1, term_2)
+        return(psim)
+        },
+    error = function(cond){
+        print(cond)
+        print("returning 0")
+        return(0)})
 }
 
 # get a combined score across all metrics 
@@ -122,7 +128,7 @@ get_tool_combined_score = function(unlab_delta,
                                    accuracy, 
                                    siml) { 
     
-    score = (1 - unlab_delta) + exact_match_prop + mean_shared_terms + median_F1 + siml
+    score = (1 - unlab_delta) + exact_match_prop + mean_shared_terms + median_F1 + log10(siml+1)
     return(round(score, 3))
 
 }
@@ -134,9 +140,9 @@ obtain_metrics_list = function(tool,
                                reference_labs,
                                predicted_labs,
                                prop_unlab_reference,
+                               lab_cl_mapping,
                                unlabelled,
                                trivial_terms,
-                               ref_CL_terms,
                                ontology,
                                sim_metric){
 
@@ -153,7 +159,17 @@ obtain_metrics_list = function(tool,
     median_F1 = metrics$MedF1
     accuracy = metrics$Acc
     # cell ontology similarity
-    siml = get_CL_similarity(reference_labs, ref_CL_terms, predicted_labs, ontology, sim_metric, unlabelled)
+    sim_vec = c()
+    for(idx in seq_along(reference_labs)){
+        lab_1 = reference_labs[idx]
+        lab_2 = predicted_labs[idx]
+        sim_vec[idx] = get_CL_similarity(lab_1, lab_2, 
+                                         lab_cl_mapping=lab_cl_mapping, 
+                                         ontology=ontology, 
+                                         sim_metric=sim_metric, 
+                                         unlabelled=unlabelled)
+    }
+    siml = mean(sim_vec, na.rm=TRUE)
     score = get_tool_combined_score(unlab_delta, exact_match_prop, mean_shared_terms, 
                                    median_F1, accuracy, siml)
 
@@ -174,47 +190,113 @@ obtain_metrics_list = function(tool,
 ################################################################################
 # methods for per-cell statistics
 ################################################################################
-get_agreement_rate = function(label_list){
-    # assume 1st column is cell id, 2nd col is label, and exclude them
-    label_list = label_list[-c(1,2)]
-    agreement = 1 / length(unique(label_list))
-    return(round(agreement, 3))
+
+# extract list of unique cell ids
+get_unq_cell_ids = function(tables_list){
+    cell_ids = lapply(tables_list, function(tbl) tbl[ , "cell_id"])
+    if(!length(unique(cell_ids)) == 1){
+        stop("Inconsistent cell IDs provided")
+    }
+    cell_ids = unlist(unique(cell_ids))
+    return(cell_ids)
 }
 
-# mean pairwise similarity among predicted labels 
-get_cell_CL_siml = function(siml_object, label_list, labs_dict) {
-    label_list = label_list[-c(1,2)]
-    siml = c()
-    for(i in 1:length(label_list)){
-        term_i = labs_dict[[label_list[i]]]
-        for(j in 1:length(label_list)){
-            term_j = labs_dict[[label_list[j]]]
-            tryCatch({
-                siml = c(siml, pairsim(siml_object, as.character(term_i), as.character(term_j)))
-            },
-            error = function(cond){
-                print(cond)
-                siml = c(siml, NA)
-            })
+# get agreement across predicted labels 
+get_agreement_rate = function(label_list){
+    label_list = label_list[which(!is.na(label_list))]
+    n_unq = length(unique(label_list))
+    if(n_unq == 0){
+        return(NA)
+    }
+    agreement = 1 / n_unq
+    return(round(agreement, 2))
+}
+
+# find the most frequent labels across top candidates from each tool; if specified, get weighted scores 
+get_top_labels = function(label_list, tool_scores=NULL){
+    unq_labs = unique(label_list)
+    # determine frequency of each unique label 
+    .get_freq = function(lab, n_labs){
+        freq = as.numeric(table(labels)[lab] / n_labs)
+        return(round(freq, 3))
+    }
+    freqs = sapply(unq_labs, function(lab) .get_freq(lab, n_labs=length(label_list)))
+    # if tool scores provided, find weighted scores
+    if(!is.null(tool_scores)){
+        # extract tool name for each label and find corresponding score
+        # NB: label vector must contrain corresponding tool in its name, e.g. tool-X_1
+        source_tools = sapply(names(label_list), function(lab) unlist(strsplit(lab, "_"))[1])
+        label_scores = sapply(source_tools, function(tool) tool_scores[tool])
+        # find sum of scores corresponding to each label 
+        score_sums = sapply(unq_labs, function(lab) sum(label_scores[which(label_list==lab)]))
+        # account for label frequencies and sort
+        sorted = sort(score_sums * freqs, decreasing=TRUE, index.return=TRUE, na.last=TRUE)
+        score_names = paste("weighted-score", c(1:3), sep="_")
+        } else{
+            # otherwise, simply return top labels by frequency
+            sorted = sort(freqs, decreasing=TRUE, index.return=TRUE, na.last=TRUE)
+            score_names = paste("frequency", c(1:3), sep="_")
+        }
+
+        sorted_scores = sorted$x
+        sorted_scores = sapply(sorted_scores, function(s) round(s,2))
+        sorted_labs = unq_labs[sorted$ix]
+        # select top 3 labels; add NAs if there are fewer than 3
+        while(length(sorted_scores) < 3){
+            sorted_labs = append(sorted_labs, NA)
+            sorted_scores = append(sorted_scores, NA)
+        }
+        sorted_labs = sorted_labs[1:3]
+        names(sorted_labs) = paste("label", c(1:3), sep="_")
+        sorted_scores = sorted_scores[1:3]
+        names(sorted_scores) = score_names
+        return(append(sorted_labs, sorted_scores))
+}
+
+
+# create a mapping between predicted labels and datasets of origin 
+# it might be that one label comes from more than one dataset
+# in this case, combine datasets names into single vector
+# takes as input vectors of labels and corresponding datasets + dictionary to fill in
+# returns updated dictionary   
+build_label_dataset_mapping = function(labels, datasets, lab_ds_map){
+    for(idx in seq_along(labels)){
+        lab = labels[idx]
+        ds = datasets[idx]
+        if(is.na(lab)){
+            next
+        }
+        if(lab %in% keys(lab_ds_map)){
+            if(!ds %in% lab_ds_map[[lab]]){
+                lab_ds_map[lab] = append(lab_ds_map[[lab]], ds)
+            } else {
+                next
+            }
+        } else {
+            lab_ds_map[lab] = ds
         }
     }
-    mean_siml = mean(siml, na.rm = TRUE)
-    return(round(mean_siml, 4))
+    return(lab_ds_map)
 }
 
-# calculate aggregated score for predicted labels 
-get_weighted_score = function(labels_list, tool_scores){
-    if(!all(names(labels_list) %in% names(tool_scores))){
-        stop("Name mismatch between predicted labels and tools")
+# extract datasets of origin by building a string of accession codes
+# take as input a vector of labels 
+# return a vector of corresponding dataset(s)
+extract_datasets = function(label_vec, lab_ds_map){
+    label_vec = label_vec[1:3]
+    s = c()
+    for(idx in seq_along(label_vec)){
+        l = label_vec[idx]
+        if(l %in% keys(lab_ds_map)){
+            ds_vec = lab_ds_map[[l]]
+            } else{
+            ds_vec = NA
+            }
+        if(length(ds_vec) > 1){
+            s[idx] = paste(ds_vec, collapse="; ")
+        } else{
+            s[idx] = ds_vec
+        }
     }
-    .get_sums = function(lab){
-        t = names(labels_list[labels_list == lab])
-        s = sum(tool_scores[t])
-        return(s)
-    }
-
-    sums = sapply(labels_list, function(label) .get_sums(label)) 
-    labels_list = sapply(1:length(labels_list), function(idx) paste(labels_list[idx], sums[idx], sep=": "))
-    return(labels_list)
+    return(s)
 }
-
