@@ -25,6 +25,7 @@
     run rm -f $tool_perf_table && get_tool_performance_table.R\
                                     --input-dir $eval_input_dir\
                                     --barcode-col-ref $barcode_col_ref\
+                                    --parallel $parallel\
                                     --num-cores $num_cores\
                                     --barcode-col-pred $barcode_col_pred\
                                     --label-column-ref $label_column_ref\
@@ -49,6 +50,7 @@
     run rm -f $empirical_dist && get_empirical_dist.R\
                                     --input-ref-file $ref_labels_file\
                                     --label-column-ref $label_column_ref\
+                                    --parallel $parallel\
                                     --num-iterations $num_iter\
                                     --lab-cl-mapping $label_cl_dict\
                                     --num-cores $num_cores\
@@ -107,6 +109,7 @@
                      --input-dir $combined_tools_results\
                      --tool-table $tool_perf_table\
                      --cl-dictionary $label_cl_dict\
+                     --parallel $parallel\
                      --ontology-graph $ontology_graph\
                      --num-cores $num_cores\
                      --summary-table-output-path $summary_table_path\
