@@ -22,12 +22,19 @@ option_list = list(
         type = 'character',
         help = 'Path to the tool evaluation table in text format'
     ),
+    make_option(
+        c("-p", "--parallel"),
+        action = "store_true",
+        default = FALSE,
+        type = 'logical',
+        help = 'Boolean: Should computation be run in parallel? Default: FALSE'
+    ),
      make_option(
         c("-c", "--num-cores"),
         action = "store",
         default = NA,
         type = 'integer',
-        help = 'Number of cores to run the process on. Default: all available cores'
+        help = 'Number of cores to run the process on. Default: all available cores. --parallel must be set to "true" for this to take effect'
     ),
     make_option(
         c("-d", "--cl-dictionary"),
@@ -166,7 +173,7 @@ top_labs = data.frame(t(top_labs))
                                         unlabelled=unlabelled)
         }
     }
-    return(mean(log10(sem_sim+1), na.rm=TRUE))
+    return(mean(sem_sim, na.rm=TRUE))
 }
 
 # agreement among predicted labels
@@ -175,18 +182,24 @@ agreement_rate = apply(labels, 1, get_agreement_rate)
 # with high agreement and poorply labelled cells)
 unlab_rate = apply(labels, 1, function(lab_vec) get_unlab_rate(lab_vec, unlabelled))
 
-
-if(is.na(opt$num_cores)){
-    n_cores = detectCores()
-} else {
-    n_cores = opt$num_cores
-}
 n_cells = nrow(labels)
-registerDoParallel(n_cores)
-# average semantic similarity across labels
-avg_siml = foreach (iter=1:n_cells) %dopar% {
-    .get_sem_sim(iter)
+# run computations in parallel, if specified 
+if(opt$parallel){
+    if(is.na(opt$num_cores)){
+        n_cores = detectCores()
+    } else {
+        n_cores = opt$num_cores
+    }
+    registerDoParallel(n_cores)
+    # average semantic similarity across labels
+    avg_siml = foreach (iter=1:n_cells) %dopar% {
+        .get_sem_sim(iter)
+    }
+} else{
+    # sequential execution
+    avg_siml = lapply(1:n_cells, function(idx) .get_sem_sim(idx))
 }
+
 sem_sim = do.call(rbind, avg_siml)
 
 # extract dataset(s) of origin for top labels
@@ -197,7 +210,7 @@ top_labs_tbl = data.frame(cbind(cell_id=cell_ids,
                                 top_labs,
                                 agreement_rate=agreement_rate,
                                 unlab_rate=unlab_rate,
-                                mean_log_sem_sim=sem_sim, 
+                                mean_sem_sim=sem_sim, 
                                 ds_tbl))
 
 write.table(top_labs_tbl, file=opt$summary_table_output_path, sep="\t", row.names=FALSE)

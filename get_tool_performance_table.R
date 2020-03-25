@@ -4,11 +4,6 @@ suppressPackageStartupMessages(require(optparse))
 suppressPackageStartupMessages(require(workflowscriptscommon))
 
 #### Create a table for evaluation metrics of multiple methods ####
-#### Inputs: 
-####    1) Text file with reference cell types
-####    2) Directory path containing a list of output files from multiple methods.
-####       A standard format is assumed: first column - cell_id; second column: pred_label
-####
 
  option_list = list(
     make_option(
@@ -27,11 +22,18 @@ suppressPackageStartupMessages(require(workflowscriptscommon))
         help = 'Path to the file with reference, "true" cell type assignments'
     ),
      make_option(
+        c("-n", "--parallel"),
+        action = "store_true",
+        default = FALSE,
+        type = 'logical',
+        help = 'Boolean: Should computation be run in parallel? Default: FALSE'
+    ),
+     make_option(
         c("-c", "--num-cores"),
         action = "store",
         default = NA,
         type = 'double',
-        help = 'Number of cores to run the process on. Default: all available cores'
+        help = 'Number of cores to run the process on. Default: all available cores. --parallel must be set to "true" for this to take effect'
     ),
      make_option(
         c("-e", "--exclusions"),
@@ -168,17 +170,24 @@ prop_unlab_reference = get_unlab_rate(reference_labs_df[, ref_labs_col], unlabel
     return(do.call(cbind, row))
 }
 
-# set number of cores for computation
-if(is.na(opt$num_cores)){
-    n_cores = detectCores()
-} else {
-    n_cores = opt$num_cores
-}
 n_tools = length(predicted_labs_tables)
-registerDoParallel(n_cores)
-metrics_lst = foreach (iter=1:n_tools) %dopar% {
-    .get_metrics(iter)
+# run parallel computation, if specified 
+if(opt$parallel){
+    # set number of cores for computation
+    if(is.na(opt$num_cores)){
+        n_cores = detectCores()
+    } else {
+        n_cores = opt$num_cores
+    }
+    registerDoParallel(n_cores)
+    metrics_lst = foreach (iter=1:n_tools) %dopar% {
+        .get_metrics(iter)
+    }
+} else{
+    # run computations sequentially 
+    metrics_lst = lapply(1:n_tools, function(idx) .get_metrics(idx))
 }
+
 output_table = data.frame(do.call(rbind, metrics_lst))
 output_table = output_table[order(output_table$Combined_score), ]
 write.table(output_table, file = opt$output_path, sep ="\t", row.names=FALSE)

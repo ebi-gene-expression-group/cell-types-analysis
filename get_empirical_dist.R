@@ -37,6 +37,13 @@ option_list = list(
         help = 'Path to serialised object containing cell label to CL terms mapping'
     ),
     make_option(
+        c("-p", "--parallel"),
+        action = "store_true",
+        default = FALSE,
+        type = 'logical',
+        help = 'Boolean: Should computation be run in parallel? Default: FALSE'
+    ),
+    make_option(
         c("-n", "--num-iterations"),
         action = "store",
         default = 5,
@@ -48,7 +55,7 @@ option_list = list(
         action = "store",
         default = NA,
         type = 'integer',
-        help = 'Number of cores to run the process on. Default: all available cores'
+        help = 'Number of cores to run the process on. Default: all available cores. --parallel must be set to "true" for this to take effect'
     ),
     make_option(
         c("-g", "--ontology-graph"),
@@ -127,15 +134,21 @@ sim_metric = opt$semantic_sim_metric
     return(metric_list)
 }
 
-# run simulations 
-if(is.na(opt$num_cores)){
-    n_cores = detectCores()
+# run simulations in parallel, if specified
+if(opt$parallel){
+    # run simulations 
+    if(is.na(opt$num_cores)){
+        n_cores = detectCores()
+    } else {
+        n_cores = opt$num_cores
+    }
+    registerDoParallel(n_cores)
+    emp_samples = foreach (iter=1:num_iter) %dopar% {
+      .run_simulations(iter)
+    }
 } else {
-    n_cores = opt$num_cores
-}
-registerDoParallel(n_cores)
-emp_samples = foreach (iter=1:num_iter) %dopar% {
-  .run_simulations(iter)
+    # run simulations sequentially
+    emp_samples = lapply(1:num_iter, function(idx) .run_simulations(idx))
 }
 
 emp_samples = do.call(rbind, emp_samples)
