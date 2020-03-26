@@ -162,10 +162,9 @@ top_labs = data.frame(t(top_labs))
     label_vec = as.character(labels[iter, ])
     sem_sim = matrix(nrow=length(label_vec), ncol=length(label_vec))
     for(i in 1:length(label_vec)){
-        print(paste("i", i))
-        label_i = label_vec[i]
+        label_i = tolower(label_vec[i])
         for(j in i:length(label_vec)){
-            label_j = label_vec[j]
+            label_j = tolower(label_vec[j])
             sem_sim[i,j] = get_CL_similarity(label_i, label_j, 
                                         lab_cl_mapping=lab_cl_mapping,
                                         ontology=ontology,
