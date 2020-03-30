@@ -43,7 +43,7 @@ option_list = list(
         action = "store",
         default = NA,
         type = 'character',
-        help = 'Path to the output table in text format. The following naming is expected: tool-X_combined.tsv'
+        help = 'Path to the output table in text format'
     )
 )
 
@@ -61,16 +61,20 @@ file_names = list.files(opt$input_dir, full.names=TRUE)
 predicted_labs_tables = lapply(file_names, function(file) read.csv(file, sep="\t",
                                                                    stringsAsFactors=FALSE,
                                                                    comment.char = "#"))
-# extract datasets of origin
-tools = sapply(file_names, function(f) extract_metadata(f)[['tool']])
+
+# extract metadata from tables 
+metadata = lapply(file_names, function(f) extract_metadata(f))
+
+# extract tools of origin
+tools = sapply(metadata, function(l) l[['tool']])
 # check that all tables are produced by the same tool
 if(! length(unique(tools)) == 1){
     stop("Inconsistent tools provided")
 }
-tool = tools[1]
+source_tool = tools[1]
 # add metadata to output file 
-writeLines(paste("# tool", tool, sep=" "), opt$output_table)
-datasets = sapply(file_names, function(f) extract_metadata(f)[['dataset']])
+writeLines(paste("# tool", source_tool, sep=" "), opt$output_table)
+datasets = sapply(metadata, function(l) l[['dataset']])
 
 # check cell ids are identical across tables
 cell_ids = get_unq_cell_ids(predicted_labs_tables)
