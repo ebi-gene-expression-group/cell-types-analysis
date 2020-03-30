@@ -8,7 +8,8 @@
     run rm -f $label_cl_dict && build_cell_ontology_dict.R\
                         --input-dir $SDRF_dir\
                         --condensed-sdrf\
-                        --output-dict-path $label_cl_dict
+                        --output-dict-path $label_cl_dict\
+                        --output-text-path $label_cl_txt
 
     echo "status = ${status}"
     echo "output = ${output}"

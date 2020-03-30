@@ -117,7 +117,9 @@ suppressPackageStartupMessages(require(yaml))
 
 # file names must start with the tool name 
 file_names = list.files(opt$input_dir, full.names=TRUE)
-predicted_labs_tables = lapply(file_names, function(file) read.csv(file, sep="\t", stringsAsFactors=FALSE))
+predicted_labs_tables = lapply(file_names, function(file) read.csv(file, sep="\t", stringsAsFactors=FALSE, comment.char = "#"))
+# extract corresponding tools 
+tools = sapply(file_names, function(file) extract_metadata(file)[['tool']])
 pred_labs_col = opt$label_column_pred
 barcode_ref = opt$barcode_col_ref
 barcode_pred = opt$barcode_col_pred
@@ -146,7 +148,8 @@ prop_unlab_reference = get_unlab_rate(reference_labs_df[, ref_labs_col], unlabel
 # iterate through tools' outputs and calculate relevant statistics per tool
 .get_metrics = function(idx){
     predicted_labs_df = predicted_labs_tables[[idx]]
-    tool = unlist(strsplit(basename(file_names[idx]), "_"))[1]
+    #tool = unlist(strsplit(basename(file_names[idx]), "_"))[1]
+    tool = tools[idx]
     print(paste("Evaluating tool:", tool, sep = " "))
 
     # check reference cell IDs match predicted cell IDs
