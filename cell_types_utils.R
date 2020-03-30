@@ -217,7 +217,6 @@ get_top_labels = function(label_list, tool_scores=NULL){
     # determine frequency of each unique label 
     .get_freq = function(lab, n_labs){
         freq = as.numeric(table(label_list)[lab] / n_labs)
-        #print(paste("freq", freq))
         return(round(freq, 3))
     }
     freqs = sapply(unq_labs, function(lab) .get_freq(lab, n_labs=length(label_list)))
