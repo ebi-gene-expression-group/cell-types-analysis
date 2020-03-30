@@ -108,10 +108,9 @@ get_CL_similarity = function(label_1, label_2, lab_cl_mapping, ontology, sim_met
     }
     term_1 = lab_cl_mapping[[as.character(label_1)]]
     term_2 = lab_cl_mapping[[as.character(label_2)]]
-
     # semantic similarity 
     tryCatch({
-        psim = pairsim(siml_object, term_1, term_2)
+        psim = round(pairsim(siml_object, term_1, term_2), 3)
         return(psim)
         },
     error = function(cond){
@@ -217,18 +216,19 @@ get_top_labels = function(label_list, tool_scores=NULL){
     unq_labs = unique(label_list)
     # determine frequency of each unique label 
     .get_freq = function(lab, n_labs){
-        freq = as.numeric(table(labels)[lab] / n_labs)
+        freq = as.numeric(table(label_list)[lab] / n_labs)
         return(round(freq, 3))
     }
     freqs = sapply(unq_labs, function(lab) .get_freq(lab, n_labs=length(label_list)))
+
     # if tool scores provided, find weighted scores
     if(!is.null(tool_scores)){
         # extract tool name for each label and find corresponding score
         # NB: label vector must contrain corresponding tool in its name, e.g. tool-X_1
-        source_tools = sapply(names(label_list), function(lab) unlist(strsplit(lab, "_"))[1])
+        source_tools = sapply(names(label_list), function(name) unlist(strsplit(name, "_"))[1])
         label_scores = sapply(source_tools, function(tool) tool_scores[tool])
         # find sum of scores corresponding to each label 
-        score_sums = sapply(unq_labs, function(lab) sum(label_scores[which(label_list==lab)]))
+        score_sums = sapply(unq_labs, function(lab) sum(label_scores[which(label_list==lab)], na.rm=TRUE))
         # account for label frequencies and sort
         sorted = sort(score_sums * freqs, decreasing=TRUE, index.return=TRUE, na.last=TRUE)
         score_names = paste("weighted-score", c(1:3), sep="_")
@@ -299,4 +299,24 @@ extract_datasets = function(label_vec, lab_ds_map){
         }
     }
     return(s)
+}
+
+# extract metadata from file into a list 
+extract_metadata = function(file){
+    con = file(file, "r")
+    vals = list()
+    idx = 1
+    while(TRUE){
+        line = readLines(con, 1)
+        if(!startsWith(line, "#")){
+            return(vals)
+        }
+        data = unlist(strsplit(line, " "))
+        # 1st item is '#', 2nd is field name 
+        n = data[2]
+        # extract values 
+        vals[[idx]] = data[-c(1,2)]
+        names(vals)[idx] = tolower(n)
+        idx = idx + 1 
+    }
 }

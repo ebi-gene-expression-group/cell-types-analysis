@@ -39,6 +39,12 @@ A common output format across tools is assumed - a tab-separated table with 3 co
 |ERR2632412 | memory B cell | 0.8|
 |ERR2632413 | memory B cell | 0.8|
 
+* Metadata 
+In order to keep track of information about tool and training dataset which produced given table, add metadata fields to the top of the file in the following format:
+```
+# tool <tool> 
+# dataset <dataset> 
+``` 
 
 ### Production scenario (novel data)
 In production scenario, we are interested in getting as accurate predictions for novel data as possible. To do so, we run a host of pre-trained classifiers against an incoming data set. Then, we aggregate predictions on a single tool basis and select top ones based on corresponding scores (`combine_tool_outputs.R`).

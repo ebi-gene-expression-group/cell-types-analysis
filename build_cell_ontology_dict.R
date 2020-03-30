@@ -51,7 +51,14 @@ option_list = list(
         default = NA,
         type = 'character',
         help = 'Output path for serialised object containing the dictionary'
-    ) 
+    ),
+    make_option(
+        c("-t", "--output-text-path"),
+        action = "store",
+        default = NA,
+        type = 'character',
+        help = 'Output path for txt version of label - term mapping'
+    )
 )
 
 # parse arguments 
@@ -80,10 +87,10 @@ if(condensed){
         # select rows which have cell type 
         df = df[df[, 5] == "cell type", ]
         cell_labs = tolower(df[, 6])
-        cl_terms = tolower(df[, 7])
+        cl_terms = df[, 7]
     } else {
         cell_labs = tolower(df[, opt$cell_label_col_name])
-        cl_terms = tolower(df[, opt$cell_ontology_col_name])
+        cl_terms = df[, opt$cell_ontology_col_name]
     }
     
     for(idx in seq_along(cell_labs)){
@@ -107,5 +114,4 @@ out_path = opt$output_dict_path
 saveRDS(cell_type_id_mapping, out_path)
 # save a human-readable version of the dictionary 
 label_cl_table = data.frame(cell_labels=keys(cell_type_id_mapping), CL_terms=values(cell_type_id_mapping))
-out_path = sub("rds", "tsv", out_path)
-write.table(label_cl_table, file=out_path, sep="\t", row.names=FALSE)
+write.table(label_cl_table, file=opt$output_text_path, sep="\t", row.names=FALSE)

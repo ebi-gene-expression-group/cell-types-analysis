@@ -43,7 +43,7 @@ option_list = list(
         action = "store",
         default = NA,
         type = 'character',
-        help = 'Path to the output table in text format. The following naming is expected: tool-X_combined.tsv'
+        help = 'Path to the output table in text format'
     )
 )
 
@@ -58,10 +58,23 @@ suppressPackageStartupMessages(require(yaml))
 
 # parse input tables
 file_names = list.files(opt$input_dir, full.names=TRUE)
-predicted_labs_tables = lapply(file_names, function(file) read.csv(file, sep="\t", stringsAsFactors=FALSE))
-# extract datasets of origin
-file_names = sapply(file_names, function(p) file_path_sans_ext(basename(p)))
-datasets = sapply(file_names, function(name) unlist(strsplit(name, "_"))[1])
+predicted_labs_tables = lapply(file_names, function(file) read.csv(file, sep="\t",
+                                                                   stringsAsFactors=FALSE,
+                                                                   comment.char = "#"))
+
+# extract metadata from tables 
+metadata = lapply(file_names, function(f) extract_metadata(f))
+
+# extract tools of origin
+tools = sapply(metadata, function(l) l[['tool']])
+# check that all tables are produced by the same tool
+if(! length(unique(tools)) == 1){
+    stop("Inconsistent tools provided")
+}
+source_tool = tools[1]
+# add metadata to output file 
+writeLines(paste("# tool", source_tool, sep=" "), opt$output_table)
+datasets = sapply(metadata, function(l) l[['dataset']])
 
 # check cell ids are identical across tables
 cell_ids = get_unq_cell_ids(predicted_labs_tables)
@@ -83,6 +96,7 @@ if(!is.na(opt$exclusions)){
 labels = lapply(labels, .filter_labs)
 labels = do.call(cbind, labels)
 top_n = opt$top_labels_num
+
 if(opt$scores){ 
     # select top n predictions based on prediction scores
     scores = lapply(predicted_labs_tables, function(tbl) tbl[, "score"])
@@ -118,17 +132,16 @@ if(opt$scores){
     top_scores = data.frame(do.call(rbind, top_scores))
     names = paste("score", c(1:top_n), sep="_")
     colnames(top_scores) = names
-
     # combine output columns
     output_table = cbind(cell_id = cell_ids, top_labels, top_datasets, top_scores)
-    write.table(output_table, opt$output_table, sep="\t", row.names=FALSE)
+    write.table(output_table, opt$output_table, sep="\t", row.names=FALSE, append=TRUE)
 } else{
-    # scores are not available, therefore simply return all labels 
+    # scores are not available, thus simply return all labels 
     labels = data.frame(labels)
     colnames(labels) = paste("label", c(1:ncol(labels)), sep="_")
     datasets = lapply(1:nrow(labels), function(idx) return(datasets))
     datasets = data.frame(do.call(rbind, datasets))
     colnames(datasets) = paste("dataset", c(1:ncol(labels)), sep="_")
     output_table = cbind(cell_id=cell_ids, labels, datasets)
-    write.table(output_table, opt$output_table, sep="\t", row.names=FALSE)
+    write.table(output_table, opt$output_table, sep="\t", row.names=FALSE, append=TRUE)
 }
