@@ -97,7 +97,7 @@ if(! is.na(opt$exclusions)){
     trivial_terms = tolower(e$trivial_terms)
 }
 
-reference_labs_df = read.csv(opt$input_ref_file, sep="\t", stringsAsFactors=FALSE)
+reference_labs_df = read.csv(opt$input_ref_file, sep="\t", stringsAsFactors=FALSE, comment.char = "#")
 reference_labs = reference_labs_df[, opt$label_column_ref]
 num_iter = opt$num_iterations
 ontology = opt$ontology_graph

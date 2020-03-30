@@ -54,6 +54,7 @@ export label_column_ref='Sample.Characteristic.cell.type.'
 export label_column_pred='predicted_label'
 
 export label_cl_dict=$output_dir/'label_cl_dict.rds'
+export label_cl_txt=$output_dir/'label_cl_txt.tsv'
 export tool_perf_table=$output_dir/'tool_perf_table.tsv'
 export empirical_dist=$output_dir/'empirical_dist_list.rds'
 export tool_table_pvals=$output_dir/'tool_pvals.tsv'

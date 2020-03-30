@@ -114,7 +114,11 @@ if(!is.na(opt$tool_table)){
 # read in predicted labels; check barcode consistency 
 file_names = list.files(opt$input_dir, full.names=TRUE)
 predicted_labs_tables = lapply(file_names, function(f) read.csv(f, sep="\t", 
-                                                       stringsAsFactors=FALSE))
+                                                       stringsAsFactors=FALSE,
+                                                       comment.char = "#"))
+
+# extract tools that produced given predictions
+source_tools = sapply(file_names, function(f) extract_metadata(f)[['tool']])
 cell_ids = get_unq_cell_ids(predicted_labs_tables)
 
 # read in exclusions file, if provided
@@ -126,21 +130,22 @@ if(! is.na(opt$exclusions)){
 # process label columns to know which tool generated which label
 # and what datasets a label maps to
 lab_dataset_mapping = hash()
-all_ds = list()
-for(idx in seq_along(file_names)){
-    file_name = file_names[idx]
+comb_ds = list()
+for(idx in seq_along(predicted_labs_tables)){
     tbl = predicted_labs_tables[[idx]]
-    f = file_path_sans_ext(basename(file_name))
-    tool_name = unlist(strsplit(f, "_"))[1] # extract tool name
+    tool_name = source_tools[idx]
     # select columns with labels
     labels = tbl[ , which(startsWith(colnames(tbl), "label"))]
+    # shift to lowercase
+    labels = sapply(labels, tolower)
     colnames(labels) = paste(tool_name, c(1:ncol(labels)), sep="_") 
     predicted_labs_tables[[idx]] = labels
+    #print(labels)
 
     # extract datasets of origin 
     datasets = tbl[, which(startsWith(colnames(tbl), "dataset"))]
     colnames(datasets) = paste(tool_name, "dataset", c(1:ncol(datasets)), sep="_") 
-    all_ds[[idx]] = datasets
+    comb_ds[[idx]] = datasets
     # map labels to corresponding datasets 
     l = as.vector(t(labels))
     d = as.vector(t(datasets))
@@ -148,12 +153,13 @@ for(idx in seq_along(file_names)){
 }
 # combine predicted labels and corresponding datasets into single data frames
 labels = do.call(cbind, predicted_labs_tables)
-all_ds = do.call(cbind, all_ds)
+comb_ds = do.call(cbind, comb_ds)
 
 ###################################################################
 # Calculate metrics for combined labels and select top candidates
 ###################################################################
 # top labels based on frequency (accounted for tool scores, if provided)
+#print(tool_scores)
 top_labs = apply(labels, 1, function(row) get_top_labels(row, tool_scores=tool_scores))
 top_labs = data.frame(t(top_labs))
 
@@ -162,9 +168,9 @@ top_labs = data.frame(t(top_labs))
     label_vec = as.character(labels[iter, ])
     sem_sim = matrix(nrow=length(label_vec), ncol=length(label_vec))
     for(i in 1:length(label_vec)){
-        label_i = tolower(label_vec[i])
+        label_i = label_vec[i]
         for(j in i:length(label_vec)){
-            label_j = tolower(label_vec[j])
+            label_j = label_vec[j]
             sem_sim[i,j] = get_CL_similarity(label_i, label_j, 
                                         lab_cl_mapping=lab_cl_mapping,
                                         ontology=ontology,
@@ -214,8 +220,8 @@ top_labs_tbl = data.frame(cbind(cell_id=cell_ids,
 
 write.table(top_labs_tbl, file=opt$summary_table_output_path, sep="\t", row.names=FALSE)
 
-all_labels = data.frame(cbind(cell_id=cell_ids, labels, all_ds))
-write.table(all_labels, file=opt$raw_table_output_path, sep="\t", row.names=FALSE)
+comb_labels = data.frame(cbind(cell_id=cell_ids, labels, comb_ds))
+write.table(comb_labels, file=opt$raw_table_output_path, sep="\t", row.names=FALSE)
 
 #TODO: add p-values for semantic similarity? 
 #TODO: finding most specific common ancestor of given terms

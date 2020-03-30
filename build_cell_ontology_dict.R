@@ -51,7 +51,14 @@ option_list = list(
         default = NA,
         type = 'character',
         help = 'Output path for serialised object containing the dictionary'
-    ) 
+    ),
+    make_option(
+        c("-t", "--output-text-path"),
+        action = "store",
+        default = NA,
+        type = 'character',
+        help = 'Output path for txt version of label - term mapping'
+    )
 )
 
 # parse arguments 
@@ -107,5 +114,4 @@ out_path = opt$output_dict_path
 saveRDS(cell_type_id_mapping, out_path)
 # save a human-readable version of the dictionary 
 label_cl_table = data.frame(cell_labels=keys(cell_type_id_mapping), CL_terms=values(cell_type_id_mapping))
-out_path = sub("rds", "tsv", out_path)
-write.table(label_cl_table, file=out_path, sep="\t", row.names=FALSE)
+write.table(label_cl_table, file=opt$output_text_path, sep="\t", row.names=FALSE)
