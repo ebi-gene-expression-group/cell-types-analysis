@@ -192,6 +192,5 @@ if(opt$parallel){
 }
 
 output_table = data.frame(do.call(rbind, metrics_lst))
-print(output_table)
 output_table = output_table[order(output_table$Combined_score), ]
 write.table(output_table, file = opt$output_path, sep ="\t", row.names=FALSE)
