@@ -119,7 +119,7 @@ suppressPackageStartupMessages(require(yaml))
 file_names = list.files(opt$input_dir, full.names=TRUE)
 predicted_labs_tables = lapply(file_names, function(file) read.csv(file, sep="\t", stringsAsFactors=FALSE, comment.char = "#"))
 # extract corresponding tools 
-tools = sapply(file_names, function(file) extract_metadata(file)[['tool']])
+tools = as.character(sapply(file_names, function(file) extract_metadata(file)[['tool']]))
 pred_labs_col = opt$label_column_pred
 barcode_ref = opt$barcode_col_ref
 barcode_pred = opt$barcode_col_pred

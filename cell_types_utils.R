@@ -108,9 +108,10 @@ get_CL_similarity = function(label_1, label_2, lab_cl_mapping, ontology, sim_met
     }
     term_1 = lab_cl_mapping[[as.character(label_1)]]
     term_2 = lab_cl_mapping[[as.character(label_2)]]
+
     # semantic similarity 
     tryCatch({
-        psim = round(pairsim(siml_object, term_1, term_2), 3)
+        psim = pairsim(siml_object, term_1, term_2)
         return(psim)
         },
     error = function(cond){
@@ -168,7 +169,7 @@ obtain_metrics_list = function(tool,
                                          sim_metric=sim_metric, 
                                          unlabelled=unlabelled)
     }
-    siml = mean(sim_vec, na.rm=TRUE)
+    siml = round(mean(sim_vec, na.rm=TRUE), 3)
     score = get_tool_combined_score(unlab_delta, exact_match_prop, mean_shared_terms, 
                                    median_F1, accuracy, siml)
 
@@ -256,7 +257,7 @@ get_top_labels = function(label_list, tool_scores=NULL){
 
 # create a mapping between predicted labels and datasets of origin 
 # it might be that one label comes from more than one dataset
-# in this case, combine datasets names into single vector
+# in this case, combine datasets names into vector.
 # takes as input vectors of labels and corresponding datasets + dictionary to fill in
 # returns updated dictionary   
 build_label_dataset_mapping = function(labels, datasets, lab_ds_map){
