@@ -118,7 +118,7 @@ predicted_labs_tables = lapply(file_names, function(f) read.csv(f, sep="\t",
                                                        comment.char = "#"))
 
 # extract tools that produced given predictions
-source_tools = sapply(file_names, function(f) extract_metadata(f)[['tool']])
+source_tools = as.character(sapply(file_names, function(f) extract_metadata(f)[['tool']]))
 cell_ids = get_unq_cell_ids(predicted_labs_tables)
 
 # read in exclusions file, if provided

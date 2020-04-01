@@ -66,7 +66,7 @@ predicted_labs_tables = lapply(file_names, function(file) read.csv(file, sep="\t
 metadata = lapply(file_names, function(f) extract_metadata(f))
 
 # extract tools of origin
-tools = sapply(metadata, function(l) l[['tool']])
+tools = as.character(sapply(metadata, function(l) l[['tool']]))
 # check that all tables are produced by the same tool
 if(! length(unique(tools)) == 1){
     stop("Inconsistent tools provided")
@@ -74,7 +74,7 @@ if(! length(unique(tools)) == 1){
 source_tool = tools[1]
 # add metadata to output file 
 writeLines(paste("# tool", source_tool, sep=" "), opt$output_table)
-datasets = sapply(metadata, function(l) l[['dataset']])
+datasets = as.character(sapply(metadata, function(l) l[['dataset']]))
 
 # check cell ids are identical across tables
 cell_ids = get_unq_cell_ids(predicted_labs_tables)
