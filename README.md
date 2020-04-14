@@ -145,4 +145,4 @@ get_consensus_output.R\
           --summary-table-output-path <Path to the output table with top labels and per-cell metrics in .tsv format>
           --raw-table-output-path <Path to the output table with all labels in .tsv format>
 ```
-Note: the following naming is expected for input tables, e.g. `tool-X_combined.tsv`
+
