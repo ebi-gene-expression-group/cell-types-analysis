@@ -4,7 +4,7 @@ A suite of scripts for analysis of scRNA-seq cell type classification tool outpu
 ## Installation 
 The package is installed via EBI Gene Expression Group conda channel:
 
-```conda install -c ebi-gene-expression-group cell-types-analysis``` 
+```conda install -c bioconda cell-types-analysis``` 
 
 Use `run_post_install_tests.sh` script to make sure installation was successful. 
 
