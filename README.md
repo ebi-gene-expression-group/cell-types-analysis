@@ -4,7 +4,7 @@ A suite of scripts for analysis of scRNA-seq cell type classification tool outpu
 ## Installation 
 The package is installed via EBI Gene Expression Group conda channel:
 
-```conda install -c ebi-gene-expression-group cell-types-analysis``` 
+```conda install -c bioconda cell-types-analysis``` 
 
 Use `run_post_install_tests.sh` script to make sure installation was successful. 
 
@@ -39,7 +39,8 @@ A common output format across tools is assumed - a tab-separated table with 3 co
 |ERR2632412 | memory B cell | 0.8|
 |ERR2632413 | memory B cell | 0.8|
 
-* Metadata 
+**Metadata**
+
 In order to keep track of information about tool and training dataset which produced given table, add metadata fields to the top of the file in the following format:
 ```
 # tool <tool> 
@@ -145,4 +146,4 @@ get_consensus_output.R\
           --summary-table-output-path <Path to the output table with top labels and per-cell metrics in .tsv format>
           --raw-table-output-path <Path to the output table with all labels in .tsv format>
 ```
-Note: the following naming is expected for input tables, e.g. `tool-X_combined.tsv`
+
