@@ -8,7 +8,6 @@
     run rm -f $label_cl_dict && build_cell_ontology_dict.R\
                         --input-dir $SDRF_dir\
                         --condensed-sdrf\
-                        --inferred-cell-type\
                         --output-dict-path $label_cl_dict\
                         --output-text-path $label_cl_txt
 
