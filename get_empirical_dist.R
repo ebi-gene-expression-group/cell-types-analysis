@@ -51,7 +51,7 @@ option_list = list(
         help = 'Number of sampling iterations to construct empirical distribution'
     ),
     make_option(
-        c("-e", "--sample-prop"),
+        c("-r", "--prop"),
         action = "store",
         default = 0.1,
         type = 'numeric',
@@ -106,7 +106,7 @@ if(! is.na(opt$exclusions)){
 
 reference_labs_df = read.csv(opt$input_ref_file, sep="\t", stringsAsFactors=FALSE, comment.char = "#")
 reference_labs = reference_labs_df[, opt$label_column_ref]
-sample_pr = opt$sample_prop
+sample_pr = opt$prop
 sample_size = round(length(reference_labs)*sample_pr, 0)
 num_iter = opt$num_iterations
 ontology = opt$ontology_graph
