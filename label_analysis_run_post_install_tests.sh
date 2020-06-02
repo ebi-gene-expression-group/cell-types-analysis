@@ -64,6 +64,7 @@ export raw_labels_table_path=$output_dir/'raw_labels_table.tsv'
 export summary_table_path=$output_dir/'summary_output_table.tsv'
 
 export num_iter=5
+export sample_prop=0.1
 export parallel='TRUE'
 export num_cores=4
 export top_labels_num=2
