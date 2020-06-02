@@ -106,8 +106,8 @@ if(! is.na(opt$exclusions)){
 
 reference_labs_df = read.csv(opt$input_ref_file, sep="\t", stringsAsFactors=FALSE, comment.char = "#")
 reference_labs = reference_labs_df[, opt$label_column_ref]
-sample_prop = opt$sample_prop
-sample_size = round(length(reference_labs)*sample_prop, 0)
+sample_pr = opt$sample_prop
+sample_size = round(length(reference_labs)*sample_pr, 0)
 num_iter = opt$num_iterations
 ontology = opt$ontology_graph
 lab_cl_mapping = readRDS(opt$lab_cl_mapping)

@@ -53,7 +53,6 @@
                                     --label-column-ref $label_column_ref\
                                     --parallel $parallel\
                                     --num-iterations $num_iter\
-				    --sample-prop $sample_prop\
                                     --lab-cl-mapping $label_cl_dict\
                                     --num-cores $num_cores\
                                     --ontology-graph $ontology_graph\
