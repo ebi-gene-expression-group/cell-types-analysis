@@ -140,7 +140,6 @@ for(idx in seq_along(predicted_labs_tables)){
     labels = sapply(labels, tolower)
     colnames(labels) = paste(tool_name, c(1:ncol(labels)), sep="_") 
     predicted_labs_tables[[idx]] = labels
-    #print(labels)
 
     # extract datasets of origin 
     datasets = tbl[, which(startsWith(colnames(tbl), "dataset"))]
@@ -159,7 +158,6 @@ comb_ds = do.call(cbind, comb_ds)
 # Calculate metrics for combined labels and select top candidates
 ###################################################################
 # top labels based on frequency (accounted for tool scores, if provided)
-#print(tool_scores)
 top_labs = apply(labels, 1, function(row) get_top_labels(row, tool_scores=tool_scores))
 top_labs = data.frame(t(top_labs))
 
@@ -183,6 +181,7 @@ top_labs = data.frame(t(top_labs))
 
 # agreement among predicted labels
 agreement_rate = apply(labels, 1, get_agreement_rate)
+
 # get proportion of unlabedlled cells (important to distinguish between cells
 # with high agreement and poorply labelled cells)
 unlab_rate = apply(labels, 1, function(lab_vec) get_unlab_rate(lab_vec, unlabelled))
@@ -200,17 +199,18 @@ if(opt$parallel){
     avg_siml = foreach (iter=1:n_cells) %dopar% {
         .get_sem_sim(iter)
     }
+    sem_sim = do.call(rbind, avg_siml)
 } else{
     # sequential execution
     avg_siml = lapply(1:n_cells, function(idx) .get_sem_sim(idx))
+    sem_sim = do.call(cbind, avg_siml)
 }
-
-sem_sim = do.call(rbind, avg_siml)
 
 # extract dataset(s) of origin for top labels
 ds_tbl = apply(top_labs, 1, function(row) extract_datasets(row, lab_dataset_mapping))
 ds_tbl = data.frame(t(ds_tbl))
 colnames(ds_tbl) = paste("dataset", c(1:3), sep="_")
+
 top_labs_tbl = data.frame(cbind(cell_id=cell_ids, 
                                 top_labs,
                                 agreement_rate=agreement_rate,

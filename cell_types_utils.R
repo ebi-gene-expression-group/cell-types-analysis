@@ -3,7 +3,7 @@
 # Define global variables 
 # list of unlabelled cell types
 # NB: keep these relevant to the tools' output
-unlabelled = c("unassigned", "unknown", 'rand','node','ambiguous', NA)
+unlabelled = c("unassigned", "unknown", 'rand','node','ambiguous', NA, "not available")
 
 # add common words here to improve specificity of word-matching method 
 trivial_terms = c("cell", "of", "tissue", "entity", "type") 

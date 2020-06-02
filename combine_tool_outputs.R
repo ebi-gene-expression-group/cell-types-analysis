@@ -103,7 +103,7 @@ if(opt$scores){
     scores = do.call(cbind, scores)
 
     .get_top_scores = function(score_list, top_n){
-        sort_lst = sort(score_list, index.return=TRUE, na.last=TRUE)
+        sort_lst = sort(score_list, index.return=TRUE, decreasing=TRUE)
         # restrict to top_n items
         top_items = lapply(sort_lst, function(v) v[1:top_n])
         return(top_items)
@@ -116,11 +116,10 @@ if(opt$scores){
     # top_items contains both sorted elements and corresponding indices
     # select columns of the label array and corresponding datasets by this index 
     sorted_lab_idx = lapply(seq_along(top_items), function(idx) as.numeric(unlist(top_items[[idx]][2])))
-    top_labels = lapply(seq_along(nrow(labels)), function(idx) labels[ idx, sorted_lab_idx[[idx]] ])
+    top_labels = lapply(1:nrow(labels), function(idx) labels[ idx, sorted_lab_idx[[idx]] ])
     top_labels = data.frame(do.call(rbind, top_labels))
     names = paste("label", c(1:top_n), sep="_")
     colnames(top_labels) = names
-
     # determine which datasets produced top predicitons for each cell
     top_datasets = lapply(sorted_lab_idx, function(idx_lst) datasets[idx_lst])
     top_datasets = data.frame(do.call(rbind, top_datasets))
