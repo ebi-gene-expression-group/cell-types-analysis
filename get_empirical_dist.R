@@ -51,7 +51,7 @@ option_list = list(
         help = 'Number of sampling iterations to construct empirical distribution'
     ),
     make_option(
-        c("-p", "--sample-prop"),
+        c("-e", "--sample-prop"),
         action = "store",
         default = 0.1,
         type = 'numeric',
