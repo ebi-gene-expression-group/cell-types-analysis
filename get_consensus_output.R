@@ -159,8 +159,6 @@ for(idx in seq_along(predicted_labs_tables)){
 }
 # combine predicted labels and corresponding datasets into single data frames
 labels = do.call(cbind, predicted_labs_tables)
-print(head(labels))
-
 comb_ds = do.call(cbind, comb_ds)
 
 ###################################################################
@@ -170,9 +168,6 @@ comb_ds = do.call(cbind, comb_ds)
 top_labs = apply(labels, 1, function(row) get_top_labels(row, tool_scores=tool_scores))
 top_labs = data.frame(t(top_labs))
 
-print(head(top_labs))
-
-stop()
 # semantic similarity across predicted labels 
 .get_sem_sim = function(iter){
     label_vec = as.character(top_labs[iter, c(1:3) ])
