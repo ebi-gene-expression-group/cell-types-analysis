@@ -51,11 +51,11 @@ option_list = list(
         help = 'Number of sampling iterations to construct empirical distribution'
     ),
     make_option(
-        c("-r", "--prop"),
+        c("-a", "--sample"),
         action = "store",
-        default = 0.1,
-        type = 'numeric',
-        help = 'Proportion of labels to sample in each iteration of the distribution generation'
+        default = 50,
+        type = 'integer',
+        help = 'Integer specifying the number of cells to infer the distribution from.' 
     ),
     make_option(
         c("-c", "--num-cores"),
@@ -106,8 +106,7 @@ if(! is.na(opt$exclusions)){
 
 reference_labs_df = read.csv(opt$input_ref_file, sep="\t", stringsAsFactors=FALSE, comment.char = "#")
 reference_labs = reference_labs_df[, opt$label_column_ref]
-sample_pr = opt$prop
-sample_size = round(length(reference_labs)*sample_pr, 0)
+sample_labs = opt$sample
 num_iter = opt$num_iterations
 ontology = opt$ontology_graph
 lab_cl_mapping = readRDS(opt$lab_cl_mapping)
@@ -116,8 +115,9 @@ sim_metric = opt$semantic_sim_metric
 # generate empirical distribution by running simulations
 .run_simulations = function(siml_num){
     print(paste("Running simulation ", siml_num, "out of ", num_iter))
-    predicted_labs = sample(reference_labs, sample_size)
-    reference_labs = sample(reference_labs, sample_size)
+    if (length(reference_labs) < sample_labs) sample_labs <- length(reference_labs)
+    predicted_labs = sample(reference_labs, sample_labs)
+    reference_labs = sample(reference_labs, sample_labs)
     exact_match_prop = get_exact_matches(reference_labs, predicted_labs)
     mean_shared_terms = get_shared_terms_prop(reference_labs, predicted_labs, trivial_terms)
     metrics = get_f1(reference_labs, predicted_labs, unlabelled)
