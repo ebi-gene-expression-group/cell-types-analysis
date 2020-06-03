@@ -218,7 +218,7 @@ ds_tbl = apply(top_labs, 1, function(row) extract_datasets(row, lab_dataset_mapp
 ds_tbl = data.frame(t(ds_tbl))
 colnames(ds_tbl) = paste("dataset", c(1:3), sep="_")
 # calculate combine score for each cell 
-combined_score = agreement_rate + (1 - unlab_rate) + log10(mean_sem_sim + 1)
+combined_score = agreement_rate + (1 - unlab_rate) + log10(sem_sim + 1)
 
 top_labs_tbl = data.frame(cbind(cell_id=cell_ids, 
                                 top_labs,
