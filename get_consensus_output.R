@@ -225,12 +225,12 @@ top_labs_tbl = data.frame(cbind(cell_id=cell_ids,
                                 agreement_rate=agreement_rate,
                                 unlab_rate=unlab_rate,
                                 mean_sem_sim=sem_sim,
-                                comb_score = combined_score, 
+                                comb_score=combined_score, 
                                 ds_tbl))
 
 
 if(opt$sort_by_agg_score){
-    top_labs_tbl = top_labs_tbl[ order(-comb_score), ]
+    top_labs_tbl = top_labs_tbl[ order(-top_labs_tbl$comb_score), ]
 }
 write.table(top_labs_tbl, file=opt$summary_table_output_path, sep="\t", row.names=FALSE)
 
