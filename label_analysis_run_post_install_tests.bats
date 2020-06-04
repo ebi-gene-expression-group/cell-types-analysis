@@ -106,7 +106,7 @@
         skip "$summary_table_path exists and use_existing_outputs is set to 'true'"
     fi
 
-    run rm -rf && get_consensus_output.R\
+    run rm -rf $summary_table_path && get_consensus_output.R\
                      --input-dir $combined_tools_results\
                      --tool-table $tool_perf_table\
                      --cl-dictionary $label_cl_dict\

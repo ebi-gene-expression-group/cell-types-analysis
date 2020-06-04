@@ -57,7 +57,7 @@ option_list = list(
         type = 'character',
         help = 'Path to the ontology graph in .obo or .xml format'
     ),
-     make_option(
+    make_option(
         c("-m", "--semantic-sim-metric"),
         action = "store",
         default = 'edge_resnik',
@@ -65,6 +65,13 @@ option_list = list(
         help = 'Semantic similarity scoring method. 
                 Must be supported by Onassis package.
                 See listSimilarities()$pairwiseMeasures for a list of accepted options'
+    ),
+    make_option(
+        c("-s", "--sort-by-agg-score"),
+        action = "store_true",
+        default = TRUE,
+        type = 'logical',
+        help = 'Should cells be sorted by their aggregated scores? Default: TRUE'
     ),
     make_option(
         c("-o", "--summary-table-output-path"),
@@ -163,7 +170,7 @@ top_labs = data.frame(t(top_labs))
 
 # semantic similarity across predicted labels 
 .get_sem_sim = function(iter){
-    label_vec = as.character(labels[iter, ])
+    label_vec = as.character(top_labs[iter, c(1:3) ])
     sem_sim = matrix(nrow=length(label_vec), ncol=length(label_vec))
     for(i in 1:length(label_vec)){
         label_i = label_vec[i]
@@ -210,14 +217,21 @@ if(opt$parallel){
 ds_tbl = apply(top_labs, 1, function(row) extract_datasets(row, lab_dataset_mapping))
 ds_tbl = data.frame(t(ds_tbl))
 colnames(ds_tbl) = paste("dataset", c(1:3), sep="_")
+# calculate combine score for each cell 
+combined_score = agreement_rate + (1 - unlab_rate) + log10(sem_sim + 1)
 
 top_labs_tbl = data.frame(cbind(cell_id=cell_ids, 
                                 top_labs,
                                 agreement_rate=agreement_rate,
                                 unlab_rate=unlab_rate,
-                                mean_sem_sim=sem_sim, 
+                                mean_sem_sim=sem_sim,
+                                comb_score=combined_score, 
                                 ds_tbl))
 
+
+if(opt$sort_by_agg_score){
+    top_labs_tbl = top_labs_tbl[ order(-top_labs_tbl$comb_score), ]
+}
 write.table(top_labs_tbl, file=opt$summary_table_output_path, sep="\t", row.names=FALSE)
 
 comb_labels = data.frame(cbind(cell_id=cell_ids, labels, comb_ds))
