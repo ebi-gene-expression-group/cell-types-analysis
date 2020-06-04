@@ -51,11 +51,11 @@ option_list = list(
         help = 'Number of sampling iterations to construct empirical distribution'
     ),
     make_option(
-        c("-a", "--sample"),
+        c("-a", "--sample-labs"),
         action = "store",
         default = 50,
         type = 'integer',
-        help = 'Integer specifying the number of cells to infer the distribution from.' 
+        help = 'Labels sample size to infer the distribution from.' 
     ),
     make_option(
         c("-c", "--num-cores"),
@@ -106,7 +106,7 @@ if(! is.na(opt$exclusions)){
 
 reference_labs_df = read.csv(opt$input_ref_file, sep="\t", stringsAsFactors=FALSE, comment.char = "#")
 reference_labs = reference_labs_df[, opt$label_column_ref]
-sample_labs = opt$sample
+sample_labs = opt$sample_labs
 num_iter = opt$num_iterations
 ontology = opt$ontology_graph
 lab_cl_mapping = readRDS(opt$lab_cl_mapping)
