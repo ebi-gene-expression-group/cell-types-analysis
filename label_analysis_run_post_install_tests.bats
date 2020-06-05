@@ -48,7 +48,7 @@
         skip "$empirical_dist exists and use_existing_outputs is set to 'true'"
     fi
 
-    run rm -f $empirical_dist && get_empirical_dist.R\ 
+    run rm -f $empirical_dist && get_empirical_dist.R\
 					--input-ref-file $ref_labels_file\
 					--label-column-ref $label_column_ref\
 					--parallel $parallel\
@@ -79,7 +79,7 @@
     echo "status = ${status}"
     echo "output = ${output}"
 
-    [ "$staturical_dists" -eq 0 ]
+    [ "$status" -eq 0 ]
     [ -f  "$tool_table_pvals" ]
 }
 
