@@ -34,7 +34,7 @@ option_list = list(
     make_option(
         c("-l", "--cell-label-col-name"),
         action = "store",
-        default = "cell.type",
+        default = "inferred cell type",
         type = 'character',
         help = 'Name of the cell label column in SDRF files (must be identical across all files)'
     ),
@@ -62,10 +62,11 @@ option_list = list(
 )
 
 # parse arguments 
-opt = wsc_parse_args(option_list, mandatory = c("input_dir", "output_dict_path"))
+opt = wsc_parse_args(option_list, mandatory = c("input_dir", "output_dict_path", "output_text_path"))
 # source function definitions 
 script_dir = dirname(strsplit(commandArgs()[grep('--file=', commandArgs())], '=')[[1]][2])
 source(file.path(script_dir, 'cell_types_utils.R'))
+cell_label = opt$cell_label_col_name
 
 # import the rest of dependencies 
 suppressPackageStartupMessages(require(hash))
@@ -85,11 +86,11 @@ if(condensed){
 .map_cell_labels = function(df, hash_table, condensed){
     if(condensed){
         # select rows which have cell type 
-        df = df[df[, 5] == "cell type", ]
+        df = df[df[, 5] == cell_label, ]
         cell_labs = tolower(df[, 6])
         cl_terms = df[, 7]
     } else {
-        cell_labs = tolower(df[, opt$cell_label_col_name])
+        cell_labs = tolower(df[, cell_label])
         cl_terms = df[, opt$cell_ontology_col_name]
     }
     

@@ -107,15 +107,16 @@
         skip "$summary_table_path exists and use_existing_outputs is set to 'true'"
     fi
 
-    run rm -rf && get_consensus_output.R\
-		--input-dir $combined_tools_results\
-		--tool-table $tool_perf_table\
-		--cl-dictionary $label_cl_dict\
-		--parallel $parallel\
-		--ontology-graph $ontology_graph\
-		--num-cores $num_cores\
-		--summary-table-output-path $summary_table_path\
-		--raw-table-output-path $raw_labels_table_path
+    run rm -rf $summary_table_path && get_consensus_output.R\
+                     --input-dir $combined_tools_results\
+                     --tool-table $tool_perf_table\
+                     --cl-dictionary $label_cl_dict\
+                     --parallel $parallel\
+                     --ontology-graph $ontology_graph\
+                     --num-cores $num_cores\
+                     --summary-table-output-path $summary_table_path\
+                     --raw-table-output-path $raw_labels_table_path
+
 
     echo "status = ${status}"
     echo "output = ${output}"
