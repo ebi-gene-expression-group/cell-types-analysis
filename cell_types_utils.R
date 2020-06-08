@@ -128,7 +128,8 @@ get_tool_combined_score = function(unlab_delta,
                                    accuracy, 
                                    siml) { 
     
-    score = exact_match_prop + mean_shared_terms + median_F1 + siml
+    # score must be in the [0;1] interval
+    score = mean(exact_match_prop + mean_shared_terms + median_F1 + siml)
     return(round(score, 3))
 
 }
