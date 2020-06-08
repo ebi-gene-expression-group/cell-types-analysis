@@ -1,4 +1,4 @@
-#!/usr/bin/env bats 
+#!/usr/bin/env bats
 
 @test "Build label - CL term mapping" {
     if [ "$use_existing_outputs" = 'true' ] && [ -f "$label_cl_dict" ]; then
@@ -6,10 +6,10 @@
     fi
 
     run rm -f $label_cl_dict && build_cell_ontology_dict.R\
-                        --input-dir $SDRF_dir\
-                        --condensed-sdrf\
-                        --output-dict-path $label_cl_dict\
-                        --output-text-path $label_cl_txt
+					--input-dir $SDRF_dir\
+					--condensed-sdrf\
+					--output-dict-path $label_cl_dict\
+					--output-text-path $label_cl_txt
 
     echo "status = ${status}"
     echo "output = ${output}"
@@ -24,23 +24,23 @@
     fi
 
     run rm -f $tool_perf_table && get_tool_performance_table.R\
-                                    --input-dir $eval_input_dir\
-                                    --barcode-col-ref $barcode_col_ref\
-                                    --parallel $parallel\
-                                    --num-cores $num_cores\
-                                    --barcode-col-pred $barcode_col_pred\
-                                    --label-column-ref $label_column_ref\
-                                    --label-column-pred $label_column_pred\
-                                    --lab-cl-mapping $label_cl_dict\
-                                    --ref-file $ref_labels_file\
-                                    --ontology-graph $ontology_graph\
-                                    --output-path $tool_perf_table
+					--input-dir $eval_input_dir\
+					--barcode-col-ref $barcode_col_ref\
+					--parallel $parallel\
+					--num-cores $num_cores\
+					--barcode-col-pred $barcode_col_pred\
+					--label-column-ref $label_column_ref\
+					--label-column-pred $label_column_pred\
+					--lab-cl-mapping $label_cl_dict\
+					--ref-file $ref_labels_file\
+					--ontology-graph $ontology_graph\
+					--output-path $tool_perf_table
     echo "status = ${status}"
     echo "output = ${output}"
 
     [ "$status" -eq 0 ]
     [ -f  "$tool_perf_table" ]
-  
+
 }
 
 @test "generate empirical CDF" {
@@ -49,20 +49,21 @@
     fi
 
     run rm -f $empirical_dist && get_empirical_dist.R\
-                                    --input-ref-file $ref_labels_file\
-                                    --label-column-ref $label_column_ref\
-                                    --parallel $parallel\
-                                    --num-iterations $num_iter\
-                                    --lab-cl-mapping $label_cl_dict\
-                                    --num-cores $num_cores\
-                                    --ontology-graph $ontology_graph\
-                                    --output-path $empirical_dist
+					--input-ref-file $ref_labels_file\
+					--label-column-ref $label_column_ref\
+					--parallel $parallel\
+					--num-iterations $num_iter\
+					--sample-labs $sample_labs\
+					--lab-cl-mapping $label_cl_dict\
+					--num-cores $num_cores\
+					--ontology-graph $ontology_graph\
+					--output-path $empirical_dist
     echo "status = ${status}"
     echo "output = ${output}"
 
     [ "$status" -eq 0 ]
     [ -f  "$empirical_dist" ]
-  
+
 }
 
 @test "obtain p-values for calculated statistics" {
@@ -71,9 +72,9 @@
     fi
 
     run rm -f $tool_table_pvals && get_tool_pvals.R\
-                                    --input-table $tool_perf_table\
-                                    --emp-dist-list $empirical_dist\
-                                    --output-table $tool_table_pvals
+				--input-table $tool_perf_table\
+				--emp-dist-list $empirical_dist\
+				--output-table $tool_table_pvals
 
     echo "status = ${status}"
     echo "output = ${output}"
@@ -88,10 +89,10 @@
     fi
 
     run rm -f $combined_results && combine_tool_outputs.R\
-                                    --input-dir $res_to_combine\
-                                    --top-labels-num $top_labels_num\
-                                    --scores\
-                                    --output-table $combined_results
+					--input-dir $res_to_combine\
+					--top-labels-num $top_labels_num\
+					--scores\
+					--output-table $combined_results
 
     echo "status = ${status}"
     echo "output = ${output}"
@@ -106,7 +107,7 @@
         skip "$summary_table_path exists and use_existing_outputs is set to 'true'"
     fi
 
-    run rm -rf && get_consensus_output.R\
+    run rm -rf $summary_table_path && get_consensus_output.R\
                      --input-dir $combined_tools_results\
                      --tool-table $tool_perf_table\
                      --cl-dictionary $label_cl_dict\
@@ -115,6 +116,7 @@
                      --num-cores $num_cores\
                      --summary-table-output-path $summary_table_path\
                      --raw-table-output-path $raw_labels_table_path
+
 
     echo "status = ${status}"
     echo "output = ${output}"
