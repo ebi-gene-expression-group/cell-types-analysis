@@ -109,9 +109,6 @@ get_CL_similarity = function(label_1, label_2, lab_cl_mapping, ontology, sim_met
     term_1 = lab_cl_mapping[[as.character(label_1)]]
     term_2 = lab_cl_mapping[[as.character(label_2)]]
 
-    print(term_1)
-    print(term_2)
-
     # semantic similarity 
     tryCatch({
         psim = pairsim(siml_object, term_1, term_2)
