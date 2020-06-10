@@ -64,7 +64,8 @@ option_list = list(
         type = 'character',
         help = 'Semantic similarity scoring method. 
                 Must be supported by Onassis package.
-                See listSimilarities()$pairwiseMeasures for a list of accepted options'
+                See listSimilarities()$pairwiseMeasures for a list of accepted options.
+                NB: if included in combined score calculation, make sure to select a metric with values in the [0;1] range.'
     ),
      make_option(
         c("-k", "--include-sem-siml"),
@@ -72,7 +73,8 @@ option_list = list(
         default = FALSE,
         type = 'logical',
         help = 'Should semantic similarity be included into combined score calculation? Default: FALSE.
-                If setting to TRUE, note that this confines the options on semantic similarity metric to default one.'
+                If setting to TRUE, note that this confines the options on semantic similarity metric
+                to those with range in the [0;1] interval only.'
     ),
     make_option(
         c("-s", "--sort-by-agg-score"),
@@ -107,10 +109,6 @@ lab_cl_mapping = readRDS(opt$cl_dictionary)
 ontology = opt$ontology_graph
 include_siml = opt$include_sem_siml
 sim_metric = opt$semantic_sim_metric
-# make sure scores are in [0;1] interval
-if(include_siml & sim_metric != "lin"){
-    stop("Semantic similarity score must be set to default when included in combined score calculation.")
-}
 script_dir = dirname(strsplit(commandArgs()[grep('--file=', commandArgs())], '=')[[1]][2])
 source(file.path(script_dir, 'cell_types_utils.R'))
 # import the rest of dependencies

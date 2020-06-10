@@ -92,7 +92,7 @@ suppressPackageStartupMessages(require(workflowscriptscommon))
         help = 'Semantic similarity scoring method. Must be supported by Onassis
                 package. See listSimilarities()$pairwiseMeasures for a list
                 of accepted options. 
-                NB: if included in combined score calculation, this parameter must be left at default value.'
+                NB: if included in combined score calculation, make sure to select a metric with values in the [0;1] range.'
     ),
     make_option(
         c("-k", "--include-sem-siml"),
@@ -100,7 +100,8 @@ suppressPackageStartupMessages(require(workflowscriptscommon))
         default = FALSE,
         type = 'logical',
         help = 'Should semantic similarity be included into combined score calculation? Default: FALSE.
-                If setting to TRUE, note that this confines the options on semantic similarity metric to default one.'
+                If setting to TRUE, note that this confines the options on semantic similarity metric
+                to those with range in the [0;1] interval only.'
     ),
     make_option(
         c("-o", "--output-path"),
@@ -150,11 +151,6 @@ if(! is.na(opt$exclusions)){
     e = yaml.load_file(opt$exclusions)
     unlabelled = tolower(e$unlabelled)
     trivial_terms = tolower(e$trivial_terms)
-}
-
-# make sure the semantic similarity is on range [0;1]
-if(include_sem_siml & sim_metric != "lin"){
-    stop("Only default semantic similarity metric is accepted when included in combined score.")
 }
 
 # find proportion of unknowns in reference cell types
