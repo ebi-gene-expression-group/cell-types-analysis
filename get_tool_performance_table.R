@@ -87,11 +87,21 @@ suppressPackageStartupMessages(require(workflowscriptscommon))
     make_option(
         c("-s", "--semantic-sim-metric"),
         action = "store",
-        default = 'edge_resnik',
+        default = 'lin',
         type = 'character',
         help = 'Semantic similarity scoring method. Must be supported by Onassis
                 package. See listSimilarities()$pairwiseMeasures for a list
-                of accepted options'
+                of accepted options. 
+                NB: if included in combined score calculation, make sure to select a metric with values in the [0;1] range.'
+    ),
+    make_option(
+        c("-k", "--include-sem-siml"),
+        action = "store_true",
+        default = FALSE,
+        type = 'logical',
+        help = 'Should semantic similarity be included into combined score calculation? Default: FALSE.
+                If setting to TRUE, note that this confines the options on semantic similarity metric
+                to those with range in the [0;1] interval only.'
     ),
     make_option(
         c("-o", "--output-path"),
@@ -123,6 +133,7 @@ tools = as.character(sapply(file_names, function(file) extract_metadata(file)[['
 pred_labs_col = opt$label_column_pred
 barcode_ref = opt$barcode_col_ref
 barcode_pred = opt$barcode_col_pred
+include_sem_siml = opt$include_sem_siml
 
 # read reference file 
 reference_labs_df = read.csv(opt$ref_file, sep="\t", stringsAsFactors=FALSE)
@@ -169,7 +180,8 @@ prop_unlab_reference = get_unlab_rate(reference_labs_df[, ref_labs_col], unlabel
                               unlabelled=unlabelled, 
                               trivial_terms=trivial_terms,
                               ontology=ontology,
-                              sim_metric=sim_metric)
+                              sim_metric=sim_metric,
+                              include_sem_siml=include_sem_siml)
     return(do.call(cbind, row))
 }
 

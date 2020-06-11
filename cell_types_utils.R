@@ -126,9 +126,13 @@ get_tool_combined_score = function(unlab_delta,
                                    mean_shared_terms, 
                                    median_F1, 
                                    accuracy, 
-                                   siml) { 
+                                   siml,
+                                   include_sem_siml) { 
     
-    score = (1 - unlab_delta) + exact_match_prop + mean_shared_terms + median_F1 + log10(siml+1)
+    
+    if(!include_sem_siml) siml = NA
+    # score must be in the [0;1] interval
+    score = mean(c(exact_match_prop, mean_shared_terms, median_F1, siml), na.rm=TRUE)
     return(round(score, 3))
 
 }
@@ -144,7 +148,8 @@ obtain_metrics_list = function(tool,
                                unlabelled,
                                trivial_terms,
                                ontology,
-                               sim_metric){
+                               sim_metric,
+                               include_sem_siml){
 
     # proportion of unlabelled cells in predicted labels
     prop_unlab_predicted = get_unlab_rate(predicted_labs, unlabelled)
@@ -171,7 +176,7 @@ obtain_metrics_list = function(tool,
     }
     siml = round(mean(sim_vec, na.rm=TRUE), 3)
     score = get_tool_combined_score(unlab_delta, exact_match_prop, mean_shared_terms, 
-                                   median_F1, accuracy, siml)
+                                   median_F1, accuracy, siml, include_sem_siml)
 
     # combine metrics
     row = list(Tool = tool,
@@ -228,8 +233,8 @@ get_top_labels = function(label_list, tool_scores=NULL){
         # NB: label vector must contrain corresponding tool in its name, e.g. tool-X_1
         source_tools = sapply(names(label_list), function(name) unlist(strsplit(name, "_"))[1])
         label_scores = sapply(source_tools, function(tool) tool_scores[tool])
-        # find sum of scores corresponding to each label 
-        score_sums = sapply(unq_labs, function(lab) sum(label_scores[which(label_list==lab)], na.rm=TRUE))
+        # find mean value of scores corresponding to each label 
+        score_sums = sapply(unq_labs, function(lab) mean(label_scores[which(label_list==lab)], na.rm=TRUE))
         # account for label frequencies and sort
         sorted = sort(score_sums * freqs, decreasing=TRUE, index.return=TRUE, na.last=TRUE)
         score_names = paste("weighted-score", c(1:3), sep="_")
