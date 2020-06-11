@@ -98,7 +98,8 @@ get_tool_performance_table.R\
           --barcode-col-pred <name of the cell id field in predictions file>\
           --label-column-ref <name of label column in reference file>\
           --label-column-pred <name of label column in prediction file>\
-          --semantic-sim-metric <semantic similarity scoring method>\    
+          --semantic-sim-metric <semantic similarity scoring method>\   
+          --include-sem-siml <boolean: should the semantic similarity be included in combined score calculation?>\ 
           --output-path <path to tab-delimited output table>
 ```
 Note that semantic similarity scoring method must be supported by the Onassis package. To see a list of available methods, run `listSimilarities()$pairwiseMeasures` or refer to Onassis [documentation](https://bioconductor.org/packages/release/bioc/html/Onassis.html). 
@@ -133,7 +134,6 @@ combine_tool_outputs.R\
           --scores <Boolean: Are prediction scores available for the given method? Default: FALSE>\
           --output-table <Path to the output table in text format>
 ```
-Note: files in the input directory are assumed to be of the following structire: `A_B_final-labs.tsv`, where A is dataset or origin and B is classifier used to obtain predictions.
 
 **get_consensus_output.R**: Get most likely labels across all tools
 ```
@@ -145,6 +145,7 @@ get_consensus_output.R\
           --exclustions <path to yaml file with unlabelled cells or excluded terms>\ 
           --ontology-graph <Path to the ontology graph in .obo or .xml format>\
           --semantic-sim-metric <Semantic similarity scoring method>\
+          --include-sem-siml <boolean: should the semantic similarity be included in combined score calculation?>\ 
           --summary-table-output-path <Path to the output table with top labels and per-cell metrics in .tsv format>
           --raw-table-output-path <Path to the output table with all labels in .tsv format>
 ```
