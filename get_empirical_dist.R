@@ -74,9 +74,11 @@ option_list = list(
     make_option(
         c("-s", "--semantic-sim-metric"),
         action = "store",
-        default = 'edge_resnik',
+        default = 'lin',
         type = 'character',
-        help = 'Semantic similarity scoring method. Must be supported by Onassis package. See listSimilarities()$pairwiseMeasures for a list of accepted options'
+        help = 'Semantic similarity scoring method. Must be supported by Onassis package. 
+                See listSimilarities()$pairwiseMeasures for a list of accepted options
+                Obviously must correspond to similarity metric used in other scripts.'
     ),
     make_option(
         c("-o", "--output-path"),
@@ -132,7 +134,7 @@ sim_metric = opt$semantic_sim_metric
                                          ontology=ontology, 
                                          sim_metric=sim_metric, 
                                          unlabelled=unlabelled)
-        sim_vec[idx] = log10(siml+1)
+        sim_vec[idx] = siml
     }
     siml = mean(sim_vec, na.rm=TRUE)
     metric_list = list(Exact_match_prop = exact_match_prop,

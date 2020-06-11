@@ -9,6 +9,7 @@
 					--input-dir $SDRF_dir\
 					--condensed-sdrf\
 					--output-dict-path $label_cl_dict\
+                    --cell-label-col-name $SDRF_cell_types\
 					--output-text-path $label_cl_txt
 
     echo "status = ${status}"
@@ -34,6 +35,7 @@
 					--lab-cl-mapping $label_cl_dict\
 					--ref-file $ref_labels_file\
 					--ontology-graph $ontology_graph\
+                    --include-sem-siml \
 					--output-path $tool_perf_table
     echo "status = ${status}"
     echo "output = ${output}"
@@ -114,6 +116,7 @@
                      --parallel $parallel\
                      --ontology-graph $ontology_graph\
                      --num-cores $num_cores\
+                     --include-sem-siml \
                      --summary-table-output-path $summary_table_path\
                      --raw-table-output-path $raw_labels_table_path
 

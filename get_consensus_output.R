@@ -60,11 +60,21 @@ option_list = list(
     make_option(
         c("-m", "--semantic-sim-metric"),
         action = "store",
-        default = 'edge_resnik',
+        default = 'lin',
         type = 'character',
         help = 'Semantic similarity scoring method. 
                 Must be supported by Onassis package.
-                See listSimilarities()$pairwiseMeasures for a list of accepted options'
+                See listSimilarities()$pairwiseMeasures for a list of accepted options.
+                NB: if included in combined score calculation, make sure to select a metric with values in the [0;1] range.'
+    ),
+     make_option(
+        c("-k", "--include-sem-siml"),
+        action = "store_true",
+        default = FALSE,
+        type = 'logical',
+        help = 'Should semantic similarity be included into combined score calculation? Default: FALSE.
+                If setting to TRUE, note that this confines the options on semantic similarity metric
+                to those with range in the [0;1] interval only.'
     ),
     make_option(
         c("-s", "--sort-by-agg-score"),
@@ -97,6 +107,7 @@ opt = wsc_parse_args(option_list, mandatory = c("input_dir", "cl_dictionary",
 # source function definitions 
 lab_cl_mapping = readRDS(opt$cl_dictionary)
 ontology = opt$ontology_graph
+include_siml = opt$include_sem_siml
 sim_metric = opt$semantic_sim_metric
 script_dir = dirname(strsplit(commandArgs()[grep('--file=', commandArgs())], '=')[[1]][2])
 source(file.path(script_dir, 'cell_types_utils.R'))
@@ -166,7 +177,7 @@ comb_ds = do.call(cbind, comb_ds)
 ###################################################################
 # top labels based on frequency (accounted for tool scores, if provided)
 top_labs = apply(labels, 1, function(row) get_top_labels(row, tool_scores=tool_scores))
-top_labs = data.frame(t(top_labs))
+top_labs = t(top_labs)
 
 # semantic similarity across predicted labels 
 .get_sem_sim = function(iter){
@@ -176,11 +187,16 @@ top_labs = data.frame(t(top_labs))
         label_i = label_vec[i]
         for(j in i:length(label_vec)){
             label_j = label_vec[j]
-            sem_sim[i,j] = get_CL_similarity(label_i, label_j, 
-                                        lab_cl_mapping=lab_cl_mapping,
-                                        ontology=ontology,
-                                        sim_metric=sim_metric,
-                                        unlabelled=unlabelled)
+            # skip if NA values present
+            if(!is.na(label_i) & !is.na(label_j)){
+                sem_sim[i,j] = get_CL_similarity(label_i, label_j, 
+                                            lab_cl_mapping=lab_cl_mapping,
+                                            ontology=ontology,
+                                            sim_metric=sim_metric,
+                                            unlabelled=unlabelled)
+            } else{
+                sem_sim[i,j] = NA
+            }
         }
     }
     return(mean(sem_sim, na.rm=TRUE))
@@ -217,17 +233,19 @@ if(opt$parallel){
 ds_tbl = apply(top_labs, 1, function(row) extract_datasets(row, lab_dataset_mapping))
 ds_tbl = data.frame(t(ds_tbl))
 colnames(ds_tbl) = paste("dataset", c(1:3), sep="_")
-# calculate combine score for each cell 
-combined_score = agreement_rate + (1 - unlab_rate) + log10(sem_sim + 1)
-
+# calculate combine score for each cell
+ss = NA
+if(include_siml){
+    ss = sem_sim
+}
+combined_score = sapply(1:n_cells, function(idx) mean(c(agreement_rate[idx], (1 - unlab_rate[idx]), ss[idx]), na.rm=TRUE))
 top_labs_tbl = data.frame(cbind(cell_id=cell_ids, 
                                 top_labs,
                                 agreement_rate=agreement_rate,
                                 unlab_rate=unlab_rate,
-                                mean_sem_sim=sem_sim,
+                                mean_sem_siml=sem_sim,
                                 comb_score=combined_score, 
                                 ds_tbl))
-
 
 if(opt$sort_by_agg_score){
     top_labs_tbl = top_labs_tbl[ order(-top_labs_tbl$comb_score), ]
