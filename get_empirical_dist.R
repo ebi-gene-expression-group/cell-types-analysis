@@ -67,7 +67,7 @@ option_list = list(
     make_option(
         c("-g", "--ontology-graph"),
         action = "store",
-        default = "data/cl-basic.obo",
+        default = NA,
         type = 'character',
         help = 'Path to the ontology graph in .obo or .xml format'
     ),
@@ -89,7 +89,7 @@ option_list = list(
     )
 )
 
-opt = wsc_parse_args(option_list, mandatory = c("input_ref_file", "output_path", "lab_cl_mapping", "ontology_graph"))
+opt = wsc_parse_args(option_list, mandatory = c("input_ref_file", "output_path", "lab_cl_mapping"))
 script_dir = dirname(strsplit(commandArgs()[grep('--file=', commandArgs())], '=')[[1]][2])
 source(file.path(script_dir, 'cell_types_utils.R'))
 # import the rest of dependencies 

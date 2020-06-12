@@ -45,7 +45,7 @@ suppressPackageStartupMessages(require(workflowscriptscommon))
     make_option(
         c("-f", "--ontology-graph"),
         action = "store",
-        default = "data/cl-basic.obo",
+        default = NA,
         type = 'character',
         help = 'Path to the ontology graph in .obo or .xml format'
     ),

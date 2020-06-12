@@ -91,6 +91,14 @@ get_CL_similarity = function(label_1, label_2, lab_cl_mapping, ontology, sim_met
     suppressPackageStartupMessages(require(Onassis)) #NB: keep package import within function, otherwise parallelism is broken
     # initialise and configure Similarity object 
     siml_object = new('Similarity')
+    # import ontology graph if not provided by user 
+    if(is.na(ontology)){
+        ontology = "TMPDIR/cl-basic.obo"
+        if(!file.exists(ontology)){
+            system("mkdir TMPDIR")
+            system("wget https://raw.githubusercontent.com/obophenotype/cell-ontology/master/cl-basic.obo -P TMPDIR")
+        }
+    }
     ontology(siml_object) = ontology
     # configure similarity measurement metric
     if(! sim_metric %in% listSimilarities()$pairwiseMeasures){

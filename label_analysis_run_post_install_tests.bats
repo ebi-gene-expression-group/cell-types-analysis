@@ -34,7 +34,6 @@
 					--label-column-pred $label_column_pred\
 					--lab-cl-mapping $label_cl_dict\
 					--ref-file $ref_labels_file\
-					--ontology-graph $ontology_graph\
                     --include-sem-siml \
 					--output-path $tool_perf_table
     echo "status = ${status}"
@@ -58,7 +57,6 @@
 					--sample-labs $sample_labs\
 					--lab-cl-mapping $label_cl_dict\
 					--num-cores $num_cores\
-					--ontology-graph $ontology_graph\
 					--output-path $empirical_dist
     echo "status = ${status}"
     echo "output = ${output}"
@@ -114,7 +112,6 @@
                      --tool-table $tool_perf_table\
                      --cl-dictionary $label_cl_dict\
                      --parallel $parallel\
-                     --ontology-graph $ontology_graph\
                      --num-cores $num_cores\
                      --include-sem-siml \
                      --summary-table-output-path $summary_table_path\
