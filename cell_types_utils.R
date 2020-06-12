@@ -87,19 +87,25 @@ get_f1 = function(reference_labs, predicted_labs, unlabelled=unlabelled) {
 }
 
 # import CL ontology graph 
-import_ontology_graph = function(tmpdir=NULL){
-    # import ontology graph if not provided by user 
+import_ontology_graph = function(tmpdir=NULL, uri=NULL){
+    # use system variable if not specified 
     if(is.null(tmpdir)){
         tmpdir = Sys.getenv("TMPDIR")
+    } 
+    # make sure dir exists
+    if(!dir.exists(tmpdir)){
+        dir.create(tmpdir)
     }
-    ontology = paste(tmpdir, "cl-basic.obo", sep="/")
+    # specify download link
+    if(is.null(uri)){
+        uri = "https://raw.githubusercontent.com/obophenotype/cell-ontology/master/cl-basic.obo"
+    }
+    ontology = paste(tmpdir, basename(uri), sep="/")
     if(!file.exists(ontology)){
-        system("mkdir TMPDIR")
-        system("wget https://raw.githubusercontent.com/obophenotype/cell-ontology/master/cl-basic.obo -P TMPDIR")
+        file.download(uri, destfile=ontology)
     }
     return(ontology)
 }
-
 
 # calculate similarity between a pair of labels 
 get_CL_similarity = function(label_1, label_2, lab_cl_mapping, ontology, sim_metric, unlabelled) {
