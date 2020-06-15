@@ -50,12 +50,19 @@ option_list = list(
         type = 'character',
         help = "Path to the yaml file with excluded terms. Must contain fields 'unlabelled' and 'trivial_terms'"
     ),
+     make_option(
+        c("-g", "--tmpdir"),
+        action = "store",
+        default = NA,
+        type = 'character',
+        help = 'Cache directory path'
+    ),
     make_option(
         c("-f", "--ontology-graph"),
         action = "store",
         default = NA,
         type = 'character',
-        help = 'Path to the ontology graph in .obo or .xml format'
+        help = 'Path to the ontology graph in .obo or .xml format. Import link can also be provided.'
     ),
     make_option(
         c("-m", "--semantic-sim-metric"),
@@ -106,7 +113,6 @@ opt = wsc_parse_args(option_list, mandatory = c("input_dir", "cl_dictionary",
                                                 "raw_table_output_path"))
 # source function definitions 
 lab_cl_mapping = readRDS(opt$cl_dictionary)
-ontology = opt$ontology_graph
 include_siml = opt$include_sem_siml
 sim_metric = opt$semantic_sim_metric
 script_dir = dirname(strsplit(commandArgs()[grep('--file=', commandArgs())], '=')[[1]][2])
@@ -128,6 +134,7 @@ if(!is.na(opt$tool_table)){
 } else{
     tool_scores = NULL
 }
+ontology = import_ontology_graph(opt$tmpdir, opt$ontology_graph)
 
 # read in predicted labels; check barcode consistency 
 file_names = list.files(opt$input_dir, full.names=TRUE)

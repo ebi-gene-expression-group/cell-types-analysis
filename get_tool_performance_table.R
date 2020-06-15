@@ -42,12 +42,19 @@ suppressPackageStartupMessages(require(workflowscriptscommon))
         type = 'character',
         help = "Path to the yaml file with excluded terms. Must contain fields 'unlabelled' and 'trivial_terms'"
     ),
+     make_option(
+        c("-d", "--tmpdir"),
+        action = "store",
+        default = NA,
+        type = 'character',
+        help = 'Cache directory path'
+    ),
     make_option(
         c("-f", "--ontology-graph"),
         action = "store",
         default = NA,
         type = 'character',
-        help = 'Path to the ontology graph in .obo or .xml format'
+        help = 'Path to the ontology graph in .obo or .xml format. Import link can also be provided.'
     ),
     make_option(
         c("-m", "--lab-cl-mapping"),
@@ -125,6 +132,7 @@ suppressPackageStartupMessages(require(parallel))
 suppressPackageStartupMessages(require(doParallel))
 suppressPackageStartupMessages(require(yaml))
 
+
 # file names must start with the tool name 
 file_names = list.files(opt$input_dir, full.names=TRUE)
 predicted_labs_tables = lapply(file_names, function(file) read.csv(file, sep="\t", stringsAsFactors=FALSE, comment.char = "#"))
@@ -141,8 +149,8 @@ reference_labs_df = read.csv(opt$ref_file, sep="\t", stringsAsFactors=FALSE)
 reference_labs_df = reference_labs_df[which(!duplicated(reference_labs_df[, barcode_ref])), ]
 ref_labs_col = opt$label_column_ref
 
-# parameters for semantic similarity 
-ontology = opt$ontology_graph
+# parameters for semantic similarity
+ontology = import_ontology_graph(opt$tmpdir, opt$ontology_graph)
 lab_cl_mapping = readRDS(opt$lab_cl_mapping)
 sim_metric = opt$semantic_sim_metric 
 

@@ -65,11 +65,18 @@ option_list = list(
         help = 'Number of cores to run the process on. Default: all available cores. --parallel must be set to "true" for this to take effect'
     ),
     make_option(
+        c("-r", "--tmpdir"),
+        action = "store",
+        default = NA,
+        type = 'character',
+        help = 'Cache directory path'
+    ),
+    make_option(
         c("-g", "--ontology-graph"),
         action = "store",
         default = NA,
         type = 'character',
-        help = 'Path to the ontology graph in .obo or .xml format'
+        help = 'Path to the ontology graph in .obo or .xml format. Import link can also be provided.'
     ),
     make_option(
         c("-s", "--semantic-sim-metric"),
@@ -110,7 +117,8 @@ reference_labs_df = read.csv(opt$input_ref_file, sep="\t", stringsAsFactors=FALS
 reference_labs = reference_labs_df[, opt$label_column_ref]
 sample_labs = opt$sample_labs
 num_iter = opt$num_iterations
-ontology = opt$ontology_graph
+ontology = import_ontology_graph(opt$tmpdir, opt$ontology_graph)
+#ontology = opt$ontology_graph
 lab_cl_mapping = readRDS(opt$lab_cl_mapping)
 sim_metric = opt$semantic_sim_metric
 

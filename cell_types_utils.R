@@ -87,24 +87,30 @@ get_f1 = function(reference_labs, predicted_labs, unlabelled=unlabelled) {
 }
 
 # import CL ontology graph 
-import_ontology_graph = function(tmpdir=NULL, uri=NULL){
-    # use system variable if not specified 
-    if(is.null(tmpdir)){
+import_ontology_graph = function(tmpdir, ont_graph){
+    # check ontology graph; specify download link or use provided
+    if(is.na(ont_graph)){
+        uri = "https://raw.githubusercontent.com/obophenotype/cell-ontology/master/cl-basic.obo"
+    } else if(grepl("www.|http:|https:", ont_graph)){
+        uri = ont_graph
+    } else {
+        if(file.exists(ont_graph)){
+            return(ont_graph)
+        }
+        stop(paste("File", ont_graph, "does not exist."))
+    }
+    # use system variable if not tmpdir specified 
+    # create it, it necessary
+    if(is.na(tmpdir)){
         tmpdir = Sys.getenv("TMPDIR")
-    } 
-    # make sure dir exists
-    if(!dir.exists(tmpdir)){
+    } else if(!dir.exists(tmpdir)){
         dir.create(tmpdir)
     }
-    # specify download link
-    if(is.null(uri)){
-        uri = "https://raw.githubusercontent.com/obophenotype/cell-ontology/master/cl-basic.obo"
+    ont_graph = paste(tmpdir, basename(uri), sep="/")
+    if(!file.exists(ont_graph)){
+        download.file(uri, destfile=ont_graph)
     }
-    ontology = paste(tmpdir, basename(uri), sep="/")
-    if(!file.exists(ontology)){
-        file.download(uri, destfile=ontology)
-    }
-    return(ontology)
+    return(ont_graph)
 }
 
 # calculate similarity between a pair of labels 

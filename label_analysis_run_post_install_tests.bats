@@ -30,6 +30,7 @@
 					--parallel $parallel\
 					--num-cores $num_cores\
 					--barcode-col-pred $barcode_col_pred\
+                    --ontology-graph $ontology_graph\
 					--label-column-ref $label_column_ref\
 					--label-column-pred $label_column_pred\
 					--lab-cl-mapping $label_cl_dict\
