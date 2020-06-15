@@ -118,7 +118,6 @@ reference_labs = reference_labs_df[, opt$label_column_ref]
 sample_labs = opt$sample_labs
 num_iter = opt$num_iterations
 ontology = import_ontology_graph(opt$tmpdir, opt$ontology_graph)
-#ontology = opt$ontology_graph
 lab_cl_mapping = readRDS(opt$lab_cl_mapping)
 sim_metric = opt$semantic_sim_metric
 

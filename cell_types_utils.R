@@ -99,8 +99,8 @@ import_ontology_graph = function(tmpdir, ont_graph){
         }
         stop(paste("File", ont_graph, "does not exist."))
     }
-    # use system variable if not tmpdir specified 
-    # create it, it necessary
+    # use system variable if no tmpdir specified 
+    # create it, if necessary
     if(is.na(tmpdir)){
         tmpdir = Sys.getenv("TMPDIR")
     } else if(!dir.exists(tmpdir)){
