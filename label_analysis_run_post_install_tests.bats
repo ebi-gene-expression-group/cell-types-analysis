@@ -30,6 +30,7 @@
 					--parallel $parallel\
 					--num-cores $num_cores\
 					--barcode-col-pred $barcode_col_pred\
+                    --tmpdir $tmpdir\
                     --ontology-graph $ontology_graph\
 					--label-column-ref $label_column_ref\
 					--label-column-pred $label_column_pred\
@@ -56,6 +57,7 @@
 					--parallel $parallel\
 					--num-iterations $num_iter\
 					--sample-labs $sample_labs\
+                    --tmpdir $tmpdir\
 					--lab-cl-mapping $label_cl_dict\
 					--num-cores $num_cores\
 					--output-path $empirical_dist
@@ -112,6 +114,7 @@
                      --input-dir $combined_tools_results\
                      --tool-table $tool_perf_table\
                      --cl-dictionary $label_cl_dict\
+                     --tmpdir $tmpdir\
                      --parallel $parallel\
                      --num-cores $num_cores\
                      --include-sem-siml \

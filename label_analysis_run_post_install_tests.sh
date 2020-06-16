@@ -47,6 +47,7 @@ export res_to_combine=$data_dir/'prod_outputs_scpred/'
 export ref_labels_file=$data_dir/'reference_sdrf.tsv'
 export SDRF_dir=$data_dir/'SDRFs'
 export SDRF_cell_types="cell type"
+export tmpdir="TMPDIR"
 export ontology_graph="https://raw.githubusercontent.com/obophenotype/cell-ontology/master/cl-basic.obo"
 export combined_tools_results=$data_dir/'prod_combined_tools'
 export barcode_col_pred='cell_id'
