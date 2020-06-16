@@ -74,7 +74,7 @@ suppressPackageStartupMessages(library(reshape2))
 suppressPackageStartupMessages(library(data.table))
 # parse input SDRF files
 condensed = opt$condensed_sdrf
-file_names = list.files(opt$input_dir, full.names=TRUE)
+file_names = list.files(opt$input_dir, full.names=TRUE, recursive = TRUE)
 if(condensed){
     sdrf_tables = lapply(file_names, function(file) data.frame(fread(file, header=FALSE, stringsAsFactors = FALSE, fill = TRUE)))
 } else{

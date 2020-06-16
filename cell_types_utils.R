@@ -86,6 +86,33 @@ get_f1 = function(reference_labs, predicted_labs, unlabelled=unlabelled) {
   return(out)
 }
 
+# import CL ontology graph 
+import_ontology_graph = function(tmpdir, ont_graph){
+    # check ontology graph; specify download link or use provided
+    if(is.na(ont_graph)){
+        uri = "https://raw.githubusercontent.com/obophenotype/cell-ontology/master/cl-basic.obo"
+    } else if(grepl("www.|http:|https:", ont_graph)){
+        uri = ont_graph
+    } else {
+        if(file.exists(ont_graph)){
+            return(ont_graph)
+        }
+        stop(paste("File", ont_graph, "does not exist."))
+    }
+    # use system variable if no tmpdir specified 
+    # create it, if necessary
+    if(is.na(tmpdir)){
+        tmpdir = Sys.getenv("TMPDIR")
+    } else if(!dir.exists(tmpdir)){
+        dir.create(tmpdir)
+    }
+    ont_graph = paste(tmpdir, basename(uri), sep="/")
+    if(!file.exists(ont_graph)){
+        download.file(uri, destfile=ont_graph)
+    }
+    return(ont_graph)
+}
+
 # calculate similarity between a pair of labels 
 get_CL_similarity = function(label_1, label_2, lab_cl_mapping, ontology, sim_metric, unlabelled) {
     suppressPackageStartupMessages(require(Onassis)) #NB: keep package import within function, otherwise parallelism is broken
