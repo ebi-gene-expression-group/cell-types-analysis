@@ -30,11 +30,12 @@
 					--parallel $parallel\
 					--num-cores $num_cores\
 					--barcode-col-pred $barcode_col_pred\
+                    --tmpdir $tmpdir\
+                    --ontology-graph $ontology_graph\
 					--label-column-ref $label_column_ref\
 					--label-column-pred $label_column_pred\
 					--lab-cl-mapping $label_cl_dict\
 					--ref-file $ref_labels_file\
-					--ontology-graph $ontology_graph\
                     --include-sem-siml \
 					--output-path $tool_perf_table
     echo "status = ${status}"
@@ -56,9 +57,9 @@
 					--parallel $parallel\
 					--num-iterations $num_iter\
 					--sample-labs $sample_labs\
+                    --tmpdir $tmpdir\
 					--lab-cl-mapping $label_cl_dict\
 					--num-cores $num_cores\
-					--ontology-graph $ontology_graph\
 					--output-path $empirical_dist
     echo "status = ${status}"
     echo "output = ${output}"
@@ -113,8 +114,8 @@
                      --input-dir $combined_tools_results\
                      --tool-table $tool_perf_table\
                      --cl-dictionary $label_cl_dict\
+                     --tmpdir $tmpdir\
                      --parallel $parallel\
-                     --ontology-graph $ontology_graph\
                      --num-cores $num_cores\
                      --include-sem-siml \
                      --summary-table-output-path $summary_table_path\
