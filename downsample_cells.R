@@ -78,6 +78,8 @@ current_cell_num = nrow(barcodes)
 if(current_cell_num <= cell_num_limit){
     system(paste("mv", opt$expression_data, opt$output_dir, sep=" "))
     system(paste("mv", opt$metadata, opt$metadata_upd, sep=" "))
+    cat(paste("Matrix not large enough, down-sampling is not required.\nData are moved to ",
+               opt$output_dir, " and ", opt$metadata_upd, "\n", sep=""))
     quit(status = 0)
 }
 
