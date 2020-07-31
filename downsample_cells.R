@@ -137,4 +137,4 @@ selected_barcodes <- c(unsampled, sampled)
 
 # write data
 write10xCounts(opt$output_dir, sce[,sce$Barcode %in% selected_barcodes])
-write.table(metadata, opt$metadata_upd, sep="\t")
+write.table(colData(sce)[,c(-1, -2)], opt$metadata_upd, sep="\t")
