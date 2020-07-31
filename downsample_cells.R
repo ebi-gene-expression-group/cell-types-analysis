@@ -156,6 +156,6 @@ if (ncol(sce) > cell_num_limit ){
 
 # write data
 print("Writing outputs")
-write10xCounts(opt$output_dir, sce, barcodes = sce$Barcode)
+write10xCounts(opt$output_dir, assays(sce)[[1]], barcodes = sce$Barcode, gene.id=rownames(sce))
 write.table(colData(sce)[,c(-1, -2)], opt$metadata_upd, sep="\t")
 print("Outputs written successfully")
