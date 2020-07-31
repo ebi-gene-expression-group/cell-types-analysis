@@ -121,6 +121,10 @@ if (ncol(sce) > cell_num_limit ){
     classes_to_downsample <- c()
 
     for (i in 1:length(cell_type_freqs)){
+      
+      # Set the proportion for this cell type (and any preceding ones) to that
+      # of the subsequent cell type
+
       props[1:i] <- props[i+1]
       classes_to_downsample <- c(classes_to_downsample, names(cell_type_freqs[i]))
       
@@ -152,6 +156,6 @@ if (ncol(sce) > cell_num_limit ){
 
 # write data
 print("Writing outputs")
-write10xCounts(opt$output_dir, sce)
+write10xCounts(opt$output_dir, sce, barcodes = sce$Barcode)
 write.table(colData(sce)[,c(-1, -2)], opt$metadata_upd, sep="\t")
 print("Outputs written successfully")
