@@ -91,7 +91,7 @@ sce <- read10xCounts(opt$expression_data)
 metadata <- read.csv(opt$metadata, sep = "\t", stringsAsFactors = FALSE)
 
 for (field in c(opt$cell_id_field, opt$cell_type_field)){
-  if (! opt$cell_id_field %in% colnames(metadata)){
+  if (! field %in% colnames(metadata)){
     write(paste0("Supplied ID field: ", opt$cell_id_field, " not in metadata frame"), stderr())
     quit(status = 1)
   }
