@@ -8,7 +8,7 @@ suppressPackageStartupMessages(require(workflowscriptscommon))
 
 option_list = list(
     make_option(
-        c("-m", "--expression-data"),
+        c("-e", "--expression-data"),
         action = "store",
         default = NA,
         type = 'character',
@@ -22,7 +22,7 @@ option_list = list(
         help = 'Metadata file mapping cells to cell types'
     ),
     make_option(
-        c("-c", "--cell-id-field"),
+        c("-i", "--cell-id-field"),
         action = "store",
         default = "id",
         type = 'character',
