@@ -8,7 +8,7 @@ suppressPackageStartupMessages(require(workflowscriptscommon))
 
 option_list = list(
     make_option(
-        c("-m", "--expression-data"),
+        c("-d", "--expression-data"),
         action = "store",
         default = NA,
         type = 'character',
@@ -22,7 +22,7 @@ option_list = list(
         help = 'Metadata file mapping cells to cell types'
     ),
     make_option(
-        c("-c", "--cell-id-field"),
+        c("-f", "--cell-id-field"),
         action = "store",
         default = "id",
         type = 'character',
@@ -45,7 +45,7 @@ option_list = list(
     make_option(
         c("-s", "--sampling-rate"),
         action = "store",
-        default = 0.1,
+        default = 0.25,
         type = 'numeric',
         help = 'Percantage of cells to be removed in a single iteration'
     ),
@@ -83,16 +83,16 @@ if(current_cell_num <= cell_num_limit){
 
 # parse the remaining data
 cell_labels = opt$cell_type_field
-cell_id_col = opt$cell_id_col
+cell_id_col = opt$cell_id_field
 matrix = Matrix::readMM(paste(expr_data, "matrix.mtx", sep="/"))
 metadata = read.csv(opt$metadata, sep = "\t", stringsAsFactors = FALSE)
+
 # remove technical duplicate rows
 metadata = metadata[which(!duplicated(metadata[, cell_id_col])), ]
-
-# get indices of all cell types
-num_per_cell_type = table(metadata$cell_labels)
+# get indices of all cell types; starting with most abundant
+num_per_cell_type = sort(table(metadata[, cell_labels]), decreasing = TRUE)
 grouped_indices = lapply(seq_along(num_per_cell_type),
-                   function(idx) which(num_per_cell_type$cell_labels == names(num_per_cell_type[idx])))
+                   function(idx) which(metadata[, cell_labels] == names(num_per_cell_type[idx])))
 
 # build a vector of cell indices to be removed 
 total_cells_to_remove = c()
@@ -104,12 +104,12 @@ while(current_cell_num >= cell_num_limit){
     i = sample(1:length(grouped_indices[[current_cell_type_idx]]), sample_size)
     current_cells_to_remove = grouped_indices[[current_cell_type_idx]][i]
     total_cells_to_remove = append(total_cells_to_remove, current_cells_to_remove)
+
     # remove sampled cells 
     grouped_indices[[current_cell_type_idx]] = grouped_indices[[current_cell_type_idx]][-i]
-
     # continue sampling from the same cell type or switch to next one    
     if(current_cell_type_idx < length(num_per_cell_type)){
-        if(length(grouped_indices[[current_cell_type_idx]] < length(grouped_indices[[current_cell_type_idx + 1]]))){
+        if(length(grouped_indices[[current_cell_type_idx]]) <= length(grouped_indices[[current_cell_type_idx + 1]])){
             current_cell_type_idx = current_cell_type_idx + 1
         }
     } else{
@@ -120,12 +120,12 @@ while(current_cell_num >= cell_num_limit){
 
 # subset matrix, barcodes and metadata by the generated index
 matrix = matrix[, -total_cells_to_remove]
-barcodes = barcodes[-total_cells_to_remove, ]
+barcodes = data.frame(barcodes[-total_cells_to_remove, ])
 metadata = metadata[-total_cells_to_remove, ]
 
 # write data
+dir.create(opt$output_dir)
 Matrix::writeMM(matrix, paste(opt$output_dir, "matrix.mtx", sep="/"))
-write.table(genes, paste(opt$output_dir, "genes.tsv", sep="/"), sep="\t")
-write.table(barcodes, paste(opt$output_dir, "barcodes.tsv", sep="/"), sep="\t", row.names=FALSE)
-write.table(metadata, opt$metadata_upd, sep="\t")
-
+write.table(genes, paste(opt$output_dir, "genes.tsv", sep="/"), sep="\t", col.names = FALSE)
+write.table(barcodes, paste(opt$output_dir, "barcodes.tsv", sep="/"), sep="\t", row.names=FALSE, col.names = FALSE)
+write.table(metadata, opt$metadata_upd, sep="\t", row.names = FALSE)
