@@ -68,6 +68,7 @@ if (is.na(opt$expression_data) || ! dir.exists(opt$expression_data)){
 
 # Don't parse whole matrix up-front, we might not need to do anything...
 
+print("Checking inputs for downsampling...")
 expr_data = opt$expression_data
 genes = read.csv(paste(expr_data, "genes.tsv", sep="/"), sep="\t", stringsAsFactors = FALSE, header = FALSE)
 barcodes = read.csv(paste(expr_data, "barcodes.tsv", sep="/"), sep="\t", stringsAsFactors = FALSE, header = FALSE)
@@ -79,9 +80,11 @@ if(current_cell_num <= cell_num_limit){
   write("No downsampling required", stderr())
   quit(status = 2)
 }
+print("... done input checks, proceeding to downsampling")
 
 # Okay, we do have to do something, so parse matrix properly
 
+print("Parsing full matrix and metadata...")
 suppressPackageStartupMessages(require(DropletUtils))
 sce <- read10xCounts(opt$expression_data)
 
@@ -93,16 +96,20 @@ for (field in c(opt$cell_id_field, opt$cell_type_field)){
     quit(status = 1)
   }
 }
+print("Done full parse")
 
 # Put the metadata into the object so we can subset both together
-colData(sce) <- merge(colData(sce), metadata, by.x='Barcode', by.y='id', all.x=TRUE, sort=FALSE)
+colData(sce) <- merge(colData(sce), metadata, by.x='Barcode', by.y=opt$cell_id_field, all.x=TRUE, sort=FALSE)
 
 # First candidates for removal are those without a label at all
+print("Checking unlablled")
 sce <- sce[, sce[[opt$cell_type_field]] != '']
 
 # If we still have too many after removing unlabelled...
 
 if (ncol(sce) > cell_num_limit ){ 
+
+    print("... unlabelled removed (where applicable), we still need to downsample")
 
     # Only down-sample the most frequent cell types. Identify the ones to downsample
     # by progressively resetting the proportion of each type to that of the next
@@ -139,8 +146,12 @@ if (ncol(sce) > cell_num_limit ){
 
     selected_barcodes <- c(unsampled, sampled)
     sce <- sce[,sce$Barcode %in% selected_barcodes]
+}else{
+    print("... unlabelled removed (where applicable), no further downsampling required")
 }
 
 # write data
+print("Writing outputs")
 write10xCounts(opt$output_dir, sce)
 write.table(colData(sce)[,c(-1, -2)], opt$metadata_upd, sep="\t")
+print("Outputs written successfully")
