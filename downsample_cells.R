@@ -8,7 +8,7 @@ suppressPackageStartupMessages(require(workflowscriptscommon))
 
 option_list = list(
     make_option(
-        c("-d", "--expression-data"),
+        c("-e", "--expression-data"),
         action = "store",
         default = NA,
         type = 'character',
@@ -22,7 +22,7 @@ option_list = list(
         help = 'Metadata file mapping cells to cell types'
     ),
     make_option(
-        c("-f", "--cell-id-field"),
+        c("-i", "--cell-id-field"),
         action = "store",
         default = "id",
         type = 'character',
@@ -43,13 +43,6 @@ option_list = list(
         help = 'Maximum length of R array'
     ),
     make_option(
-        c("-s", "--sampling-rate"),
-        action = "store",
-        default = 0.25,
-        type = 'numeric',
-        help = 'Percantage of cells to be removed in a single iteration'
-    ),
-    make_option(
         c("-o", "--output-dir"),
         action = "store",
         default = NA,
@@ -66,68 +59,103 @@ option_list = list(
 )
 
 opt = wsc_parse_args(option_list, mandatory = c('expression_data', 'metadata', 'output_dir', 'metadata_upd'))
-suppressPackageStartupMessages(require(Matrix))
 
+if (is.na(opt$expression_data) || ! dir.exists(opt$expression_data)){
+  stop("Provide a valid directory for --expression-data")
+}else if (is.na(opt$metadata) || ! file.exists(opt$metadata)){
+  stop("Provide a valid cell metadata file")
+}
+
+# Don't parse whole matrix up-front, we might not need to do anything...
+
+print("Checking inputs for downsampling...")
 expr_data = opt$expression_data
 genes = read.csv(paste(expr_data, "genes.tsv", sep="/"), sep="\t", stringsAsFactors = FALSE, header = FALSE)
 barcodes = read.csv(paste(expr_data, "barcodes.tsv", sep="/"), sep="\t", stringsAsFactors = FALSE, header = FALSE)
 cell_num_limit = floor(opt$array_size_limit / nrow(genes))
 current_cell_num = nrow(barcodes)
 
-# if no down-samling is required, simply return the output
+# if no down-samling is required return a special status code to let the user know
 if(current_cell_num <= cell_num_limit){
-    system(paste("mv", opt$expression_data, opt$output_dir, sep=" "))
-    system(paste("mv", opt$metadata, opt$metadata_upd, sep=" "))
-    cat(paste("Matrix not large enough, down-sampling is not required.\nData are moved to ",
-               opt$output_dir, " and ", opt$metadata_upd, "\n", sep=""))
-    quit(status = 0)
+  write("No downsampling required", stderr())
+  quit(status = 2)
 }
+print("... done input checks, proceeding to downsampling")
 
-# parse the remaining data
-cell_labels = opt$cell_type_field
-cell_id_col = opt$cell_id_field
-matrix = Matrix::readMM(paste(expr_data, "matrix.mtx", sep="/"))
-metadata = read.csv(opt$metadata, sep = "\t", stringsAsFactors = FALSE)
+# Okay, we do have to do something, so parse matrix properly
 
-# remove technical duplicate rows
-metadata = metadata[which(!duplicated(metadata[, cell_id_col])), ]
-# get indices of all cell types; starting with most abundant
-num_per_cell_type = sort(table(metadata[, cell_labels]), decreasing = TRUE)
-grouped_indices = lapply(seq_along(num_per_cell_type),
-                   function(idx) which(metadata[, cell_labels] == names(num_per_cell_type[idx])))
+print("Parsing full matrix and metadata...")
+suppressPackageStartupMessages(require(DropletUtils))
+sce <- read10xCounts(opt$expression_data)
 
-# build a vector of cell indices to be removed 
-total_cells_to_remove = c()
-current_cell_type_idx = 1
+metadata <- read.csv(opt$metadata, sep = "\t", stringsAsFactors = FALSE)
 
-while(current_cell_num >= cell_num_limit){
-    sample_size = floor(length(grouped_indices[[current_cell_type_idx]]) * opt$sampling_rate)
-    # sample by index, then select cells by that index
-    i = sample(1:length(grouped_indices[[current_cell_type_idx]]), sample_size)
-    current_cells_to_remove = grouped_indices[[current_cell_type_idx]][i]
-    total_cells_to_remove = append(total_cells_to_remove, current_cells_to_remove)
+for (field in c(opt$cell_id_field, opt$cell_type_field)){
+  if (! field %in% colnames(metadata)){
+    write(paste0("Supplied ID field: ", opt$cell_id_field, " not in metadata frame"), stderr())
+    quit(status = 1)
+  }
+}
+print("Done full parse")
 
-    # remove sampled cells 
-    grouped_indices[[current_cell_type_idx]] = grouped_indices[[current_cell_type_idx]][-i]
-    # continue sampling from the same cell type or switch to next one    
-    if(current_cell_type_idx < length(num_per_cell_type)){
-        if(length(grouped_indices[[current_cell_type_idx]]) <= length(grouped_indices[[current_cell_type_idx + 1]])){
-            current_cell_type_idx = current_cell_type_idx + 1
-        }
-    } else{
-        current_cell_type_idx = 1
+# Put the metadata into the object so we can subset both together
+colData(sce) <- merge(colData(sce), metadata, by.x='Barcode', by.y=opt$cell_id_field, all.x=TRUE, sort=FALSE)
+
+# First candidates for removal are those without a label at all
+print("Checking unlablled")
+sce <- sce[, sce[[opt$cell_type_field]] != '']
+
+# If we still have too many after removing unlabelled...
+
+if (ncol(sce) > cell_num_limit ){ 
+
+    print("... unlabelled removed (where applicable), we still need to downsample")
+
+    # Only down-sample the most frequent cell types. Identify the ones to downsample
+    # by progressively resetting the proportion of each type to that of the next
+    # least abundant until total cell number falls below the limit.
+
+    cell_type_freqs <- sampling_freqs <- sort(table(sce[[opt$cell_type_field]]), decreasing = TRUE)
+
+    props <- cell_type_freqs/ sum(cell_type_freqs)
+    classes_to_downsample <- c()
+
+    for (i in 1:length(cell_type_freqs)){
+      
+      # Set the proportion for this cell type (and any preceding ones) to that
+      # of the subsequent cell type
+
+      props[1:i] <- props[i+1]
+      classes_to_downsample <- c(classes_to_downsample, names(cell_type_freqs[i]))
+      
+      if ( sum(props * sum(cell_type_freqs)) < cell_num_limit ){
+        break 
+      }
     }
-    current_cell_num = current_cell_num - sample_size
-}
 
-# subset matrix, barcodes and metadata by the generated index
-matrix = matrix[, -total_cells_to_remove]
-barcodes = data.frame(barcodes[-total_cells_to_remove, ])
-metadata = metadata[-total_cells_to_remove, ]
+    no_cells_to_remove <- ncol(sce) - cell_num_limit
+    cells_in_downsampled_groups <- sum(cell_type_freqs[classes_to_downsample])
+    sampling_rate <- (cells_in_downsampled_groups - no_cells_to_remove)/ cells_in_downsampled_groups
+
+    sampling_freqs[classes_to_downsample] <- floor(sampling_freqs[classes_to_downsample] * sampling_rate)
+
+    # Now derive a cells list
+
+    # These are the cells for gropus we don't need to sample
+    unsampled <- sce$Barcode[sce[[opt$cell_type_field]] %in% names(cell_type_freqs)[! names(cell_type_freqs) %in% classes_to_downsample]]
+
+    sampled <- unlist(lapply(classes_to_downsample, function(cd){
+      sample(sce$Barcode[sce[[opt$cell_type_field]] == cd ], sampling_freqs[[cd]])
+    }))
+
+    selected_barcodes <- c(unsampled, sampled)
+    sce <- sce[,sce$Barcode %in% selected_barcodes]
+}else{
+    print("... unlabelled removed (where applicable), no further downsampling required")
+}
 
 # write data
-dir.create(opt$output_dir)
-Matrix::writeMM(matrix, paste(opt$output_dir, "matrix.mtx", sep="/"))
-write.table(genes, paste(opt$output_dir, "genes.tsv", sep="/"), sep="\t", col.names = FALSE)
-write.table(barcodes, paste(opt$output_dir, "barcodes.tsv", sep="/"), sep="\t", row.names=FALSE, col.names = FALSE)
-write.table(metadata, opt$metadata_upd, sep="\t", row.names = FALSE)
+print("Writing outputs")
+write10xCounts(opt$output_dir, assays(sce)[[1]], barcodes = sce$Barcode, gene.id=rownames(sce))
+write.table(colData(sce)[,c(-1, -2)], opt$metadata_upd, sep="\t")
+print("Outputs written successfully")
