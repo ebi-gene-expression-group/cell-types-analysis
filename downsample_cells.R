@@ -100,41 +100,47 @@ colData(sce) <- merge(colData(sce), metadata, by.x='Barcode', by.y='id', all.x=T
 # First candidates for removal are those without a label at all
 sce <- sce[, sce[[opt$cell_type_field]] != '']
 
-# Only down-sample the most frequent cell types. Identify the ones to downsample
-# by progressively resetting the proportion of each type to that of the next
-# least abundant until total cell number falls below the limit.
+# If we still have too many after removing unlabelled...
 
-cell_type_freqs <- sampling_freqs <- sort(table(sce[[opt$cell_type_field]]), decreasing = TRUE)
+if (ncol(sce) > cell_num_limit ){ 
 
-props <- cell_type_freqs/ sum(cell_type_freqs)
-classes_to_downsample <- c()
+    # Only down-sample the most frequent cell types. Identify the ones to downsample
+    # by progressively resetting the proportion of each type to that of the next
+    # least abundant until total cell number falls below the limit.
 
-for (i in 1:length(cell_type_freqs)){
-  props[1:i] <- props[i+1]
-  classes_to_downsample <- c(classes_to_downsample, names(cell_type_freqs[i]))
-  
-  if ( sum(props * sum(cell_type_freqs)) < cell_num_limit ){
-    break 
-  }
+    cell_type_freqs <- sampling_freqs <- sort(table(sce[[opt$cell_type_field]]), decreasing = TRUE)
+
+    props <- cell_type_freqs/ sum(cell_type_freqs)
+    classes_to_downsample <- c()
+
+    for (i in 1:length(cell_type_freqs)){
+      props[1:i] <- props[i+1]
+      classes_to_downsample <- c(classes_to_downsample, names(cell_type_freqs[i]))
+      
+      if ( sum(props * sum(cell_type_freqs)) < cell_num_limit ){
+        break 
+      }
+    }
+
+    no_cells_to_remove <- ncol(sce) - cell_num_limit
+    cells_in_downsampled_groups <- sum(cell_type_freqs[classes_to_downsample])
+    sampling_rate <- (cells_in_downsampled_groups - no_cells_to_remove)/ cells_in_downsampled_groups
+
+    sampling_freqs[classes_to_downsample] <- floor(sampling_freqs[classes_to_downsample] * sampling_rate)
+
+    # Now derive a cells list
+
+    # These are the cells for gropus we don't need to sample
+    unsampled <- sce$Barcode[sce[[opt$cell_type_field]] %in% names(cell_type_freqs)[! names(cell_type_freqs) %in% classes_to_downsample]]
+
+    sampled <- unlist(lapply(classes_to_downsample, function(cd){
+      sample(sce$Barcode[sce[[opt$cell_type_field]] == cd ], sampling_freqs[[cd]])
+    }))
+
+    selected_barcodes <- c(unsampled, sampled)
+    sce <- sce[,sce$Barcode %in% selected_barcodes]
 }
 
-no_cells_to_remove <- ncol(sce) - cell_num_limit
-cells_in_downsampled_groups <- sum(cell_type_freqs[classes_to_downsample])
-sampling_rate <- (cells_in_downsampled_groups - no_cells_to_remove)/ cells_in_downsampled_groups
-
-sampling_freqs[classes_to_downsample] <- floor(sampling_freqs[classes_to_downsample] * sampling_rate)
-
-# Now derive a cells list
-
-# These are the cells for gropus we don't need to sample
-unsampled <- sce$Barcode[sce[[opt$cell_type_field]] %in% names(cell_type_freqs)[! names(cell_type_freqs) %in% classes_to_downsample]]
-
-sampled <- unlist(lapply(classes_to_downsample, function(cd){
-  sample(sce$Barcode[sce[[opt$cell_type_field]] == cd ], sampling_freqs[[cd]])
-}))
-
-selected_barcodes <- c(unsampled, sampled)
-
 # write data
-write10xCounts(opt$output_dir, sce[,sce$Barcode %in% selected_barcodes])
+write10xCounts(opt$output_dir, sce)
 write.table(colData(sce)[,c(-1, -2)], opt$metadata_upd, sep="\t")
