@@ -45,6 +45,15 @@ mkdir -p $output_dir
 export eval_input_dir=$data_dir/'results_dir/'
 export res_to_combine=$data_dir/'prod_outputs_scpred/'
 export ref_labels_file=$data_dir/'reference_sdrf.tsv'
+
+export sampling_test_10x_data=$data_dir/'10x_data/'
+export sampling_test_sdrf=$data_dir/'E-GEOD-83139.sdrf.txt'
+export sampling_cell_id_field='FactorValue..single.cell.identifier.'
+export sampling_cell_type_field='Characteristics..inferred.cell.type.'
+export sampling_arr_size_limit=2454500
+export sampling_out_dir='10x_data_sampled'
+export sampling_metadata_upd='E-GEOD-83139.sdrf_sampled.txt'
+
 export SDRF_dir=$data_dir/'SDRFs'
 export SDRF_cell_types="cell type"
 export tmpdir="TMPDIR"

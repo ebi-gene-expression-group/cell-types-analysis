@@ -1,6 +1,7 @@
 #!/usr/bin/env bats
 
 @test "Build label - CL term mapping" {
+    skip
     if [ "$use_existing_outputs" = 'true' ] && [ -f "$label_cl_dict" ]; then
         skip "$label_cl_dict exists and use_existing_outputs is set to 'true'"
     fi
@@ -20,6 +21,7 @@
 }
 
 @test "build tool evaluation table" {
+    skip
     if [ "$use_existing_outputs" = 'true' ] && [ -f "$tool_perf_table" ]; then
         skip "$tool_perf_table exists and use_existing_outputs is set to 'true'"
     fi
@@ -47,6 +49,7 @@
 }
 
 @test "generate empirical CDF" {
+    skip
     if [ "$use_existing_outputs" = 'true' ] && [ -f "$empirical_dist" ]; then
         skip "$empirical_dist exists and use_existing_outputs is set to 'true'"
     fi
@@ -70,6 +73,7 @@
 }
 
 @test "obtain p-values for calculated statistics" {
+    skip
     if [ "$use_existing_outputs" = 'true' ] && [ -f "$tool_table_pvals" ]; then
         skip "$tool_table_pvals exists and use_existing_outputs is set to 'true'"
     fi
@@ -87,6 +91,7 @@
 }
 
 @test "combine results" {
+    skip
     if [ "$use_existing_outputs" = 'true' ] && [ -f "$combined_results" ]; then
         skip "$combined_results exists and use_existing_outputs is set to 'true'"
     fi
@@ -106,6 +111,7 @@
 }
 
 @test "Get consensus output" {
+    skip
     if [ "$use_existing_outputs" = 'true' ] && [ -f "$summary_table_path" ]; then
         skip "$summary_table_path exists and use_existing_outputs is set to 'true'"
     fi
@@ -127,4 +133,25 @@
 
     [ "$status" -eq 0 ]
     [ -f "$summary_table_path" ]
+}
+
+@test "Run matrix down-sampling" {
+    if [ "$use_existing_outputs" = 'true' ] && [ -d "$sampling_out_dir" ]; then
+        skip "$sampling_out_dir exists and use_existing_outputs is set to 'true'"
+    fi
+
+    run rm -rf $sampling_out_dir && downsample_cells.R\
+                    --expression-data $sampling_test_10x_data\
+                    --metadata $sampling_test_sdrf\
+                    --cell-id-field $sampling_cell_id_field\
+                    --cell-type-field $sampling_cell_type_field\
+                    --array-size-limit $sampling_arr_size_limit\
+                    --output-dir $sampling_out_dir\
+                    --metadata-upd $sampling_metadata_upd
+
+    echo "status = ${status}"
+    echo "output = ${output}"
+
+    [ "$status" -eq 0 ]
+    [ -d "$sampling_out_dir" ]
 }
