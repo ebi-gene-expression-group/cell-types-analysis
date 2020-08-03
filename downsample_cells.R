@@ -22,6 +22,13 @@ option_list = list(
         help = 'Metadata file mapping cells to cell types'
     ),
     make_option(
+        c("-x", "--exclusions"),
+        action = "store",
+        default = NA,
+        type = 'character',
+        help = "Path to the yaml file with excluded terms for initial matrix filtering"
+    ),
+    make_option(
         c("-i", "--cell-id-field"),
         action = "store",
         default = "id",
@@ -86,6 +93,7 @@ print("... done input checks, proceeding to downsampling")
 
 print("Parsing full matrix and metadata...")
 suppressPackageStartupMessages(require(DropletUtils))
+suppressPackageStartupMessages(require(yaml))
 sce <- read10xCounts(opt$expression_data)
 
 metadata <- read.csv(opt$metadata, sep = "\t", stringsAsFactors = FALSE)
@@ -101,9 +109,16 @@ print("Done full parse")
 # Put the metadata into the object so we can subset both together
 colData(sce) <- merge(colData(sce), metadata, by.x='Barcode', by.y=opt$cell_id_field, all.x=TRUE, sort=FALSE)
 
+# Source function definitions
+script_dir = dirname(strsplit(commandArgs()[grep('--file=', commandArgs())], '=')[[1]][2])
+source(file.path(script_dir, 'cell_types_utils.R'))
 # First candidates for removal are those without a label at all
 print("Checking unlablled")
-sce <- sce[, sce[[opt$cell_type_field]] != '']
+if(! is.na(opt$exclusions)){
+    e = yaml.load_file(opt$exclusions)
+    unlabelled = tolower(e$unlabelled)
+}
+sce <- sce[, tolower(sce[[opt$cell_type_field]]) %in% unlabelled]
 
 # If we still have too many after removing unlabelled...
 

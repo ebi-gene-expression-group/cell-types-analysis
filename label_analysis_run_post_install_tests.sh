@@ -82,8 +82,13 @@ export top_labels_num=2
 export use_existing_outputs
 
 # retrieve test data 
-wget "ftp://ftp.ebi.ac.uk/pub/databases/arrayexpress/data/atlas/cell-types-project-test-data/cell_types_analysis_test_data.tar.gz" -P $test_working_dir
-tar -xzvf $test_working_dir/'cell_types_analysis_test_data.tar.gz' -C $test_working_dir
+test_data_url="ftp://ftp.ebi.ac.uk/pub/databases/arrayexpress/data/atlas/cell-types-project-test-data/cell_types_analysis_test_data.tar.gz"
+test_data_archive=$test_working_dir/`basename $test_data_url`
+
+if [ ! -e "$test_data_archive" ]; then
+    wget $test_data_url -P $test_working_dir
+    tar -xzvf $test_data_archive -C $test_working_dir
+fi
 
 # Derive the tests file name from the script name
 tests_file="${script_name%.*}".bats
