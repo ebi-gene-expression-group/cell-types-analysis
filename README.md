@@ -149,4 +149,13 @@ get_consensus_output.R\
           --summary-table-output-path <Path to the output table with top labels and per-cell metrics in .tsv format>
           --raw-table-output-path <Path to the output table with all labels in .tsv format>
 ```
-
+**downsample_cells.R**: To avoid memory overflow, reduce number of cells in over-represented cell types
+```
+downsample_cells.R\
+          --expression-data <10x-type directory with expression data>\
+          --metadata <metadata file with cell id - cell type mapping>\
+          --cell-id-field <name of cell id field in metadata file>\
+          --cell-type-field <name of cell type field in metadata file>\
+          --output-dir <directory to which outputs are returned>\
+          --metadata-upd <path for filtered metadata file>
+```
