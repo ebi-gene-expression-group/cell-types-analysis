@@ -106,21 +106,39 @@ for (field in c(opt$cell_id_field, opt$cell_type_field)){
     quit(status = 1)
   }
 }
+
+metadata[[opt$cell_id_field]] <- gsub(' ', '_', metadata[[opt$cell_id_field]])
 print("Done full parse")
 
 # Put the metadata into the object so we can subset both together
-colData(sce) <- merge(colData(sce), metadata, by.x='Barcode', by.y=opt$cell_id_field, all.x=TRUE, sort=FALSE)
+
+if (! any(sce$Barcode %in% metadata[[opt$cell_id_field]])){
+  write(paste("Cannot match any cells to metadata using", opt$cell_id_field), stderr())
+  quit(status = 1)
+}
+colData(sce) <- merge(colData(sce), metadata[!duplicated(metadata[[opt$cell_id_field]]),], by.x='Barcode', by.y=opt$cell_id_field, all.x=TRUE, sort=FALSE)
+
+# If there are any NAs in the cell type field, set to empty string
+colData(sce)[[opt$cell_type_field]][ is.na(colData(sce)[[opt$cell_type_field]]) ] <- ''
 
 # Source function definitions
+
 script_dir = dirname(strsplit(commandArgs()[grep('--file=', commandArgs())], '=')[[1]][2])
 source(file.path(script_dir, 'cell_types_utils.R'))
+
+if (! opt$cell_type_field %in% colnames(colData(sce))){
+    print(opt$cell_type_field, 'not in', paste(colnames(colData(sce)), collapse=','))
+    stop()
+}
+
 # First candidates for removal are those without a label at all
+
 print("Checking unlablled")
 if(! is.na(opt$exclusions)){
     e = yaml.load_file(opt$exclusions)
     unlabelled = tolower(e$unlabelled)
 }
-sce <- sce[, tolower(sce[[opt$cell_type_field]]) %in% unlabelled]
+sce <- sce[, ! tolower(colData(sce)[[opt$cell_type_field]]) %in% unlabelled]
 
 # If we still have too many after removing unlabelled...
 
@@ -132,7 +150,7 @@ if (ncol(sce) > cell_num_limit ){
     # by progressively resetting the proportion of each type to that of the next
     # least abundant until total cell number falls below the limit.
 
-    cell_type_freqs <- sampling_freqs <- sort(table(sce[[opt$cell_type_field]]), decreasing = TRUE)
+    cell_type_freqs <- sampling_freqs <- sort(table(colData(sce)[[opt$cell_type_field]]), decreasing = TRUE)
     print("Starting cell type frequencies:")
     print(cell_type_freqs)
 
@@ -167,12 +185,12 @@ if (ncol(sce) > cell_num_limit ){
     # Now derive a cells list
 
     # These are the cells for gropus we don't need to sample
-    unsampled <- sce$Barcode[sce[[opt$cell_type_field]] %in% names(cell_type_freqs)[! names(cell_type_freqs) %in% classes_to_downsample]]
+    unsampled <- sce$Barcode[colData(sce)[[opt$cell_type_field]] %in% names(cell_type_freqs)[! names(cell_type_freqs) %in% classes_to_downsample]]
 
     # Remove cells in proportion to their over-abundance 
 
     sampled <- unlist(lapply(classes_to_downsample, function(cd){
-      cell_type_cells <- sce$Barcode[sce[[opt$cell_type_field]] == cd ]
+      cell_type_cells <- sce$Barcode[colData(sce)[[opt$cell_type_field]] == cd ]
       cell_type_cells[! cell_type_cells %in% sample(cell_type_cells, remove_freqs[[cd]])]
     }))
 
@@ -182,7 +200,7 @@ if (ncol(sce) > cell_num_limit ){
     print("... unlabelled removed (where applicable), no further downsampling required")
 }
 
-cell_type_freqs <- sort(table(sce[[opt$cell_type_field]]), decreasing = TRUE)
+cell_type_freqs <- sort(table(colData(sce)[[opt$cell_type_field]]), decreasing = TRUE)
 print("Ending cell type frequencies:")
 print(cell_type_freqs)
     
