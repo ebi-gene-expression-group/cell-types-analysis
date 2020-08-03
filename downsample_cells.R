@@ -82,6 +82,8 @@ barcodes = read.csv(paste(expr_data, "barcodes.tsv", sep="/"), sep="\t", strings
 cell_num_limit = floor(opt$array_size_limit / nrow(genes))
 current_cell_num = nrow(barcodes)
 
+print(paste("Matrix limit of", opt$array_size_limit, 'for', nrow(genes), 'genes implies cell number limit of', cell_num_limit))
+
 # if no down-samling is required return a special status code to let the user know
 if(current_cell_num <= cell_num_limit){
   write("No downsampling required", stderr())
@@ -131,6 +133,8 @@ if (ncol(sce) > cell_num_limit ){
     # least abundant until total cell number falls below the limit.
 
     cell_type_freqs <- sampling_freqs <- sort(table(sce[[opt$cell_type_field]]), decreasing = TRUE)
+    print("Starting cell type frequencies:")
+    print(cell_type_freqs)
 
     props <- checkprops <- cell_type_freqs/ sum(cell_type_freqs)
     classes_to_downsample <- c()
@@ -177,6 +181,12 @@ if (ncol(sce) > cell_num_limit ){
 }else{
     print("... unlabelled removed (where applicable), no further downsampling required")
 }
+
+cell_type_freqs <- sort(table(sce[[opt$cell_type_field]]), decreasing = TRUE)
+print("Ending cell type frequencies:")
+print(cell_type_freqs)
+    
+print(paste('Final object has', ncol(sce), 'cells'))
 
 # write data
 print("Writing outputs")
