@@ -132,35 +132,44 @@ if (ncol(sce) > cell_num_limit ){
 
     cell_type_freqs <- sampling_freqs <- sort(table(sce[[opt$cell_type_field]]), decreasing = TRUE)
 
-    props <- cell_type_freqs/ sum(cell_type_freqs)
+    props <- checkprops <- cell_type_freqs/ sum(cell_type_freqs)
     classes_to_downsample <- c()
+    over_abundance <- c()
 
     for (i in 1:length(cell_type_freqs)){
       
       # Set the proportion for this cell type (and any preceding ones) to that
       # of the subsequent cell type
 
-      props[1:i] <- props[i+1]
+      checkprops[1:i] <- checkprops[i+1]
+      over_abundance <- (props - checkprops)[1:i]
+
       classes_to_downsample <- c(classes_to_downsample, names(cell_type_freqs[i]))
       
-      if ( sum(props * sum(cell_type_freqs)) < cell_num_limit ){
+      if ( sum(checkprops * sum(cell_type_freqs)) < cell_num_limit ){
         break 
       }
     }
 
+    # For the cell types we downsample, do so in proportion to their relative
+    # over-abundance
+
     no_cells_to_remove <- ncol(sce) - cell_num_limit
     cells_in_downsampled_groups <- sum(cell_type_freqs[classes_to_downsample])
-    sampling_rate <- (cells_in_downsampled_groups - no_cells_to_remove)/ cells_in_downsampled_groups
-
-    sampling_freqs[classes_to_downsample] <- floor(sampling_freqs[classes_to_downsample] * sampling_rate)
+    
+    remove_props <- over_abundance / sum(over_abundance)    
+    remove_freqs <- floor(no_cells_to_remove * remove_props)
 
     # Now derive a cells list
 
     # These are the cells for gropus we don't need to sample
     unsampled <- sce$Barcode[sce[[opt$cell_type_field]] %in% names(cell_type_freqs)[! names(cell_type_freqs) %in% classes_to_downsample]]
 
+    # Remove cells in proportion to their over-abundance 
+
     sampled <- unlist(lapply(classes_to_downsample, function(cd){
-      sample(sce$Barcode[sce[[opt$cell_type_field]] == cd ], sampling_freqs[[cd]])
+      cell_type_cells <- sce$Barcode[sce[[opt$cell_type_field]] == cd ]
+      cell_type_cells[! cell_type_cells %in% sample(cell_type_cells, remove_freqs[[cd]])]
     }))
 
     selected_barcodes <- c(unsampled, sampled)
