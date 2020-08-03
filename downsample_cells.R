@@ -133,10 +133,12 @@ if (! opt$cell_type_field %in% colnames(colData(sce))){
 
 # First candidates for removal are those without a label at all
 
-print("Checking unlablled")
+print("Checking unlabelled")
+unlabelled <- ''
 if(! is.na(opt$exclusions)){
     e = yaml.load_file(opt$exclusions)
-    unlabelled = tolower(e$unlabelled)
+    print(e)
+    unlabelled = c(unlabelled, tolower(e$unlabelled))
 }
 sce <- sce[, ! tolower(colData(sce)[[opt$cell_type_field]]) %in% unlabelled]
 
