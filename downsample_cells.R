@@ -137,7 +137,6 @@ print("Checking unlabelled")
 unlabelled <- ''
 if(! is.na(opt$exclusions)){
     e = yaml.load_file(opt$exclusions)
-    print(e)
     unlabelled = c(unlabelled, tolower(e$unlabelled))
 }
 sce <- sce[, ! tolower(colData(sce)[[opt$cell_type_field]]) %in% unlabelled]
