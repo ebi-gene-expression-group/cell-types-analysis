@@ -5,6 +5,8 @@ unlabelled:
   - node
   - ambiguous
   - NA
+  - ''
+  - 'not available'
 trivial_terms:
   - cell
   - of
