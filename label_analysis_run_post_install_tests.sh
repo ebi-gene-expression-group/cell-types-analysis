@@ -82,7 +82,7 @@ export top_labels_num=2
 export use_existing_outputs
 
 # retrieve test data 
-test_data_url="http://ftp.ebi.ac.uk/pub/databases/arrayexpress/data/atlas/cell-types-project-test-data/cell_types_analysis_test_data.tar.gz"
+test_data_url="ftp://ftp.ebi.ac.uk/pub/databases/arrayexpress/data/atlas/cell-types-project-test-data/cell_types_analysis_test_data.tar.gz"
 test_data_archive=$test_working_dir/`basename $test_data_url`
 
 if [ ! -e "$test_data_archive" ]; then
