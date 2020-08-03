@@ -128,3 +128,24 @@
     [ "$status" -eq 0 ]
     [ -f "$summary_table_path" ]
 }
+
+@test "Run matrix down-sampling" {
+    if [ "$use_existing_outputs" = 'true' ] && [ -d "$sampling_out_dir" ]; then
+        skip "$sampling_out_dir exists and use_existing_outputs is set to 'true'"
+    fi
+
+    run rm -rf $sampling_out_dir && downsample_cells.R\
+                    --expression-data $sampling_test_10x_data\
+                    --metadata $sampling_test_sdrf\
+                    --cell-id-field $sampling_cell_id_field\
+                    --cell-type-field $sampling_cell_type_field\
+                    --array-size-limit $sampling_arr_size_limit\
+                    --output-dir $sampling_out_dir\
+                    --metadata-upd $sampling_metadata_upd
+
+    echo "status = ${status}"
+    echo "output = ${output}"
+
+    [ "$status" -eq 0 ]
+    [ -d "$sampling_out_dir" ]
+}

@@ -22,7 +22,7 @@ before_install:
       conda config --add channels bioconda;
       conda config --add channels ebi-gene-expression-group;
 
-      conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION r-base r-cairo r-yaml r-hash=2.2.6.1 r-foreach r-doparallel r-matrixstats bioconductor-onassis openjdk=8.0.152 r-reshape2=1.4.3 r-data.table=1.12.8 r-optparse r-workflowscriptscommon bats r-stringi;
+      conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION r-base r-cairo r-yaml r-hash=2.2.6.1 r-foreach r-doparallel r-matrixstats bioconductor-onassis openjdk=8.0.152 r-reshape2=1.4.3 r-data.table=1.12.8 r-optparse r-workflowscriptscommon bats r-stringi dropletutils-scripts;
     fi
 
 install:
