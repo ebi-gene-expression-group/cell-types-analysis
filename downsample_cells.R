@@ -210,5 +210,8 @@ print(paste('Final object has', ncol(sce), 'cells'))
 # write data
 print("Writing outputs")
 write10xCounts(opt$output_dir, assays(sce)[[1]], barcodes = sce$Barcode, gene.id=rownames(sce))
-write.table(colData(sce)[,c(-1, -2)], opt$metadata_upd, sep="\t")
+# rename cell id field and remove redundant column
+colnames(colData(sce))[1] <- opt$cell_id_field
+colData(sce) <- colData(sce)[, -2] 
+write.table(colData(sce), opt$metadata_upd, sep="\t")
 print("Outputs written successfully")
