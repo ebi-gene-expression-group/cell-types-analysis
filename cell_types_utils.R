@@ -296,7 +296,7 @@ build_label_dataset_mapping = function(labels, datasets, lab_ds_map){
     for(idx in seq_along(labels)){
         lab = labels[idx]
         ds = datasets[idx]
-        if(is.na(lab)){
+        if(is.na(lab) | lab == ''){
             next
         }
         if(lab %in% keys(lab_ds_map)){
