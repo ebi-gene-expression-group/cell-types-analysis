@@ -117,7 +117,7 @@
                      --tmpdir $tmpdir\
                      --parallel $parallel\
                      --num-cores $num_cores\
-                     --include-sem-siml \
+                     --include-sem-siml\
                      --summary-table-output-path $summary_table_path\
                      --raw-table-output-path $raw_labels_table_path
 
