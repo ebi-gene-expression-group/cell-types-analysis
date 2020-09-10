@@ -217,35 +217,37 @@ agreement_rate = apply(labels, 1, get_agreement_rate)
 unlab_rate = apply(labels, 1, function(lab_vec) get_unlab_rate(lab_vec, unlabelled))
 
 n_cells = nrow(labels)
-# run computations in parallel, if specified 
-if(opt$parallel){
-    if(is.na(opt$num_cores)){
-        n_cores = detectCores()
-    } else {
-        n_cores = opt$num_cores
+
+sem_sim = NA
+# if specified, calculate semantic similarity across labels
+if(include_siml){
+    # run computations in parallel, if specified 
+    if(opt$parallel){
+        if(is.na(opt$num_cores)){
+            n_cores = detectCores()
+        } else {
+            n_cores = opt$num_cores
+        }
+        registerDoParallel(n_cores)
+        # average semantic similarity across labels
+        avg_siml = foreach (iter=1:n_cells) %dopar% {
+            .get_sem_sim(iter)
+        }
+        sem_sim = do.call(rbind, avg_siml)
+    } else{
+        # sequential execution
+        avg_siml = lapply(1:n_cells, function(idx) .get_sem_sim(idx))
+        sem_sim = do.call(cbind, avg_siml)
     }
-    registerDoParallel(n_cores)
-    # average semantic similarity across labels
-    avg_siml = foreach (iter=1:n_cells) %dopar% {
-        .get_sem_sim(iter)
-    }
-    sem_sim = do.call(rbind, avg_siml)
-} else{
-    # sequential execution
-    avg_siml = lapply(1:n_cells, function(idx) .get_sem_sim(idx))
-    sem_sim = do.call(cbind, avg_siml)
 }
 
 # extract dataset(s) of origin for top labels
 ds_tbl = apply(top_labs, 1, function(row) extract_datasets(row, lab_dataset_mapping))
 ds_tbl = data.frame(t(ds_tbl))
 colnames(ds_tbl) = paste("dataset", c(1:3), sep="_")
-# calculate combine score for each cell
-ss = NA
-if(include_siml){
-    ss = sem_sim
-}
-combined_score = sapply(1:n_cells, function(idx) mean(c(agreement_rate[idx], (1 - unlab_rate[idx]), ss[idx]), na.rm=TRUE))
+
+# calculate combined score for each cell
+combined_score = sapply(1:n_cells, function(idx) mean(c(agreement_rate[idx], (1 - unlab_rate[idx]), sem_sim[idx]), na.rm=TRUE))
 top_labs_tbl = data.frame(cbind(cell_id=cell_ids, 
                                 top_labs,
                                 agreement_rate=agreement_rate,
