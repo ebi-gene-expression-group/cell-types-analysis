@@ -91,6 +91,13 @@ option_list = list(
         help = 'Should cells be sorted by their aggregated scores? Default: TRUE'
     ),
     make_option(
+        c("-l", "--true-labels"),
+        action = "store",
+        type = 'character',
+        help = '(OPTIONAL) Path to the true labels tsv file in case tool performance is evaluated. 
+                Expected columns: cell_id, true_label, ontology_term'
+    ),
+    make_option(
         c("-o", "--summary-table-output-path"),
         action = "store",
         default = NA,
@@ -135,6 +142,13 @@ if(!is.na(opt$tool_table)){
     tool_scores = NULL
 }
 ontology = import_ontology_graph(opt$tmpdir, opt$ontology_graph)
+
+# check if true labels provided
+if(! is.na(opt$true_labels)){
+    true_labs_provided = TRUE
+} else {
+    true_labs_provided = FALSE
+}
 
 # read in predicted labels; check barcode consistency 
 file_names = list.files(opt$input_dir, full.names=TRUE)
@@ -209,6 +223,23 @@ top_labs = t(top_labs)
     return(mean(sem_sim, na.rm=TRUE))
 }
 
+# semantic similarity to true labels, if provided
+.get_sem_sim_true_labs = function(iter){
+    pred_lab = top_labs[iter, 1] # select first consensus label
+    true_lab = true_labels[iter, "true_label"]
+    if(!is.na(pred_lab) & !is.na(true_lab)){
+        sem_siml = get_CL_similarity(pred_lab, true_lab, 
+                                        lab_cl_mapping=lab_cl_mapping,
+                                        ontology=ontology,
+                                        sim_metric=sim_metric,
+                                        unlabelled=unlabelled)
+    } else{
+        sem_sim = NA
+    }
+    return(sem_siml)
+}
+
+
 # agreement among predicted labels
 agreement_rate = apply(labels, 1, get_agreement_rate)
 
@@ -217,6 +248,34 @@ agreement_rate = apply(labels, 1, get_agreement_rate)
 unlab_rate = apply(labels, 1, function(lab_vec) get_unlab_rate(lab_vec, unlabelled))
 
 n_cells = nrow(labels)
+
+
+# include true labels & update dictionary
+if(true_labs_provided){ 
+    true_labels = read.csv(opt$true_labels, sep="\t", stringsAsFactors=FALSE)
+    if(! all(c("cell_id", "true_label", "ontology_term") %in% colnames(true_labels))){
+        stop("Incorrect field names in true labels file provided.")
+    }
+
+    # make sure cell ids correspond
+    if(! setequal(true_labels$cell_id, cell_ids)){ 
+        stop("Provided true labels do not match those in predicted data")
+    }
+
+    # make sure order is the same
+    true_labels = true_labels[ match(true_labels$cell_id, cell_ids), ]
+
+    # update the label-CL terms dictionary 
+    .upd_dictionary = function(key, val, hash){
+        if(has.key(key, hash)){
+            return()
+        }
+        hash[key] = val
+    }
+    sapply(1:n_cells, function(idx) .upd_dictionary(true_labels$true_label[idx],
+                                                              true_labels$ontology_term,
+                                                              lab_cl_mapping)
+}
 
 sem_sim = NA
 # if specified, calculate semantic similarity across labels
@@ -234,10 +293,19 @@ if(include_siml){
             .get_sem_sim(iter)
         }
         sem_sim = do.call(rbind, avg_siml)
+        
+        if(true_labs_provided){
+            siml_to_true_labs = foreach(iter=1:n_cells) %dopar% {
+                .get_sem_sim_true_labs(iter)
+            }
+
     } else{
         # sequential execution
         avg_siml = lapply(1:n_cells, function(idx) .get_sem_sim(idx))
         sem_sim = do.call(cbind, avg_siml)
+        if(true_labs_provided){
+            siml_to_true_labs = sapply(1:n_cells, function(idx) .get_sem_sim_true_labs(idx))
+        }
     }
 }
 
@@ -252,9 +320,16 @@ top_labs_tbl = data.frame(cbind(cell_id=cell_ids,
                                 top_labs,
                                 agreement_rate=agreement_rate,
                                 unlab_rate=unlab_rate,
-                                mean_sem_siml=sem_sim,
                                 comb_score=combined_score, 
                                 ds_tbl))
+
+if(include_siml){
+    top_labs_tbl["mean_sem_siml"] = sem_sim
+}
+
+if(true_labs_provided){
+    top_labs_tbl["siml_to_true_labs"] = siml_to_true_labs
+}
 
 if(opt$sort_by_agg_score){
     top_labs_tbl = top_labs_tbl[ order(-top_labs_tbl$comb_score), ]
