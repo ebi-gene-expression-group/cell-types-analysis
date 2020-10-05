@@ -221,7 +221,7 @@ top_labs = t(top_labs)
             }
         }
     }
-    return(mean(sem_sim, na.rm=TRUE))
+    return(round(mean(sem_sim, na.rm=TRUE),3))
 }
 
 # semantic similarity to true labels, if provided
@@ -237,7 +237,7 @@ top_labs = t(top_labs)
     } else{
         sem_sim = NA
     }
-    return(sem_siml)
+    return(round(sem_siml, 3))
 }
 
 
