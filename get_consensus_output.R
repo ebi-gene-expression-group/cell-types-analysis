@@ -275,7 +275,7 @@ if(true_labs_provided){
     }
     sapply(1:n_cells, function(idx) .upd_dictionary(true_labels$true_label[idx],
                                                               true_labels$ontology_term,
-                                                              lab_cl_mapping)
+                                                              lab_cl_mapping))
 }
 
 sem_sim = NA
