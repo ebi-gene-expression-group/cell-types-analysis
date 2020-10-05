@@ -94,6 +94,7 @@ option_list = list(
         c("-l", "--true-labels"),
         action = "store",
         type = 'character',
+        default = NA,
         help = '(OPTIONAL) Path to the true labels tsv file in case tool performance is evaluated. 
                 Expected columns: cell_id, true_label, ontology_term'
     ),
