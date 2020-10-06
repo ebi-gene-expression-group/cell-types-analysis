@@ -145,11 +145,7 @@ if(!is.na(opt$tool_table)){
 ontology = import_ontology_graph(opt$tmpdir, opt$ontology_graph)
 
 # check if true labels provided
-if(! is.na(opt$true_labels)){
-    true_labs_provided = TRUE
-} else {
-    true_labs_provided = FALSE
-}
+true_labs_provided = !is.na(opt$true_labels)
 
 # read in predicted labels; check barcode consistency 
 file_names = list.files(opt$input_dir, full.names=TRUE)
@@ -226,8 +222,9 @@ top_labs = t(top_labs)
 
 # semantic similarity to true labels, if provided
 .get_sem_sim_true_labs = function(iter){
-    pred_lab = top_labs[iter, 1] # select first consensus label
+    pred_lab = as.character(top_labs[[iter]][1]) # select first consensus label
     true_lab = true_labels[iter, "true_label"]
+	
     if(!is.na(pred_lab) & !is.na(true_lab)){
         sem_siml = get_CL_similarity(pred_lab, true_lab, 
                                         lab_cl_mapping=lab_cl_mapping,
@@ -235,7 +232,7 @@ top_labs = t(top_labs)
                                         sim_metric=sim_metric,
                                         unlabelled=unlabelled)
     } else{
-        sem_sim = NA
+        sem_siml = NA
     }
     return(round(sem_siml, 3))
 }
@@ -250,10 +247,10 @@ unlab_rate = apply(labels, 1, function(lab_vec) get_unlab_rate(lab_vec, unlabell
 
 n_cells = nrow(labels)
 
-
 # include true labels & update dictionary
 if(true_labs_provided){ 
-    true_labels = read.csv(opt$true_labels, sep="\t", stringsAsFactors=FALSE)
+    true_labels = read.csv(opt$true_labels, sep="\t", stringsAsFactors=FALSE)  
+
     if(! all(c("cell_id", "true_label", "ontology_term") %in% colnames(true_labels))){
         stop("Incorrect field names in true labels file provided.")
     }
@@ -267,15 +264,17 @@ if(true_labs_provided){
     true_labels = true_labels[ match(true_labels$cell_id, cell_ids), ]
 
     # update the label-CL terms dictionary 
-    .upd_dictionary = function(key, val, hash){
-        if(has.key(key, hash)){
+    .upd_dictionary = function(key, val, hash){      
+	if(has.key(key, hash)){
             return()
         }
-        hash[key] = val
+        hash[tolower(key)] = val
     }
-    sapply(1:n_cells, function(idx) .upd_dictionary(true_labels$true_label[idx],
-                                                              true_labels$ontology_term,
-                                                              lab_cl_mapping))
+    for(idx in  1:n_cells){
+	.upd_dictionary(true_labels$true_label[idx],
+                        true_labels$ontology_term[idx],
+                        lab_cl_mapping)
+	}
 }
 
 sem_sim = NA
@@ -296,9 +295,11 @@ if(include_siml){
         sem_sim = do.call(rbind, avg_siml)
         
         if(true_labs_provided){
+	    registerDoParallel(n_cores)
             siml_to_true_labs = foreach(iter=1:n_cells) %dopar% {
                 .get_sem_sim_true_labs(iter)
             }
+	}
 
     } else{
         # sequential execution
@@ -329,7 +330,8 @@ if(include_siml){
 }
 
 if(true_labs_provided){
-    top_labs_tbl["siml_to_true_labs"] = siml_to_true_labs
+    print(siml_to_true_labs)
+    top_labs_tbl["siml_to_true_labs"] = unlist(siml_to_true_labs)
 }
 
 if(opt$sort_by_agg_score){
