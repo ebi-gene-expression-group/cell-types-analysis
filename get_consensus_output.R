@@ -330,7 +330,6 @@ if(include_siml){
 }
 
 if(true_labs_provided){
-    print(siml_to_true_labs)
     top_labs_tbl["siml_to_true_labs"] = unlist(siml_to_true_labs)
 }
 
