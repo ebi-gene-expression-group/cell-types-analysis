@@ -145,6 +145,7 @@ get_consensus_output.R\
           --exclustions <path to yaml file with unlabelled cells or excluded terms>\ 
           --ontology-graph <Path to the ontology graph in .obo or .xml format>\
           --semantic-sim-metric <Semantic similarity scoring method>\
+          --true-labels <path to file with true labels>\
           --include-sem-siml <boolean: should the semantic similarity be included in combined score calculation?>\ 
           --summary-table-output-path <Path to the output table with top labels and per-cell metrics in .tsv format>
           --raw-table-output-path <Path to the output table with all labels in .tsv format>
