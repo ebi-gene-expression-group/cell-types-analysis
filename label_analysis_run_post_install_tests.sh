@@ -48,6 +48,8 @@ export ref_labels_file=$data_dir/'reference_sdrf.tsv'
 
 export sampling_test_10x_data=$data_dir/'10x_data/'
 export sampling_test_sdrf=$data_dir/'E-GEOD-83139.sdrf.txt'
+export true_labels=$data_dir/'E-GEOD-83139_true_labels.tsv'
+export lab_cl_mapping_consensus=$data_dir/'lab_cl_mapping_consensus_labs.rds'
 export sampling_cell_id_field='FactorValue..single.cell.identifier.'
 export sampling_cell_type_field='Characteristics..inferred.cell.type.'
 export sampling_arr_size_limit=2454500
@@ -55,7 +57,7 @@ export sampling_out_dir=$output_dir/'10x_data_sampled'
 export sampling_metadata_upd=$output_dir/'E-GEOD-83139.sdrf_sampled.txt'
 
 export SDRF_dir=$data_dir/'SDRFs'
-export SDRF_cell_types="cell type"
+export SDRF_cell_types="inferred cell type"
 export tmpdir="TMPDIR"
 export ontology_graph="https://raw.githubusercontent.com/obophenotype/cell-ontology/master/cl-basic.obo"
 export combined_tools_results=$data_dir/'prod_combined_tools'
@@ -82,7 +84,7 @@ export top_labels_num=2
 export use_existing_outputs
 
 # retrieve test data 
-test_data_url="http://ftp.ebi.ac.uk/pub/databases/arrayexpress/data/atlas/cell-types-project-test-data/cell_types_analysis_test_data.tar.gz"
+test_data_url="http://ftp.ebi.ac.uk/pub/databases/arrayexpress/data/atlas/cell-types-project-test-data/cell_types_analysis_test_data_2.tar.gz"
 test_data_archive=$test_working_dir/$(basename $test_data_url)
 
 if [ ! -e "$test_data_archive" ]; then
