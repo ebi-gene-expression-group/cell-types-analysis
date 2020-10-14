@@ -160,3 +160,20 @@ downsample_cells.R\
           --output-dir <directory to which outputs are returned>\
           --metadata-upd <path for filtered metadata file>
 ```
+
+**check_labels.R**: Remove non-alphanumeric characters from labels in metadata files
+```
+check_labels.R\
+          --input-file <Path to input metadata file in .tsv format>\
+          --label-field <Name of label field in metadata file>\
+          --condensed <Is the provided metadata file in condensed format? Default: False>\
+          --attribute-type-col-num <Position of the attribute type field in condensed metadata file. Default: 5>\
+          --variable-col-num <Number of the label field in condensed metadata file. Default: 6>\
+          --avoid-lowercase <Should setting the labels to lowercase be skipped? Default: False>\
+          --output-path <Output for updated file>
+          
+```
+
+
+
+
