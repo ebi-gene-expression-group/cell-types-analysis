@@ -31,6 +31,20 @@ option_list = list(
         help = 'Is the provided metadata file in condensed format? Default: False'
     ),
     make_option(
+        c("-t", "--attribute-type-col-num"),
+        action = "store",
+        default = 5,
+        type = 'numeric',
+        help = 'Number of the attribute type field in condensed metadata file. Default: 5'
+    ),
+    make_option(
+        c("-v", "--variable-col-num"),
+        action = "store",
+        default = 6,
+        type = 'numeric',
+        help = 'Number of the label field in condensed metadata file. Default: 6'
+    ),
+    make_option(
         c("-a", "--avoid-lowercase"),
         action = "store_true",
         default = FALSE,
@@ -61,13 +75,13 @@ cond = opt$condensed
 lab_field = opt$label_field
 
 if(cond){
-    data = fread(opt$input_file, header=FALSE, stringsAsFactors = FALSE, fill = TRUE)
+    data = data.frame(fread(opt$input_file, header=FALSE, stringsAsFactors = FALSE, fill = TRUE))
     # extract rows with labels 
-    idx = which(data[, 5] == lab_field)
+    idx = which(data[, opt$attribute_type_col_num] == lab_field)
     if(length(idx) < 1){
         stop("No labels found in supplied file")
     }
-    labels = data[idx, 6]
+    labels = data[idx, opt$variable_col_num]
 } else{
     data = read.csv(opt$input_file, sep = "\t", stringsAsFactors = FALSE)
     print(data)
