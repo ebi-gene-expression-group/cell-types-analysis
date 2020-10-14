@@ -353,3 +353,11 @@ extract_metadata = function(file){
         idx = idx + 1 
     }
 }
+
+# remove non-aplhanumeric charecters from metadata/marker gene files
+# given a vector of labels, return updated labels
+filter_labels = function(labels, reg_exp="[^-A-Za-z0-9>+ ]"){
+    labels = sapply(labels, function(l) gsub(reg_exp, "_", l))
+    return(labels)
+}
+

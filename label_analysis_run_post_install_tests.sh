@@ -57,6 +57,7 @@ export sampling_out_dir=$output_dir/'10x_data_sampled'
 export sampling_metadata_upd=$output_dir/'E-GEOD-83139.sdrf_sampled.txt'
 
 export SDRF_dir=$data_dir/'SDRFs'
+export SDRF_to_process=$SDRF_dir/'E-ENAD-27.condensed-sdrf.tsv'
 export SDRF_cell_types="inferred cell type"
 export tmpdir="TMPDIR"
 export ontology_graph="https://raw.githubusercontent.com/obophenotype/cell-ontology/master/cl-basic.obo"
@@ -72,6 +73,7 @@ export tool_perf_table=$output_dir/'tool_perf_table.tsv'
 export empirical_dist=$output_dir/'empirical_dist_list.rds'
 export tool_table_pvals=$output_dir/'tool_pvals.tsv'
 export combined_results=$output_dir/'combined_results.tsv'
+export SDRF_checked_output=$output_dir/'checked_SDRF.tsv'
 
 export raw_labels_table_path=$output_dir/'raw_labels_table.tsv'
 export summary_table_path=$output_dir/'summary_output_table.tsv'
