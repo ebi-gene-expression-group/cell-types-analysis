@@ -150,3 +150,26 @@
     [ "$status" -eq 0 ]
     [ -d "$sampling_out_dir" ]
 }
+
+@test "Check labels" {
+    if [ "$use_existing_outputs" = 'true' ] && [ -d "$SDRF_checked_output" ]; then
+        skip "$SDRF_checked_output exists and use_existing_outputs is set to 'true'"
+    fi
+
+    run rm -rf $SDRF_checked_output && check_labels.R --input-file $SDRF_to_process\
+                                                      --condensed\
+                                                      --label-field $SDRF_cell_types\
+                                                      --output-path $SDRF_checked_output
+
+
+    echo "status = ${status}"
+    echo "output = ${output}"
+
+    [ "$status" -eq 0 ]
+    [ -f "$SDRF_checked_output" ]
+}
+
+
+
+
+
