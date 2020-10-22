@@ -31,6 +31,13 @@ option_list = list(
         help = 'Is the provided metadata file in condensed format? Default: False'
     ),
     make_option(
+        c("-d", "--delimiter"),
+        action = "store",
+        default = NA,
+        type = 'character',
+        help = 'Delimiter in provided cell label field'
+    ),
+    make_option(
         c("-t", "--attribute-type-col-num"),
         action = "store",
         default = 5,
@@ -73,6 +80,10 @@ if(!file.exists(opt$input_file)){
 reg_exp = "[^-A-Za-z0-9>+ ]"
 cond = opt$condensed
 lab_field = opt$label_field
+# if specified, remove delimeter from label field definition
+if(!is.na(opt$delimiter)){
+    lab_field = gsub(opt$delimiter, " ", lab_field)
+}
 
 if(cond){
     data = data.frame(fread(opt$input_file, header=FALSE, stringsAsFactors = FALSE, fill = TRUE))
