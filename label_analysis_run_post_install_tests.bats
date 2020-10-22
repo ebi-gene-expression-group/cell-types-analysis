@@ -159,6 +159,7 @@
     run rm -rf $SDRF_checked_output && check_labels.R --input-file $SDRF_to_process\
                                                       --condensed\
                                                       --label-field $SDRF_cell_types\
+                                                      --delimiter $SDRF_delimiter\
                                                       --output-path $SDRF_checked_output
 
 
