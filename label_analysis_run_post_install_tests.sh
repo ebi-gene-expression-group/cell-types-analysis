@@ -58,7 +58,8 @@ export sampling_metadata_upd=$output_dir/'E-GEOD-83139.sdrf_sampled.txt'
 
 export SDRF_dir=$data_dir/'SDRFs'
 export SDRF_to_process=$SDRF_dir/'E-ENAD-27.condensed-sdrf.tsv'
-export SDRF_cell_types="inferred cell type"
+export SDRF_cell_types="inferred_cell_type"
+export SDRF_delimiter="_"
 export tmpdir="TMPDIR"
 export ontology_graph="https://raw.githubusercontent.com/obophenotype/cell-ontology/master/cl-basic.obo"
 export combined_tools_results=$data_dir/'prod_combined_tools'
