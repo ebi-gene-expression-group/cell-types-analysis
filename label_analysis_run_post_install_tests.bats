@@ -9,7 +9,7 @@
 					--input-dir $SDRF_dir\
 					--condensed-sdrf\
 					--output-dict-path $label_cl_dict\
-                    --cell-label-col-name $SDRF_cell_types\
+                    			--cell-label-col-name $SDRF_cell_types\
 					--output-text-path $label_cl_txt
 
     echo "status = ${status}"
@@ -30,13 +30,13 @@
 					--parallel $parallel\
 					--num-cores $num_cores\
 					--barcode-col-pred $barcode_col_pred\
-                    --tmpdir $tmpdir\
-                    --ontology-graph $ontology_graph\
+                    			--tmpdir $tmpdir\
+                    			--ontology-graph $ontology_graph\
 					--label-column-ref $label_column_ref\
 					--label-column-pred $label_column_pred\
 					--lab-cl-mapping $label_cl_dict\
 					--ref-file $ref_labels_file\
-                    --include-sem-siml \
+                    			--include-sem-siml \
 					--output-path $tool_perf_table
     echo "status = ${status}"
     echo "output = ${output}"
@@ -57,7 +57,7 @@
 					--parallel $parallel\
 					--num-iterations $num_iter\
 					--sample-labs $sample_labs\
-                    --tmpdir $tmpdir\
+                    			--tmpdir $tmpdir\
 					--lab-cl-mapping $label_cl_dict\
 					--num-cores $num_cores\
 					--output-path $empirical_dist
@@ -159,7 +159,6 @@
     run rm -rf $SDRF_checked_output && check_labels.R --input-file $SDRF_to_process\
                                                       --condensed\
                                                       --label-field $SDRF_cell_types\
-                                                      --delimiter $SDRF_delimiter\
                                                       --output-path $SDRF_checked_output
 
 
