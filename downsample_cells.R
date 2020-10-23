@@ -12,7 +12,8 @@ option_list = list(
         action = "store",
         default = NA,
         type = 'character',
-        help = '10xGenomics-type directory holding expression matrix, genes, and barcodes'
+        help = '10xGenomics-type directory holding expression matrix, genes, 
+                and barcodes'
     ),
     make_option(
         c("-m", "--metadata"),
@@ -26,7 +27,8 @@ option_list = list(
         action = "store",
         default = NA,
         type = 'character',
-        help = "Path to the yaml file with excluded terms for initial matrix filtering"
+        help = "Path to the yaml file with excluded terms for 
+        initial matrix filtering"
     ),
     make_option(
         c("-i", "--cell-id-field"),
@@ -65,7 +67,8 @@ option_list = list(
     )
 )
 
-opt = wsc_parse_args(option_list, mandatory = c('expression_data', 'metadata', 'output_dir', 'metadata_upd'))
+opt = wsc_parse_args(option_list, mandatory = c('expression_data', 'metadata',
+                                                'output_dir', 'metadata_upd'))
 
 if (is.na(opt$expression_data) || ! dir.exists(opt$expression_data)){
   stop("Provide a valid directory for --expression-data")
@@ -77,12 +80,15 @@ if (is.na(opt$expression_data) || ! dir.exists(opt$expression_data)){
 
 print("Checking inputs for downsampling...")
 expr_data = opt$expression_data
-genes = read.csv(paste(expr_data, "genes.tsv", sep="/"), sep="\t", stringsAsFactors = FALSE, header = FALSE)
-barcodes = read.csv(paste(expr_data, "barcodes.tsv", sep="/"), sep="\t", stringsAsFactors = FALSE, header = FALSE)
+genes = read.csv(paste(expr_data, "genes.tsv", sep="/"), sep="\t", 
+                 stringsAsFactors = FALSE, header = FALSE, check.names=FALSE)
+barcodes = read.csv(paste(expr_data, "barcodes.tsv", sep="/"), sep="\t", 
+                 stringsAsFactors = FALSE, header = FALSE, check.names=FALSE)
 cell_num_limit = floor(opt$array_size_limit / nrow(genes))
 current_cell_num = nrow(barcodes)
 
-print(paste("Matrix limit of", opt$array_size_limit, 'for', nrow(genes), 'genes implies cell number limit of', cell_num_limit))
+print(paste("Matrix limit of", opt$array_size_limit, 'for', nrow(genes),
+            'genes implies cell number limit of', cell_num_limit))
 
 # if no down-samling is required return a special status code to let the user know
 if(current_cell_num <= cell_num_limit){
@@ -98,11 +104,13 @@ suppressPackageStartupMessages(require(DropletUtils))
 suppressPackageStartupMessages(require(yaml))
 sce <- read10xCounts(opt$expression_data)
 
-metadata <- read.csv(opt$metadata, sep = "\t", stringsAsFactors = FALSE)
+metadata <- read.csv(opt$metadata, sep = "\t", 
+                     stringsAsFactors = FALSE, check.names=FALSE)
 
 for (field in c(opt$cell_id_field, opt$cell_type_field)){
   if (! field %in% colnames(metadata)){
-    write(paste0("Supplied ID field: ", opt$cell_id_field, " not in metadata frame"), stderr())
+    write(paste0("Supplied ID field: ", opt$cell_id_field,
+          " not in metadata frame"), stderr())
     quit(status = 1)
   }
 }
@@ -113,10 +121,14 @@ print("Done full parse")
 # Put the metadata into the object so we can subset both together
 
 if (! any(sce$Barcode %in% metadata[[opt$cell_id_field]])){
-  write(paste("Cannot match any cells to metadata using", opt$cell_id_field), stderr())
+  write(paste("Cannot match any cells to metadata using", 
+               opt$cell_id_field), stderr())
   quit(status = 1)
 }
-colData(sce) <- merge(colData(sce), metadata[!duplicated(metadata[[opt$cell_id_field]]),], by.x='Barcode', by.y=opt$cell_id_field, all.x=TRUE, sort=FALSE)
+colData(sce) <- merge(colData(sce), 
+                      metadata[!duplicated(metadata[[opt$cell_id_field]]),],
+                      by.x='Barcode', by.y=opt$cell_id_field, 
+                      all.x=TRUE, sort=FALSE)
 
 # If there are any NAs in the cell type field, set to empty string
 colData(sce)[[opt$cell_type_field]][ is.na(colData(sce)[[opt$cell_type_field]]) ] <- ''
@@ -151,7 +163,8 @@ if (ncol(sce) > cell_num_limit ){
     # by progressively resetting the proportion of each type to that of the next
     # least abundant until total cell number falls below the limit.
 
-    cell_type_freqs <- sampling_freqs <- sort(table(colData(sce)[[opt$cell_type_field]]), decreasing = TRUE)
+    cell_type_freqs <- sampling_freqs <- sort(table(colData(sce)[[opt$cell_type_field]]),
+                                              decreasing = TRUE)
     print("Starting cell type frequencies:")
     print(cell_type_freqs)
 
@@ -186,7 +199,9 @@ if (ncol(sce) > cell_num_limit ){
     # Now derive a cells list
 
     # These are the cells for gropus we don't need to sample
-    unsampled <- sce$Barcode[colData(sce)[[opt$cell_type_field]] %in% names(cell_type_freqs)[! names(cell_type_freqs) %in% classes_to_downsample]]
+    unsampled <- sce$Barcode[colData(sce)[[opt$cell_type_field]] %in% 
+                 names(cell_type_freqs)[! names(cell_type_freqs) %in%
+                 classes_to_downsample]]
 
     # Remove cells in proportion to their over-abundance 
 
@@ -209,7 +224,8 @@ print(paste('Final object has', ncol(sce), 'cells'))
 
 # write data
 print("Writing outputs")
-write10xCounts(opt$output_dir, assays(sce)[[1]], barcodes = sce$Barcode, gene.id=rownames(sce))
+write10xCounts(opt$output_dir, assays(sce)[[1]], barcodes = sce$Barcode, 
+                                                 gene.id=rownames(sce))
 # rename cell id field and remove redundant column
 colnames(colData(sce))[1] <- opt$cell_id_field
 colData(sce) <- colData(sce)[, -2] 

@@ -34,7 +34,8 @@ option_list = list(
         action = "store",
         default = NA,
         type = 'integer',
-        help = 'Number of cores to run the process on. Default: all available cores. --parallel must be set to "true" for this to take effect'
+        help = 'Number of cores to run the process on. Default: all available cores.
+                --parallel must be set to "true" for this to take effect'
     ),
     make_option(
         c("-d", "--cl-dictionary"),
@@ -48,7 +49,8 @@ option_list = list(
         action = "store",
         default = NA,
         type = 'character',
-        help = "Path to the yaml file with excluded terms. Must contain fields 'unlabelled' and 'trivial_terms'"
+        help = "Path to the yaml file with excluded terms. Must contain fields
+                'unlabelled' and 'trivial_terms'"
     ),
      make_option(
         c("-g", "--tmpdir"),
@@ -62,7 +64,8 @@ option_list = list(
         action = "store",
         default = NA,
         type = 'character',
-        help = 'Path to the ontology graph in .obo or .xml format. Import link can also be provided.'
+        help = 'Path to the ontology graph in .obo or .xml format. 
+                Import link can also be provided.'
     ),
     make_option(
         c("-m", "--semantic-sim-metric"),
@@ -71,16 +74,18 @@ option_list = list(
         type = 'character',
         help = 'Semantic similarity scoring method. 
                 Must be supported by Onassis package.
-                See listSimilarities()$pairwiseMeasures for a list of accepted options.
-                NB: if included in combined score calculation, make sure to select a metric with values in the [0;1] range.'
+                See listSimilarities()$pairwiseMeasures for a list of accepted
+                options. NB: if included in combined score calculation,
+                make sure to select a metric with values in the [0;1] range.'
     ),
      make_option(
         c("-k", "--include-sem-siml"),
         action = "store_true",
         default = FALSE,
         type = 'logical',
-        help = 'Should semantic similarity be included into combined score calculation? Default: FALSE.
-                If setting to TRUE, note that this confines the options on semantic similarity metric
+        help = 'Should semantic similarity be included into combined score
+                calculation? Default: FALSE. If setting to TRUE, note that this
+                confines the options on semantic similarity metric
                 to those with range in the [0;1] interval only.'
     ),
     make_option(
@@ -95,8 +100,8 @@ option_list = list(
         action = "store",
         type = 'character',
         default = NA,
-        help = '(OPTIONAL) Path to the true labels tsv file in case tool performance is evaluated. 
-                Expected columns: cell_id, true_label, ontology_term'
+        help = '(OPTIONAL) Path to the true labels tsv file in case tool
+                performance is evaluated. Expected columns: cell_id, true_label, ontology_term'
     ),
     make_option(
         c("-o", "--summary-table-output-path"),
@@ -135,7 +140,8 @@ suppressPackageStartupMessages(require(yaml))
 
 # retrieve tool scores if specified
 if(!is.na(opt$tool_table)){
-    tool_table = read.csv(opt$tool_table, sep="\t", stringsAsFactors=FALSE)
+    tool_table = read.csv(opt$tool_table, sep="\t", stringsAsFactors=FALSE, 
+                                                    check.names=FALSE)
     tools = tool_table[, "Tool"]
     tool_scores = tool_table[, "Combined_score"]
     names(tool_scores) = tools
@@ -151,7 +157,8 @@ true_labs_provided = !is.na(opt$true_labels)
 file_names = list.files(opt$input_dir, full.names=TRUE)
 predicted_labs_tables = lapply(file_names, function(f) read.csv(f, sep="\t", 
                                                        stringsAsFactors=FALSE,
-                                                       comment.char = "#"))
+                                                       comment.char = "#",
+                                                       check.names=FALSE))
 
 # extract tools that produced given predictions
 source_tools = as.character(sapply(file_names, function(f) extract_metadata(f)[['tool']]))
@@ -249,7 +256,8 @@ n_cells = nrow(labels)
 
 # include true labels & update dictionary
 if(true_labs_provided){ 
-    true_labels = read.csv(opt$true_labels, sep="\t", stringsAsFactors=FALSE)  
+    true_labels = read.csv(opt$true_labels, sep="\t", stringsAsFactors=FALSE, 
+                                                      check.names=FALSE)  
 
     if(! all(c("cell_id", "true_label", "ontology_term") %in% colnames(true_labels))){
         stop("Incorrect field names in true labels file provided.")
