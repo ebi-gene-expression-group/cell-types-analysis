@@ -20,7 +20,8 @@ option_list = list(
         action = "store",
         default = NA,
         type = 'character',
-        help = "Path to the yaml file with excluded terms. Must contain fields 'unlabelled' and 'trivial_terms'"
+        help = "Path to the yaml file with excluded terms. 
+                Must contain fields 'unlabelled' and 'trivial_terms'"
     ),
     make_option(
         c("-l", "--label-column-ref"),
@@ -76,16 +77,18 @@ option_list = list(
         action = "store",
         default = NA,
         type = 'character',
-        help = 'Path to the ontology graph in .obo or .xml format. Import link can also be provided.'
+        help = 'Path to the ontology graph in .obo or .xml format. 
+                Import link can also be provided.'
     ),
     make_option(
         c("-s", "--semantic-sim-metric"),
         action = "store",
         default = 'lin',
         type = 'character',
-        help = 'Semantic similarity scoring method. Must be supported by Onassis package. 
-                See listSimilarities()$pairwiseMeasures for a list of accepted options
-                Obviously must correspond to similarity metric used in other scripts.'
+        help = 'Semantic similarity scoring method. Must be supported by
+                Onassis package. See listSimilarities()$pairwiseMeasures 
+                for a list of accepted options. Obviously must correspond 
+                to similarity metric used in other scripts.'
     ),
     make_option(
         c("-o", "--output-path"),
@@ -96,7 +99,9 @@ option_list = list(
     )
 )
 
-opt = wsc_parse_args(option_list, mandatory = c("input_ref_file", "output_path", "lab_cl_mapping"))
+opt = wsc_parse_args(option_list, mandatory = c("input_ref_file", 
+                                                "output_path",
+                                                "lab_cl_mapping"))
 script_dir = dirname(strsplit(commandArgs()[grep('--file=', commandArgs())], '=')[[1]][2])
 source(file.path(script_dir, 'cell_types_utils.R'))
 # import the rest of dependencies 
@@ -113,7 +118,9 @@ if(! is.na(opt$exclusions)){
     trivial_terms = tolower(e$trivial_terms)
 }
 
-reference_labs_df = read.csv(opt$input_ref_file, sep="\t", stringsAsFactors=FALSE, comment.char = "#")
+reference_labs_df = read.csv(opt$input_ref_file, sep="\t", stringsAsFactors=FALSE,
+                                                           comment.char = "#", 
+                                                           check.names=FALSE)
 reference_labs = reference_labs_df[, opt$label_column_ref]
 sample_labs = opt$sample_labs
 num_iter = opt$num_iterations

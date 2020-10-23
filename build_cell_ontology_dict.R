@@ -22,28 +22,32 @@ option_list = list(
         action = "store_true",
         default = FALSE,
         type = 'logical',
-        help = 'Boolean: is the provided SDRF file in a condensed form? Default: TRUE'
+        help = 'Boolean: is the provided SDRF file in a condensed form? 
+                Default: TRUE'
     ),
     make_option(
         c("-b", "--barcode-col-name"),
         action = "store",
         default = "id",
         type = 'character',
-        help = 'Name of the barcode column in SDRF files (must be identical across all files)'
+        help = 'Name of the barcode column in SDRF files (must be identical 
+                across all files)'
     ),
     make_option(
         c("-l", "--cell-label-col-name"),
         action = "store",
         default = "inferred cell type",
         type = 'character',
-        help = 'Name of the cell label column in SDRF files (must be identical across all files)'
+        help = 'Name of the cell label column in SDRF files 
+                (must be identical across all files)'
     ),
     make_option(
         c("-c", "--cell-ontology-col-name"),
         action = "store",
         default = "cell.type.ontology",
         type = 'character',
-        help = 'Name of the cell ontology terms column in SDRF files (must be identical across all files)'
+        help = 'Name of the cell ontology terms column in SDRF files 
+                (must be identical across all files)'
     ),
     make_option(
         c("-o", "--output-dict-path"),
@@ -62,9 +66,11 @@ option_list = list(
 )
 
 # parse arguments 
-opt = wsc_parse_args(option_list, mandatory = c("input_dir", "output_dict_path", "output_text_path"))
+opt = wsc_parse_args(option_list, mandatory = c("input_dir", "output_dict_path",
+                                                "output_text_path"))
 # source function definitions 
-script_dir = dirname(strsplit(commandArgs()[grep('--file=', commandArgs())], '=')[[1]][2])
+script_dir = dirname(strsplit(commandArgs()[grep('--file=',
+                                            commandArgs())], '=')[[1]][2])
 source(file.path(script_dir, 'cell_types_utils.R'))
 cell_label = opt$cell_label_col_name
 
@@ -76,9 +82,14 @@ suppressPackageStartupMessages(library(data.table))
 condensed = opt$condensed_sdrf
 file_names = list.files(opt$input_dir, full.names=TRUE, recursive = TRUE)
 if(condensed){
-    sdrf_tables = lapply(file_names, function(file) data.frame(fread(file, header=FALSE, stringsAsFactors = FALSE, fill = TRUE)))
+    sdrf_tables = lapply(file_names, function(file)
+                                     data.frame(fread(file, header=FALSE,
+                                     stringsAsFactors = FALSE, fill = TRUE, 
+                                     check.names=FALSE)))
 } else{
-    sdrf_tables = lapply(file_names, function(file) read.csv(file, sep="\t", stringsAsFactors = FALSE))
+    sdrf_tables = lapply(file_names, function(file) read.csv(file, sep="\t", 
+                                                    stringsAsFactors = FALSE, 
+                                                    check.names=FALSE))
 }
 
 # extract cell labels and CL terms from SDRF files (condensed or non-condensed)

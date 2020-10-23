@@ -32,7 +32,8 @@ option_list = list(
 opt = wsc_parse_args(option_list, mandatory = c("input_table", "emp_dist_list", "output_table"))
 
 distr_list = readRDS(opt$emp_dist_list)
-tools_table = read.delim(opt$input_table, stringsAsFactors=FALSE)
+tools_table = read.delim(opt$input_table, stringsAsFactors=FALSE,
+                                          check.names=FALSE)
 metrics = names(distr_list)
 for(metric in metrics){
     metric_distr = distr_list[[metric]]
