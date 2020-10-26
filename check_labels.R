@@ -31,18 +31,12 @@ option_list = list(
         help = 'Is the provided metadata file in condensed format? Default: False'
     ),
     make_option(
-        c("-d", "--delimiter"),
-        action = "store",
-        default = NA,
-        type = 'character',
-        help = 'Delimiter in provided cell label field'
-    ),
-    make_option(
         c("-t", "--attribute-type-col-num"),
         action = "store",
         default = 5,
         type = 'numeric',
-        help = 'Number of the attribute type field in condensed metadata file. Default: 5'
+        help = 'Number of the attribute type field in condensed metadata file.
+                Default: 5'
     ),
     make_option(
         c("-v", "--variable-col-num"),
@@ -68,9 +62,11 @@ option_list = list(
 )
 
 # parse arguments 
-opt = wsc_parse_args(option_list, mandatory = c("input_file", "label_field", "output_path"))
+opt = wsc_parse_args(option_list, mandatory = c("input_file", "label_field",
+                                                "output_path"))
 # source function definitions 
-script_dir = dirname(strsplit(commandArgs()[grep('--file=', commandArgs())], '=')[[1]][2])
+script_dir = dirname(strsplit(commandArgs()[grep('--file=',
+                                            commandArgs())], '=')[[1]][2])
 source(file.path(script_dir, 'cell_types_utils.R'))
 
 if(!file.exists(opt$input_file)){
@@ -80,13 +76,11 @@ if(!file.exists(opt$input_file)){
 reg_exp = "[^-A-Za-z0-9>+ ]"
 cond = opt$condensed
 lab_field = opt$label_field
-# if specified, remove delimeter from label field definition
-if(!is.na(opt$delimiter)){
-    lab_field = gsub(opt$delimiter, " ", lab_field)
-}
 
 if(cond){
-    data = data.frame(fread(opt$input_file, header=FALSE, stringsAsFactors = FALSE, fill = TRUE))
+    data = data.frame(fread(opt$input_file, header=FALSE, 
+                            stringsAsFactors = FALSE, fill = TRUE, 
+                            check.names=FALSE))
     # extract rows with labels 
     idx = which(data[, opt$attribute_type_col_num] == lab_field)
     if(length(idx) < 1){
@@ -94,8 +88,8 @@ if(cond){
     }
     labels = data[idx, opt$variable_col_num]
 } else{
-    data = read.csv(opt$input_file, sep = "\t", stringsAsFactors = FALSE)
-    print(data)
+    data = read.csv(opt$input_file, sep = "\t", 
+                    stringsAsFactors = FALSE, check.names=FALSE)
     if(!lab_field %in% colnames(data)){
     stop("Provided label field not found in metada file")
     }
@@ -107,14 +101,13 @@ labels = filter_labels(labels, reg_exp)
 if(! opt$avoid_lowercase){
     labels = tolower(labels)
 }
-
 # update metadata file
 if(cond){
-    data[idx, 6] = labels
+    data[idx, opt$variable_col_num] = labels
     cols = FALSE
     
 } else{
-    data$lab_field = labels
+    data[, lab_field] = labels
     cols = TRUE
 }
 write.table(data, opt$output_path, sep = "\t", row.names=FALSE, col.names = cols)

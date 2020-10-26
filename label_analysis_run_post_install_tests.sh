@@ -50,22 +50,21 @@ export sampling_test_10x_data=$data_dir/'10x_data/'
 export sampling_test_sdrf=$data_dir/'E-GEOD-83139.sdrf.txt'
 export true_labels=$data_dir/'E-GEOD-83139_true_labels.tsv'
 export lab_cl_mapping_consensus=$data_dir/'lab_cl_mapping_consensus_labs.rds'
-export sampling_cell_id_field='FactorValue..single.cell.identifier.'
-export sampling_cell_type_field='Characteristics..inferred.cell.type.'
+export sampling_cell_id_field='FactorValue [single cell identifier]'
+export sampling_cell_type_field='Characteristics [inferred cell type]'
 export sampling_arr_size_limit=2454500
 export sampling_out_dir=$output_dir/'10x_data_sampled'
 export sampling_metadata_upd=$output_dir/'E-GEOD-83139.sdrf_sampled.txt'
 
 export SDRF_dir=$data_dir/'SDRFs'
 export SDRF_to_process=$SDRF_dir/'E-ENAD-27.condensed-sdrf.tsv'
-export SDRF_cell_types="inferred_cell_type"
-export SDRF_delimiter="_"
+export SDRF_cell_types="inferred cell type"
 export tmpdir="TMPDIR"
 export ontology_graph="https://raw.githubusercontent.com/obophenotype/cell-ontology/master/cl-basic.obo"
 export combined_tools_results=$data_dir/'prod_combined_tools'
 export barcode_col_pred='cell_id'
 export barcode_col_ref='Assay'
-export label_column_ref='Sample.Characteristic.cell.type.'
+export label_column_ref='Sample Characteristic[cell type]'
 export label_column_pred='predicted_label'
 
 export label_cl_dict=$output_dir/'label_cl_dict.rds'
