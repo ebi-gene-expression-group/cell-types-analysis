@@ -78,9 +78,10 @@ cond = opt$condensed
 lab_field = opt$label_field
 
 if(cond){
-    data = data.frame(fread(opt$input_file, header=FALSE, 
-                            stringsAsFactors = FALSE, fill = TRUE, 
-                            check.names=FALSE))
+    data = data.frame(fread(opt$input_file, header = FALSE, 
+                            stringsAsFactors = FALSE, 
+                            fill = TRUE, sep = "\t", 
+                            check.names = FALSE))
     # extract rows with labels 
     idx = which(data[, opt$attribute_type_col_num] == lab_field)
     if(length(idx) < 1){
@@ -88,7 +89,7 @@ if(cond){
     }
     labels = data[idx, opt$variable_col_num]
 } else{
-    data = read.csv(opt$input_file, sep = "\t", 
+    data = read.csv(opt$input_file, sep = "\t",
                     stringsAsFactors = FALSE, check.names=FALSE)
     if(!lab_field %in% colnames(data)){
     stop("Provided label field not found in metada file")

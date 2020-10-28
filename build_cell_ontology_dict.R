@@ -85,7 +85,7 @@ if(condensed){
     sdrf_tables = lapply(file_names, function(file)
                                      data.frame(fread(file, header=FALSE,
                                      stringsAsFactors = FALSE, fill = TRUE, 
-                                     check.names=FALSE)))
+                                     sep = "\t", check.names=FALSE)))
 } else{
     sdrf_tables = lapply(file_names, function(file) read.csv(file, sep="\t", 
                                                     stringsAsFactors = FALSE, 
