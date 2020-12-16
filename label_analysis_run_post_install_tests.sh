@@ -49,6 +49,7 @@ export ref_labels_file=$data_dir/'reference_sdrf.tsv'
 export sampling_test_10x_data=$data_dir/'10x_data/'
 export sampling_test_sdrf=$data_dir/'E-GEOD-83139.sdrf.txt'
 export true_labels=$data_dir/'E-GEOD-83139_true_labels.tsv'
+export cell_num_threshold=10
 export lab_cl_mapping_consensus=$data_dir/'lab_cl_mapping_consensus_labs.rds'
 export sampling_cell_id_field='FactorValue [single cell identifier]'
 export sampling_cell_type_field='Characteristics [inferred cell type]'
