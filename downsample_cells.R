@@ -221,8 +221,10 @@ if(downsampling_required){
 
         selected_barcodes <- c(unsampled, sampled)
         sce <- sce[,sce$Barcode %in% selected_barcodes]
-    }else{
+    }
+    else{
         print("... unlabelled removed (where applicable), no further downsampling required")
+    }
 }
 if(minor_cell_types_present){
     cell_type_freqs <- sort(table(colData(sce)[[opt$cell_type_field]]), decreasing = FALSE)
