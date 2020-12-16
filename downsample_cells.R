@@ -232,8 +232,8 @@ if(minor_cell_types_present){
     # need to make sure those rare cells are still present after down-sampling
     if(length(cell_types_to_drop) > 0){
         print("Removing cell types with low frequency...")
-        barcodes_to_drop <- colData(sce)[[opt$cell_type_field]] %in% cell_types_to_drop
-        sce <- sce[, !barcodes_to_drop]
+        barcodes_to_keep <- ! colData(sce)[[opt$cell_type_field]] %in% cell_types_to_drop
+        sce <- sce[, barcodes_to_keep]
     }
 }
 
