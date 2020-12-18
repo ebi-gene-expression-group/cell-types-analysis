@@ -228,7 +228,7 @@ if(downsampling_required){
 }
 if(minor_cell_types_present){
     cell_type_freqs <- sort(table(colData(sce)[[opt$cell_type_field]]), decreasing = FALSE)
-    cell_types_to_drop = cell_type_freqs[cell_type_freqs < cell_count_threshold]
+    cell_types_to_drop = names(cell_type_freqs[cell_type_freqs < cell_count_threshold])
     # need to make sure those rare cells are still present after down-sampling
     if(length(cell_types_to_drop) > 0){
         print("Removing cell types with low frequency...")
@@ -250,5 +250,7 @@ write10xCounts(opt$output_dir, assays(sce)[[1]], barcodes = sce$Barcode,
 # rename cell id field and remove redundant column
 colnames(colData(sce))[1] <- opt$cell_id_field
 colData(sce) <- colData(sce)[, -2] 
-write.table(colData(sce), opt$metadata_upd, sep="\t")
+# write outputs and avoid column names mangling
+write(paste(colnames(colData(sce)), collapse="\t"), opt$metadata_upd, sep="\t")
+write.table(colData(sce), opt$metadata_upd, col.names=F, row.names=FALSE, sep="\t", append=T)
 print("Outputs written successfully")
