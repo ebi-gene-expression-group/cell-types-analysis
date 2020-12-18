@@ -251,6 +251,5 @@ write10xCounts(opt$output_dir, assays(sce)[[1]], barcodes = sce$Barcode,
 colnames(colData(sce))[1] <- opt$cell_id_field
 colData(sce) <- colData(sce)[, -2] 
 # write outputs and avoid column names mangling
-write(paste(colnames(colData(sce)), collapse="\t"), opt$metadata_upd, sep="\t")
-write.table(colData(sce), opt$metadata_upd, col.names=F, row.names=FALSE, sep="\t", append=T)
+write.table(data.frame(colData(sce), check.names = FALSE), opt$metadata_upd, sep="\t")
 print("Outputs written successfully")
