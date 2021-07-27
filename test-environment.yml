@@ -8,7 +8,8 @@ dependencies:
   - r-doparallel
   - r-matrixstats
   - bioconductor-onassis 
-  - openjdk=8.0.152 
+  - openjdk=8.0.152
+  - r-rjava  
   - r-reshape2=1.4.3 
   - r-data.table=1.12.8 
   - r-optparse 
