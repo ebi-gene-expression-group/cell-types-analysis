@@ -146,7 +146,9 @@ get_consensus_output.R\
           --ontology-graph <Path to the ontology graph in .obo or .xml format>\
           --semantic-sim-metric <Semantic similarity scoring method>\
           --true-labels <path to file with true labels>\
-          --include-sem-siml <boolean: should the semantic similarity be included in combined score calculation?>\ 
+          --include-sem-siml <boolean: should the semantic similarity be included in combined score calculation?>\
+          --return-ontology-labels <Should the summary table contain cell ontology ids for the top labels? Default: TRUE>\
+          --return-json <Should the summary table be written as a json file (as well as tsv)? Default: TRUE>\
           --summary-table-output-path <Path to the output table with top labels and per-cell metrics in .tsv format>
           --raw-table-output-path <Path to the output table with all labels in .tsv format>
 ```
