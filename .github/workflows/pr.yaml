@@ -15,6 +15,10 @@ jobs:
         shell: bash -l {0}
     steps:
       - uses: actions/checkout@v2
+      - uses: actions/setup-java@v2
+          with:
+            distribution: 'adopt'
+            java-version: '11'
 
       - name: Add workspace to path
         run: |
@@ -40,7 +44,7 @@ jobs:
           channel-priority: flexible
           show-channel-urls: true
           use-only-tar-bz2: true
-      
+
       - name: Run tests
         run: |
           label_analysis_run_post_install_tests.sh
