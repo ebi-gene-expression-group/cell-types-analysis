@@ -1,7 +1,9 @@
 name: test-environment
 dependencies:
   - bats 
-  - r-cairo 
+  - r-cairo
+  - r-yaml 
+  - r-base 
   - r-hash=2.2.6.1 
   - r-foreach
   - r-rjson
