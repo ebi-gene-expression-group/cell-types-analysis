@@ -4,6 +4,7 @@ dependencies:
   - r-cairo 
   - r-hash=2.2.6.1 
   - r-foreach
+  - r-rjson
   - r-doparallel
   - r-matrixstats
   - bioconductor-onassis 
