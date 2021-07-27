@@ -81,7 +81,7 @@ export summary_table_path=$output_dir/'summary_output_table.tsv'
 
 export num_iter=5
 export sample_labs=50
-export parallel='TRUE'
+export parallel='FALSE'
 export num_cores=4
 export top_labels_num=2
 export use_existing_outputs
