@@ -358,17 +358,21 @@ if(opt$return_ontology_labels){
         row = as.character(row)
         for (i in 1:length(row)) {
             lab = as.character(row[i])
-            cl_val = cl_dictionary[[lab]]
-            res[[i]] = cl_val
+            cl_val = lab_cl_mapping[[lab]]
+            if(is.na(cl_val) | is.null(val)){
+                res[[i]] = NA
+            } else{
+                res[[i]] = cl_val
+            }
         }
-        res = do.call(rbind, res)
+        res = do.call(cbind, res)
         return(res)
     }
-    l = top_labs[[, 1:3]]
+    l = top_labs[, c(1:3)]
     ont_labels = apply(l, 1, .map_labels)
     ont_labels = data.frame(t(ont_labels))
     colnames(ont_labels) = c(paste("CL_term", c(1:3), sep="_"))
-    top_labs_tbl = cbind(top_labs_tbl, ont_labels)
+    top_labs_tbl = data.frame(cbind(top_labs_tbl, ont_labels))
 }
 
 if(true_labs_provided){
