@@ -327,7 +327,7 @@ if(include_siml){
     } else{
         # sequential execution
         avg_siml = lapply(1:n_cells, function(idx) .get_sem_sim(idx))
-        sem_sim = do.call(cbind, avg_siml)
+        sem_sim = do.call(rbind, avg_siml)
         if(true_labs_provided){
             siml_to_true_labs = sapply(1:n_cells, function(idx) .get_sem_sim_true_labs(idx))
         }
