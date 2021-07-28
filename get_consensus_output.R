@@ -359,7 +359,7 @@ if(opt$return_ontology_labels){
         for (i in 1:length(row)) {
             lab = as.character(row[i])
             cl_val = lab_cl_mapping[[lab]]
-            if(is.na(cl_val) | is.null(val)){
+            if(is.null(cl_val)){
                 res[[i]] = NA
             } else{
                 res[[i]] = cl_val
@@ -392,7 +392,7 @@ write.table(comb_labels, file=opt$raw_table_output_path, sep="\t", row.names=FAL
 # write JSON file
 if(opt$return_json){
     top_labs_json = toJSON(unname(split(top_labs_tbl, 1:nrow(top_labs_tbl))))
-    out_path = gsub("\\.t.*", "json", opt$summary_table_output_path)
+    out_path = gsub("\\.t.*", ".json", opt$summary_table_output_path)
     write(top_labs_json, out_path)
 }
 
