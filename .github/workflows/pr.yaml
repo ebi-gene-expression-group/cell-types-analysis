@@ -41,10 +41,10 @@ jobs:
           show-channel-urls: true
           use-only-tar-bz2: true
 
-      - uses: actions/setup-java@v2
-        with:
-          distribution: 'adopt'
-          java-version: '11'
+      - name: Run Java config'
+        run: | 
+          R CMD javareconf -e
+          LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$JAVA_LD_LIBRARY_PATH
 
       - name: Run tests
         run: |
