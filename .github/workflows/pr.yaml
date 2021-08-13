@@ -44,7 +44,7 @@ jobs:
       - name: Run Java config'
         run: | 
           export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$JAVA_LD_LIBRARY_PATH
-          R CMD javareconf -e
+          R CMD javareconf
           
       - name: Run tests
         run: |
