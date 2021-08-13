@@ -41,9 +41,9 @@ jobs:
           show-channel-urls: true
           use-only-tar-bz2: true
 
-      - name: Run Java config'
+      - name: Run Java config
         run: | 
-          export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$JAVA_LD_LIBRARY_PATH
+          export LD_LIBRARY_PATH=/usr/lib/jvm/java-1.8.0-openjdk/jre/lib/amd64/server/
           R CMD javareconf
           
       - name: Run tests
