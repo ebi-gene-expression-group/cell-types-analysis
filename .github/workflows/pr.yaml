@@ -43,9 +43,9 @@ jobs:
 
       - name: Run Java config'
         run: | 
-          R CMD javareconf -e
           LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$JAVA_LD_LIBRARY_PATH
-
+          R CMD javareconf -e
+          
       - name: Run tests
         run: |
           label_analysis_run_post_install_tests.sh
