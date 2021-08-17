@@ -120,7 +120,7 @@
                      --include-sem-siml\
                      --summary-table-output-path $summary_table_path\
                      --raw-table-output-path $raw_labels_table_path\
-		     --true-labels $true_labels
+		             --true-labels $true_labels
 
 
     echo "status = ${status}"

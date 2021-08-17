@@ -104,6 +104,20 @@ option_list = list(
                 performance is evaluated. Expected columns: cell_id, true_label, ontology_term'
     ),
     make_option(
+        c("-n", "--return-ontology-labels"),
+        action = "store_true",
+        default = TRUE,
+        type = 'logical',
+        help = 'Should the summary table contain cell ontology ids for the top labels? Default: TRUE'
+    ),
+    make_option(
+        c("-j", "--return-json"),
+        action = "store_true",
+        default = TRUE,
+        type = 'logical',
+        help = 'Should the summary table be written as a json file (as well as tsv)? Default: TRUE'
+    ),
+    make_option(
         c("-o", "--summary-table-output-path"),
         action = "store",
         default = NA,
@@ -137,6 +151,7 @@ suppressPackageStartupMessages(require(foreach))
 suppressPackageStartupMessages(require(parallel))
 suppressPackageStartupMessages(require(doParallel))
 suppressPackageStartupMessages(require(yaml))
+suppressPackageStartupMessages(require(rjson))
 
 # retrieve tool scores if specified
 if(!is.na(opt$tool_table)){
@@ -312,7 +327,7 @@ if(include_siml){
     } else{
         # sequential execution
         avg_siml = lapply(1:n_cells, function(idx) .get_sem_sim(idx))
-        sem_sim = do.call(cbind, avg_siml)
+        sem_sim = do.call(rbind, avg_siml)
         if(true_labs_provided){
             siml_to_true_labs = sapply(1:n_cells, function(idx) .get_sem_sim_true_labs(idx))
         }
@@ -337,6 +352,29 @@ if(include_siml){
     top_labs_tbl["mean_sem_siml"] = sem_sim
 }
 
+if(opt$return_ontology_labels){
+    .map_labels = function(row){
+        res = list()
+        row = as.character(row)
+        for (i in 1:length(row)) {
+            lab = as.character(row[i])
+            cl_val = lab_cl_mapping[[lab]]
+            if(is.null(cl_val)){
+                res[[i]] = NA
+            } else{
+                res[[i]] = cl_val
+            }
+        }
+        res = do.call(cbind, res)
+        return(res)
+    }
+    l = top_labs[, c(1:3)]
+    ont_labels = apply(l, 1, .map_labels)
+    ont_labels = data.frame(t(ont_labels))
+    colnames(ont_labels) = c(paste("CL_term", c(1:3), sep="_"))
+    top_labs_tbl = data.frame(cbind(top_labs_tbl, ont_labels))
+}
+
 if(true_labs_provided){
     top_labs_tbl["siml_to_true_labs"] = unlist(siml_to_true_labs)
 }
@@ -344,10 +382,19 @@ if(true_labs_provided){
 if(opt$sort_by_agg_score){
     top_labs_tbl = top_labs_tbl[ order(-top_labs_tbl$comb_score), ]
 }
+# write summary table 
 write.table(top_labs_tbl, file=opt$summary_table_output_path, sep="\t", row.names=FALSE)
 
+# write raw predictions 
 comb_labels = data.frame(cbind(cell_id=cell_ids, labels, comb_ds))
 write.table(comb_labels, file=opt$raw_table_output_path, sep="\t", row.names=FALSE)
+
+# write JSON file
+if(opt$return_json){
+    top_labs_json = toJSON(unname(split(top_labs_tbl, 1:nrow(top_labs_tbl))))
+    out_path = gsub("\\.t.*", ".json", opt$summary_table_output_path)
+    write(top_labs_json, out_path)
+}
 
 #TODO: add p-values for semantic similarity? 
 #TODO: finding most specific common ancestor of given terms
